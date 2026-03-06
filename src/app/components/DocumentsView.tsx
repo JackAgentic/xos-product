@@ -1,5 +1,7 @@
-import { Search, Folder, ChevronDown, MoreVertical, File as FileIcon, Plus, Eye, Info, Database, Clock, Lock, Download, FileText } from 'lucide-react';
+import { useState } from 'react';
+import { Search, Folder, ChevronDown, ChevronRight, MoreVertical, File as FileIcon, Plus, Eye, Info, Database, Clock, Lock, Download, FileText } from 'lucide-react';
 import { QuickActionsMenu } from './QuickActionsMenu';
+import { documentFolders } from '../data/seedData';
 
 interface DocumentsViewProps {
   setShowAddEventModal: (show: boolean) => void;
@@ -60,38 +62,30 @@ export function DocumentsView({
         <div className="flex-1 overflow-y-auto">
           <div className="p-2">{/* Folder List */}
             <div className="space-y-1">
-              <div className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-sm">
-                <div className="flex items-center gap-3 flex-1">
-                  <ChevronDown className="w-4 h-4 text-gray-400" />
-                  <Folder className="w-5 h-5 text-[#0B3D2E]" />
-                  <div className="flex-1">
-                    <div className="font-medium">Identity</div>
+              {documentFolders.map((folder) => (
+                <div key={folder.name}>
+                  <div className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-sm">
+                    <div className="flex items-center gap-3 flex-1">
+                      <ChevronDown className="w-4 h-4 text-gray-400" />
+                      <Folder className="w-5 h-5 text-[#0B3D2E]" />
+                      <div className="flex-1">
+                        <div className="font-medium">{folder.name}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm text-gray-500">{folder.documents.length}</span>
+                      <button>
+                        <MoreVertical className="w-4 h-4 text-gray-400" />
+                      </button>
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-sm text-gray-500">1</span>
-                  <button>
-                    <MoreVertical className="w-4 h-4 text-gray-400" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Document under Identity */}
-              <div className="ml-10 flex items-center gap-2 p-2 hover:bg-gray-50 rounded-sm">
-                <FileIcon className="w-4 h-4 text-gray-400" />
-                <span className="text-sm">Terms and Conditions.pdf</span>
-              </div>
-
-              {/* Other Folders */}
-              {['Insurance', 'Investments', 'KiwiSaver', 'Mortgage', 'Property'].map((folder) => (
-                <div key={folder} className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-sm">
-                  <div className="flex items-center gap-3">
-                    <Folder className="w-5 h-5 text-[#0B3D2E]" />
-                    <span className="font-medium">{folder}</span>
-                  </div>
-                  <button>
-                    <MoreVertical className="w-4 h-4 text-gray-400" />
-                  </button>
+                  {folder.documents.map((doc) => (
+                    <div key={doc.name} className="ml-10 flex items-center gap-2 p-2 hover:bg-gray-50 rounded-sm">
+                      <FileIcon className="w-4 h-4 text-gray-400" />
+                      <span className="text-sm flex-1">{doc.name}</span>
+                      <span className="text-xs text-gray-400">{doc.size}</span>
+                    </div>
+                  ))}
                 </div>
               ))}
             </div>

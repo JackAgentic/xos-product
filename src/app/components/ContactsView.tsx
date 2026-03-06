@@ -1,5 +1,6 @@
 import { Plus, Search, Mail, Phone, ChevronDown, UserCircle, Sparkles, RefreshCw } from 'lucide-react';
 import { QuickActionsMenu } from './QuickActionsMenu';
+import { contactsData } from '../data/seedData';
 
 interface ContactsViewProps {
   selectedContact: number;
@@ -24,34 +25,7 @@ export function ContactsView({
   setShowAddOpportunityModal,
   setShowAIAssistantModal
 }: ContactsViewProps) {
-  const contacts = [
-    {
-      id: 0,
-      name: 'A household Client',
-      type: 'self',
-      email: 'test@test.com',
-      phone: '0987654321',
-      firstName: 'A household',
-      lastName: 'Client',
-      middleName: '',
-      dateOfBirth: '',
-      gender: '',
-      relationship: ''
-    },
-    {
-      id: 1,
-      name: 'Another Client',
-      type: 'primary_contact',
-      email: 'test@test.com',
-      phone: '0987654321',
-      firstName: 'Another',
-      lastName: 'Client',
-      middleName: '',
-      dateOfBirth: '',
-      gender: '',
-      relationship: ''
-    }
-  ];
+  const contacts = contactsData;
 
   const selected = contacts[selectedContact];
 

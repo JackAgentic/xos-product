@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import { ClientHeaderCard } from './ClientHeaderCard';
 import { ActivitiesCard } from './ActivitiesCard';
 import { FactFindCard } from './FactFindCard';
+import { overviewActivities, overviewOpportunities } from '../data/seedData';
 import {
   DollarSign,
   FileText,
@@ -65,16 +66,8 @@ export function OverviewView({ visibleModules, changeTab, selectedClient }: Over
     );
   };
 
-  const activities = [
-    { id: 1, type: 'meeting', title: 'Meeting', subtitle: 'Security Test', date: 'Jan 15', time: '11:00 PM', status: 'upcoming' },
-    { id: 2, type: 'document', title: 'Document Upload', subtitle: 'Privacy Policy.pdf', date: 'Jan 10', time: '2:30 PM', status: 'completed' },
-    { id: 3, type: 'email', title: 'Email Sent', subtitle: 'Investment Proposal', date: 'Jan 8', time: '9:15 AM', status: 'completed' },
-  ];
-
-  const opportunities = [
-    { id: 1, name: 'Life Insurance Policy', value: '$50,000', stage: 'Proposal', probability: 75 },
-    { id: 2, name: 'Investment Portfolio', value: '$125,000', stage: 'Negotiation', probability: 85 },
-  ];
+  const activities = overviewActivities;
+  const opportunities = overviewOpportunities;
 
   return (
     <div className="flex-1 overflow-auto p-4 pb-24 bg-gray-50">
@@ -105,8 +98,8 @@ export function OverviewView({ visibleModules, changeTab, selectedClient }: Over
               <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 h-full">
                 <div className="bg-white rounded-sm border border-gray-200 p-4 h-full flex flex-col justify-between">
                   <div className="flex items-center gap-2 mb-2"><DollarSign className="w-5 h-5 text-[#2D6A4F]" /><span className="text-xs font-medium text-gray-500">TOTAL VALUE</span></div>
-                  <div className="text-xl font-semibold text-gray-900">$175K</div>
-                  <div className="text-xs text-gray-600 mt-1">+15% growth</div>
+                  <div className="text-xl font-semibold text-gray-900">$925K</div>
+                  <div className="text-xs text-gray-600 mt-1">+12% growth</div>
                 </div>
                 <div className="bg-white rounded-sm border border-gray-200 p-4 h-full flex flex-col justify-between">
                   <div className="flex items-center gap-2 mb-2"><FileText className="w-5 h-5 text-[#4F46E5]" /><span className="text-xs font-medium text-gray-500">DOCUMENTS</span></div>
@@ -130,7 +123,7 @@ export function OverviewView({ visibleModules, changeTab, selectedClient }: Over
                   <h3 className="font-semibold text-lg">ACTIVITIES</h3>
                 </div>
                 <div className="space-y-4">
-                  <div className="text-xs font-medium text-gray-500 mb-3">JANUARY 2026</div>
+                  <div className="text-xs font-medium text-gray-500 mb-3">MARCH 2026</div>
                   {activities.map((activity, idx) => (
                     <div key={activity.id} className="relative">
                       {idx !== activities.length - 1 && <div className="absolute left-4 top-10 bottom-0 w-px bg-gray-200"></div>}

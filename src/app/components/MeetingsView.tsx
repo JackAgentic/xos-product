@@ -26,13 +26,14 @@ export function MeetingsView({
   setShowAIAssistantModal
 }: MeetingsViewProps) {
   const meetings = [
-    {
-      id: 0,
-      title: 'Security Test',
-      date: 'Thu, Jan 15, 2026',
-      time: '11:00 PM to 11:30 PM',
-      attendees: 0
-    }
+    { id: 0, title: 'Annual KiwiSaver Review', date: 'Thu, Mar 6, 2026', time: '10:00 AM to 11:00 AM', attendees: 2 },
+    { id: 1, title: 'Mortgage Pre-Approval Discussion', date: 'Thu, Mar 6, 2026', time: '2:00 PM to 2:45 PM', attendees: 1 },
+    { id: 2, title: 'Insurance Proposal Presentation', date: 'Fri, Mar 7, 2026', time: '9:30 AM to 11:00 AM', attendees: 3 },
+    { id: 3, title: 'Retirement Income Planning', date: 'Fri, Mar 7, 2026', time: '2:00 PM to 3:00 PM', attendees: 2 },
+    { id: 4, title: 'Quarterly Portfolio Review', date: 'Mon, Mar 10, 2026', time: '10:00 AM to 10:45 AM', attendees: 1 },
+    { id: 5, title: 'Estate Planning Consultation', date: 'Tue, Mar 11, 2026', time: '11:00 AM to 12:00 PM', attendees: 4 },
+    { id: 6, title: 'Investment Strategy Workshop', date: 'Wed, Mar 12, 2026', time: '1:00 PM to 2:30 PM', attendees: 2 },
+    { id: 7, title: 'Follow-up — Risk Assessment', date: 'Thu, Mar 13, 2026', time: '3:00 PM to 3:30 PM', attendees: 1 },
   ];
 
   const [activeTab, setActiveTab] = useState('meeting');

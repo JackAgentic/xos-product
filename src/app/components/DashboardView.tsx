@@ -18,6 +18,7 @@ import {
   Activity
 } from 'lucide-react';
 import { AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { revenueData as seedRevenue, pipelineData as seedPipeline, activityTrendData, dashboardRecentActivities, dashboardUpcomingMeetings } from '../data/seedData';
 
 export function DashboardView({ 
   setMobileDrawerOpen,
@@ -32,35 +33,9 @@ export function DashboardView({
 }) {
   const [timeRange, setTimeRange] = useState<'week' | 'month' | 'quarter' | 'year'>('month');
 
-  // Sample data for revenue chart
-  const revenueData = [
-    { month: 'Jan', revenue: 45000, target: 50000 },
-    { month: 'Feb', revenue: 52000, target: 50000 },
-    { month: 'Mar', revenue: 48000, target: 50000 },
-    { month: 'Apr', revenue: 61000, target: 55000 },
-    { month: 'May', revenue: 55000, target: 55000 },
-    { month: 'Jun', revenue: 67000, target: 60000 },
-  ];
-
-  // Sample data for opportunities pipeline
-  const pipelineData = [
-    { name: 'Lead', value: 12, amount: 180000, color: '#94a3b8' },
-    { name: 'Qualified', value: 8, amount: 240000, color: '#0B3D2E' },
-    { name: 'Proposal', value: 5, amount: 175000, color: '#081C15' },
-    { name: 'Negotiation', value: 3, amount: 120000, color: '#16a34a' },
-    { name: 'Closed Won', value: 7, amount: 385000, color: '#0ea5e9' },
-  ];
-
-  // Sample data for activity trend
-  const activityData = [
-    { day: 'Mon', meetings: 4, calls: 12, emails: 28 },
-    { day: 'Tue', meetings: 6, calls: 15, emails: 32 },
-    { day: 'Wed', meetings: 3, calls: 10, emails: 25 },
-    { day: 'Thu', meetings: 8, calls: 18, emails: 35 },
-    { day: 'Fri', meetings: 5, calls: 14, emails: 30 },
-    { day: 'Sat', meetings: 1, calls: 3, emails: 8 },
-    { day: 'Sun', meetings: 0, calls: 2, emails: 5 },
-  ];
+  const revenueData = seedRevenue;
+  const pipelineData = seedPipeline;
+  const activityData = activityTrendData;
 
   // Calculate metrics
   const totalClients = clients.length;
@@ -80,21 +55,11 @@ export function DashboardView({
   ];
 
   // Recent activities
-  const recentActivities = [
-    { id: 1, type: 'meeting', client: 'Sarah Johnson', action: 'Completed discovery call', time: '2 hours ago', icon: Video, color: 'text-blue-600 bg-blue-50' },
-    { id: 2, type: 'task', client: 'Michael Chen', action: 'Follow-up email sent', time: '4 hours ago', icon: Mail, color: 'text-green-600 bg-green-50' },
-    { id: 3, type: 'opportunity', client: 'Emma Wilson', action: 'Proposal submitted', time: '5 hours ago', icon: FileText, color: 'text-purple-600 bg-purple-50' },
-    { id: 4, type: 'call', client: 'James Brown', action: 'Phone consultation', time: '1 day ago', icon: Phone, color: 'text-orange-600 bg-orange-50' },
-    { id: 5, type: 'meeting', client: 'Lisa Anderson', action: 'Quarterly review scheduled', time: '1 day ago', icon: Calendar, color: 'text-[#0B3D2E] bg-[#F2E9E4]/20' },
-  ];
+  const iconMap = { video: Video, mail: Mail, file: FileText, phone: Phone, calendar: Calendar };
+  const recentActivities = dashboardRecentActivities.map(a => ({ ...a, icon: iconMap[a.iconType] }));
 
   // Upcoming meetings
-  const upcomingMeetings = [
-    { id: 1, client: 'Sarah Johnson', type: 'Review Meeting', time: 'Today, 2:00 PM', duration: '60 min' },
-    { id: 2, client: 'Michael Chen', type: 'Discovery Call', time: 'Today, 4:30 PM', duration: '30 min' },
-    { id: 3, client: 'Emma Wilson', type: 'Proposal Presentation', time: 'Tomorrow, 10:00 AM', duration: '90 min' },
-    { id: 4, client: 'James Brown', type: 'Follow-up Call', time: 'Tomorrow, 3:00 PM', duration: '30 min' },
-  ];
+  const upcomingMeetings = dashboardUpcomingMeetings;
 
   // Top performing clients
   const topClients = clients.slice(0, 5).map((client, idx) => ({

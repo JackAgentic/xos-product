@@ -1,5 +1,6 @@
 import { Mail, Search, Filter, StickyNote } from 'lucide-react';
 import { QuickActionsMenu } from './QuickActionsMenu';
+import { communicationsData } from '../data/seedData';
 
 interface CommunicationViewProps {
   selectedCommunication: number | null;
@@ -24,34 +25,7 @@ export function CommunicationView({
   setShowAddOpportunityModal,
   setShowAIAssistantModal
 }: CommunicationViewProps) {
-  const communications = [
-    {
-      id: 0,
-      from: 'Sarah Johnson',
-      subject: 'RE: Quarterly Portfolio Review - In...',
-      preview: 'Dear John, I hope this email finds you well. Following our recent conversation about...',
-      date: 'Aug 26, 2024',
-      type: 'email',
-      unread: true
-    },
-    {
-      id: 1,
-      from: 'John Smith',
-      subject: 'RE: Insurance Policy Renewal Disc...',
-      preview: 'Client called to discuss upcoming life insurance policy renewal. Reviewed curre...',
-      date: 'Aug 25, 2024',
-      type: 'note',
-      unread: true
-    },
-    {
-      id: 2,
-      from: 'Sarah Johnson',
-      subject: 'RE: KiwiSaver Investment Options ...',
-      preview: "Conducted comprehensive review of client's KiwiSaver portfolio. Discussed...",
-      date: 'Aug 23, 2024',
-      type: 'email',
-      unread: true
-    }
+  const communications = [...communicationsData
   ];
 
   return (

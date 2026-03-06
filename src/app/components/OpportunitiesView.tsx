@@ -12,6 +12,7 @@ import {
 import { CLIENTS_LOOKUP } from '../data/clients';
 import { getAdviceIcon } from '../utils/adviceUtils';
 import { generateAIInsights } from '../utils/opportunityInsights';
+import { opportunityActivities } from '../data/seedData';
 import { QuickActionsMenu } from './QuickActionsMenu';
 import { OpportunitySidebar } from './OpportunitySidebar';
 import { OpportunityDetails } from './OpportunityDetails';
@@ -67,14 +68,7 @@ const pipelineStages = [
 ];
 
 // Activity timeline data
-const activities = [
-  { id: 1, type: 'document', date: '3 Feb', label: 'Feb 3', title: 'Policy Documents', description: 'Insurance policy documents uploaded', assigned: true },
-  { id: 2, type: 'note', date: '5 Feb', label: 'Feb 5', title: 'Client Call Notes', description: 'Discussion about coverage options', assigned: true },
-  { id: 3, type: 'note', date: '6 Feb', label: 'Feb 6', title: 'Follow-up Required', description: 'Need to clarify health questions', assigned: true },
-  { id: 4, type: 'meeting', date: '11 Feb', label: 'Feb 11', title: 'Test Meeting', description: 'No content available', location: 'Apple Room', time: '11 Feb 2028 09:00 am', assigned: true },
-  { id: 5, type: 'document', date: '14 Feb', label: 'Feb 14', title: 'Application Form', description: 'Completed application received', assigned: false },
-  { id: 6, type: 'document', date: '18 Feb', label: 'Feb 18', title: 'Medical Records', description: 'Health assessment documents', assigned: false },
-];
+const activities = opportunityActivities;
 
 export function OpportunitiesView({
   clientId,

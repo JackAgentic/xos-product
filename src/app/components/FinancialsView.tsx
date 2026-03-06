@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { QuickActionsMenu } from './QuickActionsMenu';
+import { financialSnapshots as seedSnapshots, seedAssets, seedLiabilities, seedIncome, seedExpenses, seedGoals } from '../data/seedData';
 import {
   Plus,
   Search,
@@ -92,28 +93,7 @@ export function FinancialsView({
   setShowAddOpportunityModal: (show: boolean) => void;
   setShowAIAssistantModal: (show: boolean) => void;
 }) {
-  const [snapshots, setSnapshots] = useState<FinancialSnapshot[]>([
-    {
-      id: '1',
-      name: 'Annual Review 2026',
-      date: '2026-03-01',
-      status: 'completed',
-      progress: 100,
-      netWorth: 850000,
-      totalAssets: 1200000,
-      totalLiabilities: 350000
-    },
-    {
-      id: '2',
-      name: 'Q1 2026 Update',
-      date: '2026-02-15',
-      status: 'in-progress',
-      progress: 60,
-      netWorth: 825000,
-      totalAssets: 1180000,
-      totalLiabilities: 355000
-    }
-  ]);
+  const [snapshots, setSnapshots] = useState<FinancialSnapshot[]>(seedSnapshots);
 
   const [selectedSnapshot, setSelectedSnapshot] = useState<FinancialSnapshot | null>(null);
   const [activeTab, setActiveTab] = useState('assets');
@@ -123,11 +103,11 @@ export function FinancialsView({
   const [showActionMenu, setShowActionMenu] = useState<string | null>(null);
 
   // Form data states
-  const [assets, setAssets] = useState<AssetItem[]>([]);
-  const [liabilities, setLiabilities] = useState<LiabilityItem[]>([]);
-  const [incomeItems, setIncomeItems] = useState<IncomeItem[]>([]);
-  const [expenseItems, setExpenseItems] = useState<ExpenseItem[]>([]);
-  const [goals, setGoals] = useState<GoalItem[]>([]);
+  const [assets, setAssets] = useState<AssetItem[]>(seedAssets);
+  const [liabilities, setLiabilities] = useState<LiabilityItem[]>(seedLiabilities);
+  const [incomeItems, setIncomeItems] = useState<IncomeItem[]>(seedIncome);
+  const [expenseItems, setExpenseItems] = useState<ExpenseItem[]>(seedExpenses);
+  const [goals, setGoals] = useState<GoalItem[]>(seedGoals);
 
   const tabs = [
     { id: 'assets', label: 'Assets', icon: TrendingUp },
