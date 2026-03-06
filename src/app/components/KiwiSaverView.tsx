@@ -477,7 +477,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
     { id: 'meeting' as KiwiSaverTab, label: 'Meeting', icon: Calendar },
     { id: 'risk' as KiwiSaverTab, label: 'Risk Profile', icon: Target },
     { id: 'projection' as KiwiSaverTab, label: 'Projection', icon: TrendingUp },
-    { id: 'comparison' as KiwiSaverTab, label: 'Comparison & Report', icon: Scale },
+    { id: 'comparison' as KiwiSaverTab, label: 'Report', icon: Scale },
   ];
 
   const visibleTabs = tabs.filter(tab => !hiddenTabs.includes(tab.id));
@@ -693,7 +693,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
               <div className="flex-shrink-0">
                 {/* Tab Navigation - Floor to Ceiling Grid */}
                 <div className="bg-white border-b border-gray-200 flex-shrink-0">
-                  <div className="flex h-10 sm:h-12">
+                  <div className="flex h-10 sm:h-12 overflow-x-auto scrollbar-hide">
                     {/* Assessment Info */}
                     <div className="hidden lg:flex items-center gap-2.5 px-4 border-r border-gray-200 flex-shrink-0 lg:w-64 bg-gray-50">
                       <div className="w-7 h-7 bg-emerald-900 rounded flex items-center justify-center flex-shrink-0">
@@ -714,28 +714,36 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                       const Icon = tab.icon;
                       const isActive = activeTab === tab.id;
                       return (
-                        <button
-                          key={tab.id}
-                          onClick={() => setActiveTab(tab.id)}
-                          className={`flex-1 flex flex-col sm:flex-row items-center justify-center gap-1.5 sm:gap-3 px-2 sm:px-4 transition-all relative border-r border-gray-100 last:border-r-0 ${isActive
-                            ? 'text-emerald-900 bg-emerald-900/5'
-                            : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
-                            }`}
-                        >
-                          <Icon className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isActive ? 'text-emerald-900' : 'text-gray-400'}`} />
-                          <span className={`text-[9px] sm:text-[11px] font-bold uppercase tracking-widest whitespace-nowrap flex items-center gap-1 ${isActive ? 'text-emerald-900' : 'text-gray-500'}`}>
+                        <ShadcnTooltip key={tab.id}>
+                          <TooltipTrigger asChild>
+                            <button
+                              onClick={() => setActiveTab(tab.id)}
+                              className={`flex-1 min-w-[48px] sm:min-w-[64px] flex flex-row items-center justify-center gap-2 px-2 sm:px-4 transition-all relative border-r border-gray-100 last:border-r-0 ${isActive
+                                ? 'text-emerald-900 bg-emerald-900/5'
+                                : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
+                                }`}
+                            >
+                              <Icon className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isActive ? 'text-emerald-900' : 'text-gray-400'}`} />
+                              <span className={`hidden tab-label-responsive text-[11px] font-bold uppercase tracking-widest whitespace-nowrap ${isActive ? 'text-emerald-900' : 'text-gray-500'}`}>
+                                {tab.label}
+                              </span>
+                              {tab.id === 'assessment' && allContactsComplete && (
+                                <CheckCircle className="w-3.5 h-3.5 text-green-500 fill-green-50 flex-shrink-0 ml-1" />
+                              )}
+                              {isActive && (
+                                <div className="absolute bottom-0 left-0 right-0 h-1 bg-emerald-900" />
+                              )}
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent side="bottom" sideOffset={10}>
                             {tab.label}
-                            {tab.id === 'assessment' && allContactsComplete && <CheckCircle className="w-3.5 h-3.5 text-green-500 fill-green-50" />}
-                          </span>
-                          {isActive && (
-                            <div className="absolute bottom-0 left-0 right-0 h-1 bg-emerald-900" />
-                          )}
-                        </button>
+                          </TooltipContent>
+                        </ShadcnTooltip>
                       );
                     })}
 
-                    {/* Tab Visibility Dropdown */}
-                    <div className="relative w-12 sm:w-16 flex-shrink-0 border-l border-gray-100 flex items-center justify-center">
+                    {/* Tab Visibility Dropdown - Fixed width and always visible */}
+                    <div className="relative w-10 sm:w-16 flex-shrink-0 border-l border-gray-100 flex items-center justify-center bg-white sticky right-0 z-10">
                       <ShadcnTooltip>
                         <TooltipTrigger asChild>
                           <button
@@ -749,45 +757,44 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                           Visibility
                         </TooltipContent>
                       </ShadcnTooltip>
-
-                      {isVisibilityDropdownOpen && (
-                        <>
-                          <div
-                            className="fixed inset-0 z-40"
-                            onClick={() => setIsVisibilityDropdownOpen(false)}
-                          />
-                          <div className="absolute right-0 top-full mt-0 bg-white border border-gray-200 rounded-sm py-2 min-w-[240px] z-[60] animate-in fade-in zoom-in duration-200 origin-top-right border-t-2 border-t-emerald-900">
-                            <div className="px-4 py-2 border-b border-gray-50 mb-1">
-                              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Show/Hide Tabs</span>
-                            </div>
-                            {tabs.map((tab) => {
-                              const Icon = tab.icon;
-                              const isHidden = hiddenTabs.includes(tab.id);
-                              return (
-                                <button
-                                  key={tab.id}
-                                  onClick={() => toggleTabVisibility(tab.id)}
-                                  className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-50 transition-colors group/tab"
-                                >
-                                  <div className="flex items-center gap-3">
-                                    <div className={`p-1.5 rounded transition-colors ${isHidden ? 'bg-gray-50 text-gray-400' : 'bg-stone-200 text-emerald-900'}`}>
-                                      <Icon className="w-3.5 h-3.5" />
-                                    </div>
-                                    <span className={`text-xs font-medium transition-colors ${isHidden ? 'text-gray-400' : 'text-gray-700'}`}>{tab.label}</span>
-                                  </div>
-                                  {isHidden ? (
-                                    <EyeOff className="w-3.5 h-3.5 text-gray-300" />
-                                  ) : (
-                                    <Eye className="w-3.5 h-3.5 text-emerald-900" />
-                                  )}
-                                </button>
-                              );
-                            })}
-                          </div>
-                        </>
-                      )}
                     </div>
 
+                    {isVisibilityDropdownOpen && (
+                      <>
+                        <div
+                          className="fixed inset-0 z-40"
+                          onClick={() => setIsVisibilityDropdownOpen(false)}
+                        />
+                        <div className="absolute right-0 top-full mt-0 bg-white border border-gray-200 rounded-sm py-2 min-w-[240px] z-[60] animate-in fade-in zoom-in duration-200 origin-top-right border-t-2 border-t-emerald-900">
+                          <div className="px-4 py-2 border-b border-gray-50 mb-1">
+                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Show/Hide Tabs</span>
+                          </div>
+                          {tabs.map((tab) => {
+                            const Icon = tab.icon;
+                            const isHidden = hiddenTabs.includes(tab.id);
+                            return (
+                              <button
+                                key={tab.id}
+                                onClick={() => toggleTabVisibility(tab.id)}
+                                className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-50 transition-colors group/tab"
+                              >
+                                <div className="flex items-center gap-3">
+                                  <div className={`p-1.5 rounded transition-colors ${isHidden ? 'bg-gray-50 text-gray-400' : 'bg-stone-200 text-emerald-900'}`}>
+                                    <Icon className="w-3.5 h-3.5" />
+                                  </div>
+                                  <span className={`text-xs font-medium transition-colors ${isHidden ? 'text-gray-400' : 'text-gray-700'}`}>{tab.label}</span>
+                                </div>
+                                {isHidden ? (
+                                  <EyeOff className="w-3.5 h-3.5 text-gray-300" />
+                                ) : (
+                                  <Eye className="w-3.5 h-3.5 text-emerald-900" />
+                                )}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
@@ -864,13 +871,12 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                   if (!isSelected) setSelectedContacts(prev => [...prev, contact.id]);
                                   setActiveContactId(contact.id);
                                 }}
-                                className={`flex items-center gap-2.5 px-2.5 py-2 rounded-sm cursor-pointer transition-all ${
-                                  isActive
-                                    ? 'bg-emerald-900 text-white'
-                                    : isSelected
-                                      ? 'bg-white border border-gray-100 hover:bg-gray-50'
-                                      : 'opacity-50 hover:opacity-75'
-                                }`}
+                                className={`flex items-center gap-2.5 px-2.5 py-2 rounded-sm cursor-pointer transition-all ${isActive
+                                  ? 'bg-emerald-900 text-white'
+                                  : isSelected
+                                    ? 'bg-white border border-gray-100 hover:bg-gray-50'
+                                    : 'opacity-50 hover:opacity-75'
+                                  }`}
                               >
                                 <div className="flex-1 min-w-0">
                                   <p className={`text-xs font-bold truncate ${isActive ? 'text-white' : 'text-gray-800'}`}>{contact.name}</p>
@@ -887,13 +893,12 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                 </div>
                                 <button
                                   onClick={e => { e.stopPropagation(); toggleContact(contact.id); }}
-                                  className={`shrink-0 w-5 h-5 rounded-full flex items-center justify-center transition-all ${
-                                    isActive
-                                      ? 'text-white/40 hover:text-white'
-                                      : isSelected
-                                        ? 'text-emerald-900/40 hover:text-red-500'
-                                        : 'text-gray-300 hover:text-emerald-900'
-                                  }`}
+                                  className={`shrink-0 w-5 h-5 rounded-full flex items-center justify-center transition-all ${isActive
+                                    ? 'text-white/40 hover:text-white'
+                                    : isSelected
+                                      ? 'text-emerald-900/40 hover:text-red-500'
+                                      : 'text-gray-300 hover:text-emerald-900'
+                                    }`}
                                   title={isSelected ? 'Remove from assessment' : 'Add to assessment'}
                                 >
                                   {isSelected ? <CheckCircle className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
@@ -1168,13 +1173,12 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                             }
                                             setProviderForm(f => ({ ...f, memberNumber: formatted }));
                                           }}
-                                          className={`w-full h-9 px-4 border rounded-sm text-sm bg-gray-50/50 focus:ring-2 transition-all font-bold text-gray-900 placeholder:text-gray-300 ${
-                                            hasInput && isValid
-                                              ? 'border-green-400 focus:ring-green-500/20 focus:border-green-500'
-                                              : hasInput && !isValid
-                                                ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500'
-                                                : 'border-gray-200 focus:ring-emerald-900/20 focus:border-emerald-900'
-                                          }`}
+                                          className={`w-full h-9 px-4 border rounded-sm text-sm bg-gray-50/50 focus:ring-2 transition-all font-bold text-gray-900 placeholder:text-gray-300 ${hasInput && isValid
+                                            ? 'border-green-400 focus:ring-green-500/20 focus:border-green-500'
+                                            : hasInput && !isValid
+                                              ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500'
+                                              : 'border-gray-200 focus:ring-emerald-900/20 focus:border-emerald-900'
+                                            }`}
                                         />
                                         {hasInput && !isValid && (
                                           <p className="text-[11px] text-red-500 mt-1.5 font-medium">Enter a valid 9-digit member number (XXX-XXX-XXX)</p>
@@ -1274,13 +1278,12 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                               }
                                               setEmploymentForm(f => ({ ...f, irdNumber: formatted }));
                                             }}
-                                            className={`w-full h-9 px-4 border rounded-sm text-sm bg-gray-50/50 focus:ring-2 transition-all font-bold text-gray-900 placeholder:text-gray-300 ${
-                                              hasInput && isValid
-                                                ? 'border-green-400 focus:ring-green-500/20 focus:border-green-500'
-                                                : hasInput && !isValid
-                                                  ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500'
-                                                  : 'border-gray-200 focus:ring-emerald-900/20 focus:border-emerald-900'
-                                            }`}
+                                            className={`w-full h-9 px-4 border rounded-sm text-sm bg-gray-50/50 focus:ring-2 transition-all font-bold text-gray-900 placeholder:text-gray-300 ${hasInput && isValid
+                                              ? 'border-green-400 focus:ring-green-500/20 focus:border-green-500'
+                                              : hasInput && !isValid
+                                                ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500'
+                                                : 'border-gray-200 focus:ring-emerald-900/20 focus:border-emerald-900'
+                                              }`}
                                           />
                                           {hasInput && !isValid && (
                                             <p className="text-[11px] text-red-500 mt-1.5 font-medium">Enter a valid 9-digit IRD number (XXX-XXX-XXX)</p>
@@ -1404,7 +1407,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                         className={`px-3 h-8 rounded-sm text-xs font-bold transition-all ${otherForm.nzWorkplace === choice
                                           ? 'bg-emerald-900 text-white'
                                           : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
-                                        }`}
+                                          }`}
                                       >{choice}</button>
                                     ))}
                                   </div>
@@ -1453,7 +1456,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                         className={`px-3 h-8 rounded-sm text-xs font-bold transition-all ${otherForm.overseasPension === choice
                                           ? 'bg-emerald-900 text-white'
                                           : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
-                                        }`}
+                                          }`}
                                       >{choice}</button>
                                     ))}
                                   </div>
@@ -1535,7 +1538,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                 <div className="p-4 sm:p-4">
                   <div className="max-w-[1400px] mx-auto">
                     <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-                      <div className="lg:col-span-1 flex lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible pb-4 lg:pb-0 no-scrollbar items-center lg:items-stretch">
+                      <div className="lg:col-span-1 flex lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible pb-4 lg:pb-0 scrollbar-hide items-center lg:items-stretch">
                         {[
                           { id: 'meeting', label: 'Meeting', icon: Calendar, active: true },
                           { id: 'transcript', label: 'Transcript', icon: FileText },
@@ -2382,100 +2385,100 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
   );
 }
 
-          // Helper Components
+// Helper Components
 
-          interface ExpandableSectionProps {
-            icon: any;
-          title: string;
-          subtitle?: string;
-          children: React.ReactNode;
-          defaultOpen?: boolean;
-          completedCount?: number;
-          totalCount?: number;
+interface ExpandableSectionProps {
+  icon: any;
+  title: string;
+  subtitle?: string;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+  completedCount?: number;
+  totalCount?: number;
 }
 
-          function ExpandableSection({
-            icon: Icon,
-          title,
-          subtitle,
-          children,
-          defaultOpen = false,
-          completedCount,
-          totalCount
+function ExpandableSection({
+  icon: Icon,
+  title,
+  subtitle,
+  children,
+  defaultOpen = false,
+  completedCount,
+  totalCount
 }: ExpandableSectionProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
-          const hasProgress = completedCount !== undefined && totalCount !== undefined;
-          const progressPercentage = hasProgress ? Math.round((completedCount / totalCount) * 100) : 0;
+  const hasProgress = completedCount !== undefined && totalCount !== undefined;
+  const progressPercentage = hasProgress ? Math.round((completedCount / totalCount) * 100) : 0;
 
-          return (
-          <div className="border border-gray-200 rounded overflow-hidden">
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="w-full flex items-center justify-between p-4 bg-white hover:bg-gray-50 transition-colors"
-            >
-              <div className="flex items-center gap-3 flex-1">
-                <div className="w-8 h-8 rounded-full bg-emerald-900/10 flex items-center justify-center">
-                  <Icon className="w-4 h-4 text-emerald-900" />
-                </div>
-                <div className="text-left flex-1">
-                  <div className="flex items-center gap-3">
-                    <p className="text-sm font-medium text-gray-900">{title}</p>
-                    {hasProgress && (
-                      <div className="flex items-center gap-2 flex-1 max-w-[120px]">
-                        <div className="h-1 flex-1 bg-gray-100 rounded-full overflow-hidden">
-                          <div
-                            className={`h-full transition-all duration-500 ${progressPercentage === 100 ? 'bg-green-500' : 'bg-emerald-900'}`}
-                            style={{ width: `${progressPercentage}%` }}
-                          />
-                        </div>
-                        <span className={`text-[10px] font-bold ${progressPercentage === 100 ? 'text-green-600' : 'text-gray-400'}`}>
-                          {completedCount}/{totalCount}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                  {subtitle && <p className="text-xs text-emerald-900 mt-0.5">{subtitle}</p>}
-                </div>
-              </div>
-              <ChevronRight className={`w-5 h-5 text-gray-400 transition-transform ${isOpen ? 'rotate-90' : ''}`} />
-            </button>
-            {isOpen && <div className="border-t border-gray-200">{children}</div>}
-          </div>
-          );
-}
-
-          interface WorkflowStepProps {
-            status: 'completed' | 'pending' | 'upcoming';
-          title: string;
-          timestamp: string;
-          user: string;
-}
-
-          function WorkflowStep({status, title, timestamp, user}: WorkflowStepProps) {
   return (
-          <div className="flex items-start gap-3">
-            <div className="flex-shrink-0 mt-0.5">
-              {status === 'completed' && (
-                <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center">
-                  <CheckCircle className="w-4 h-4 text-green-600" />
-                </div>
-              )}
-              {status === 'pending' && (
-                <div className="w-6 h-6 rounded-full bg-yellow-100 flex items-center justify-center">
-                  <Clock className="w-4 h-4 text-yellow-600" />
-                </div>
-              )}
-              {status === 'upcoming' && (
-                <div className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center">
-                  <div className="w-2 h-2 rounded-full bg-gray-400" />
-                </div>
-              )}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900">{title}</p>
-              <p className="text-xs text-gray-500 mt-0.5">{timestamp}</p>
-              <p className="text-xs text-gray-500">by {user}</p>
-            </div>
+    <div className="border border-gray-200 rounded overflow-hidden">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center justify-between p-4 bg-white hover:bg-gray-50 transition-colors"
+      >
+        <div className="flex items-center gap-3 flex-1">
+          <div className="w-8 h-8 rounded-full bg-emerald-900/10 flex items-center justify-center">
+            <Icon className="w-4 h-4 text-emerald-900" />
           </div>
-          );
+          <div className="text-left flex-1">
+            <div className="flex items-center gap-3">
+              <p className="text-sm font-medium text-gray-900">{title}</p>
+              {hasProgress && (
+                <div className="flex items-center gap-2 flex-1 max-w-[120px]">
+                  <div className="h-1 flex-1 bg-gray-100 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full transition-all duration-500 ${progressPercentage === 100 ? 'bg-green-500' : 'bg-emerald-900'}`}
+                      style={{ width: `${progressPercentage}%` }}
+                    />
+                  </div>
+                  <span className={`text-[10px] font-bold ${progressPercentage === 100 ? 'text-green-600' : 'text-gray-400'}`}>
+                    {completedCount}/{totalCount}
+                  </span>
+                </div>
+              )}
+            </div>
+            {subtitle && <p className="text-xs text-emerald-900 mt-0.5">{subtitle}</p>}
+          </div>
+        </div>
+        <ChevronRight className={`w-5 h-5 text-gray-400 transition-transform ${isOpen ? 'rotate-90' : ''}`} />
+      </button>
+      {isOpen && <div className="border-t border-gray-200">{children}</div>}
+    </div>
+  );
+}
+
+interface WorkflowStepProps {
+  status: 'completed' | 'pending' | 'upcoming';
+  title: string;
+  timestamp: string;
+  user: string;
+}
+
+function WorkflowStep({ status, title, timestamp, user }: WorkflowStepProps) {
+  return (
+    <div className="flex items-start gap-3">
+      <div className="flex-shrink-0 mt-0.5">
+        {status === 'completed' && (
+          <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center">
+            <CheckCircle className="w-4 h-4 text-green-600" />
+          </div>
+        )}
+        {status === 'pending' && (
+          <div className="w-6 h-6 rounded-full bg-yellow-100 flex items-center justify-center">
+            <Clock className="w-4 h-4 text-yellow-600" />
+          </div>
+        )}
+        {status === 'upcoming' && (
+          <div className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center">
+            <div className="w-2 h-2 rounded-full bg-gray-400" />
+          </div>
+        )}
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-medium text-gray-900">{title}</p>
+        <p className="text-xs text-gray-500 mt-0.5">{timestamp}</p>
+        <p className="text-xs text-gray-500">by {user}</p>
+      </div>
+    </div>
+  );
 }
