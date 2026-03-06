@@ -59,7 +59,7 @@ export function OpportunitySidebar({
         <h2 className="text-lg font-semibold">Opportunities</h2>
         <button
           onClick={() => setShowAddOpportunityModal(true)}
-          className="px-3 py-2 bg-[#0B3D2E] text-white rounded-sm hover:bg-[#081C15] transition-colors flex items-center gap-2 text-sm font-medium"
+          className="px-3 py-2 bg-emerald-900 text-white rounded-sm hover:bg-emerald-950 transition-colors flex items-center gap-2 text-sm font-medium"
         >
           <Plus className="w-4 h-4" />
           <span>New</span>
@@ -72,7 +72,7 @@ export function OpportunitySidebar({
           <h3 className="font-semibold text-lg">Opportunities</h3>
           <button
             onClick={() => setShowAddOpportunityModal(true)}
-            className="p-2 bg-[#0B3D2E] text-white rounded-sm hover:bg-[#081C15] transition-colors"
+            className="p-2 bg-emerald-900 text-white rounded-sm hover:bg-emerald-950 transition-colors"
           >
             <Plus className="w-4 h-4" />
           </button>
@@ -84,7 +84,7 @@ export function OpportunitySidebar({
           <input
             type="text"
             placeholder="Search opportunities..."
-            className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-sm text-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] focus:border-transparent"
+            className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-sm text-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 focus:border-transparent"
           />
         </div>
 
@@ -95,13 +95,13 @@ export function OpportunitySidebar({
               onClick={showFilterModal}
               className={`relative px-3 py-2 h-10 border rounded-sm text-sm font-medium transition-colors flex items-center justify-center flex-1 ${
                 filterClient !== null || filterType
-                  ? 'border-[#0B3D2E] bg-[#F2E9E4] text-[#0B3D2E]'
+                  ? 'border-emerald-900 bg-stone-200 text-emerald-900'
                   : 'border-gray-300 text-gray-700 hover:bg-gray-50'
               }`}
             >
               <Filter className="w-4 h-4" />
               {(filterClient !== null || filterType) && (
-                <span className="w-2 h-2 bg-[#0B3D2E] rounded-full absolute top-1.5 right-1.5" />
+                <span className="w-2 h-2 bg-emerald-900 rounded-full absolute top-1.5 right-1.5" />
               )}
             </button>
 
@@ -121,7 +121,7 @@ export function OpportunitySidebar({
           <h3 className="font-semibold text-lg">Opportunities</h3>
           <button
             onClick={() => setShowAddOpportunityModal(true)}
-            className="p-2 bg-[#0B3D2E] text-white rounded-sm hover:bg-[#081C15] transition-colors"
+            className="p-2 bg-emerald-900 text-white rounded-sm hover:bg-emerald-950 transition-colors"
           >
             <Plus className="w-4 h-4" />
           </button>
@@ -133,7 +133,7 @@ export function OpportunitySidebar({
           <input
             type="text"
             placeholder="Search opportunities..."
-            className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-sm text-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] focus:border-transparent"
+            className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-sm text-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 focus:border-transparent"
           />
         </div>
 
@@ -144,13 +144,13 @@ export function OpportunitySidebar({
               onClick={showFilterModal}
               className={`px-3 py-2 h-10 border rounded-sm text-sm font-medium transition-colors flex items-center justify-center relative flex-1 ${
                 filterClient !== null || filterType
-                  ? 'border-[#0B3D2E] bg-[#F2E9E4] text-[#0B3D2E]'
+                  ? 'border-emerald-900 bg-stone-200 text-emerald-900'
                   : 'border-gray-300 text-gray-700 hover:bg-gray-50'
               }`}
             >
               <Filter className="w-4 h-4" />
               {(filterClient !== null || filterType) && (
-                <span className="w-2 h-2 bg-[#0B3D2E] rounded-full absolute top-1.5 right-1.5" />
+                <span className="w-2 h-2 bg-emerald-900 rounded-full absolute top-1.5 right-1.5" />
               )}
             </button>
 
@@ -175,7 +175,7 @@ export function OpportunitySidebar({
             }}
             className={`
               p-4 border-b border-gray-200 cursor-pointer transition-colors
-              ${selectedOpportunity === opp.id ? 'bg-[#F2E9E4] border-l-4 border-l-[#0B3D2E]' : 'hover:bg-gray-50'}
+              ${selectedOpportunity === opp.id ? 'bg-stone-200 border-l-4 border-l-emerald-900' : 'hover:bg-gray-50'}
             `}
           >
             <div className="flex lg:flex-col items-start justify-between gap-2 mb-2">

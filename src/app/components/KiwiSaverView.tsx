@@ -148,16 +148,41 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
     contacts.forEach(c => {
       initial[c.id] = makeDefaultForms(c);
     });
-    // Simulate saved/persisted data for the first contact
+    // Seed realistic data for contacts
     if (contacts.length > 0) {
       const first = contacts[0].id;
       initial[first] = {
         ...initial[first],
-        personal: { ...initial[first].personal, dateOfBirth: '15/03/1982', residence: 'New Zealand' },
+        personal: { firstName: 'Andrew', lastName: 'Carter', dateOfBirth: '15/03/1985', residence: 'New Zealand' },
         enrolment: 'Yes',
-        provider: { provider: 'ANZ Investments', providerUnknown: false, fund: 'Balanced', fundUnknown: false, balance: '100,000', balanceUnknown: false, joiningYear: '2009', memberNumber: '' },
-        employment: { ...initial[first].employment, income: '85,000', esctRate: '33%' },
-        goals: 'First Home',
+        provider: { provider: 'Fisher Funds', providerUnknown: false, fund: 'Growth', fundUnknown: false, balance: '128,000', balanceUnknown: false, joiningYear: '2008', memberNumber: 'FF-2847193' },
+        employment: { status: 'Employed', income: '145,000', pirRate: '28%', esctRate: '33%', irdNumber: '123-456-789', employeeContrib: '4%', employerContrib: '3%', voluntaryContrib: '50', frequency: 'Fortnightly' },
+        goals: 'Retirement',
+        other: { nzWorkplace: 'No', nzWorkplaceName: '', nzWorkplaceBalance: '', overseasPension: 'No', overseasName: '', overseasCountry: '', overseasBalance: '', notes: 'Client interested in increasing voluntary contributions. Discussed tax benefits of higher PIR rate.' },
+      };
+    }
+    if (contacts.length > 1) {
+      const second = contacts[1].id;
+      initial[second] = {
+        ...initial[second],
+        personal: { firstName: 'Sarah', lastName: 'Carter', dateOfBirth: '22/07/1987', residence: 'New Zealand' },
+        enrolment: 'Yes',
+        provider: { provider: 'Milford Asset Management', providerUnknown: false, fund: 'Active Growth', fundUnknown: false, balance: '95,400', balanceUnknown: false, joiningYear: '2010', memberNumber: 'MAM-5519822' },
+        employment: { status: 'Employed', income: '115,000', pirRate: '28%', esctRate: '30%', irdNumber: '987-654-321', employeeContrib: '3%', employerContrib: '3%', voluntaryContrib: '', frequency: 'Fortnightly' },
+        goals: 'Retirement',
+        other: { nzWorkplace: 'No', nzWorkplaceName: '', nzWorkplaceBalance: '', overseasPension: 'No', overseasName: '', overseasCountry: '', overseasBalance: '', notes: 'Consider consolidating with partner\'s provider for fee savings.' },
+      };
+    }
+    if (contacts.length > 2) {
+      const third = contacts[2].id;
+      initial[third] = {
+        ...initial[third],
+        personal: { firstName: 'Margaret', lastName: 'Carter', dateOfBirth: '10/11/1958', residence: 'New Zealand' },
+        enrolment: 'Yes',
+        provider: { provider: 'ANZ Investments', providerUnknown: false, fund: 'Conservative', fundUnknown: false, balance: '245,000', balanceUnknown: false, joiningYear: '2007', memberNumber: 'ANZ-7734201' },
+        employment: { status: 'Retired', income: '42,000', pirRate: '17.5%', esctRate: '', irdNumber: '456-789-123', employeeContrib: '0%', employerContrib: '0%', voluntaryContrib: '', frequency: 'Monthly' },
+        goals: 'Retirement',
+        other: { nzWorkplace: 'No', nzWorkplaceName: '', nzWorkplaceBalance: '', overseasPension: 'Yes', overseasName: 'UK State Pension', overseasCountry: 'United Kingdom', overseasBalance: '38,500', notes: 'Receiving UK state pension. Review fund allocation — may be too conservative for remaining time horizon.' },
       };
     }
     return initial;
@@ -292,10 +317,10 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
 
   // Mock data for assessments
   const [assessments] = useState([
-    { id: 1, label: 'Initial Assessment', status: 'Draft', date: '5 Mar 2026', progress: 85 },
-    { id: 2, label: 'Initial Assessment', status: 'Draft', date: '1 Mar 2026', progress: 100 },
-    { id: 3, label: 'Initial Assessment', status: 'Draft', date: '28 Feb 2026', progress: 100 },
-    { id: 4, label: 'Initial Assessment', status: 'Draft', date: '15 Feb 2026', progress: 100 },
+    { id: 1, label: 'Annual Review 2026', status: 'Draft', date: '5 Mar 2026', progress: 77 },
+    { id: 2, label: 'Fund Switch Assessment', status: 'Complete', date: '1 Feb 2026', progress: 100 },
+    { id: 3, label: 'First Home Withdrawal', status: 'Complete', date: '15 Nov 2025', progress: 100 },
+    { id: 4, label: 'Initial Assessment', status: 'Complete', date: '20 Jun 2025', progress: 100 },
   ]);
 
   // Get currently selected assessment
@@ -478,7 +503,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
       case 'signed':
         return { label: 'Client Signed', color: 'bg-purple-100 text-purple-700', icon: UserCheck };
       case 'completed':
-        return { label: 'Completed', color: 'bg-[#0B3D2E]/10 text-[#081C15]', icon: CheckCircle };
+        return { label: 'Completed', color: 'bg-emerald-900/10 text-emerald-950', icon: CheckCircle };
       default:
         return { label: 'Draft', color: 'bg-gray-100 text-gray-700', icon: FileText };
     }
@@ -512,16 +537,16 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
 
   return (
     <TooltipProvider delayDuration={0}>
-      <div className="flex-1 flex flex-col h-full overflow-hidden bg-[#fafbfc]">
+      <div className="flex-1 flex flex-col h-full overflow-hidden bg-gray-200">
 
         <div className="flex flex-1 overflow-hidden">
           {/* Persistent Left Sidebar - Assessment Selection */}
-          <div className={`relative z-20 border-r border-gray-200 bg-white ${isSidebarCollapsed ? 'overflow-visible' : 'overflow-y-auto'} flex-shrink-0 transition-all duration-300 ${isSidebarCollapsed ? 'w-16' : 'w-80'}`}>
+          <div className={`relative z-20 border-r border-gray-200 bg-white shadow-md ${isSidebarCollapsed ? 'overflow-visible' : 'overflow-y-auto'} flex-shrink-0 transition-all duration-300 ${isSidebarCollapsed ? 'w-16' : 'w-80'}`}>
             <div className={`border-b border-gray-100 transition-all ${isSidebarCollapsed ? 'p-4 flex justify-center' : 'p-4'}`}>
               {!isSidebarCollapsed ? (
                 <div className="flex flex-col gap-1.5">
                   <div className="flex items-center justify-between">
-                    <PiggyBank className="w-8 h-8 text-[#0B3D2E] -ml-1" />
+                    <PiggyBank className="w-8 h-8 text-emerald-900 -ml-1" />
                     {setMobileDrawerOpen && (
                       <button
                         onClick={() => setMobileDrawerOpen(true)}
@@ -539,7 +564,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                   </div>
                 </div>
               ) : (
-                <PiggyBank className="w-6 h-6 text-[#0B3D2E]" />
+                <PiggyBank className="w-6 h-6 text-emerald-900" />
               )}
             </div>
             <ShadcnTooltip>
@@ -548,8 +573,8 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                   onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
                   className={`w-full p-4 border-b border-gray-100 flex items-center ${isSidebarCollapsed ? 'justify-center' : 'justify-between'} bg-gray-50/50 hover:bg-gray-100 transition-colors group/collapse`}
                 >
-                  {!isSidebarCollapsed && <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest group-hover/collapse:text-[#0B3D2E] transition-colors">Collapse</span>}
-                  <div className="p-1.5 rounded text-gray-500 group-hover/collapse:text-[#0B3D2E] transition-colors">
+                  {!isSidebarCollapsed && <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest group-hover/collapse:text-emerald-900 transition-colors">Collapse</span>}
+                  <div className="p-1.5 rounded text-gray-500 group-hover/collapse:text-emerald-900 transition-colors">
                     {isSidebarCollapsed ? <PanelLeftOpen className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
                   </div>
                 </button>
@@ -564,7 +589,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
               {!isSidebarCollapsed && (
                 <div className="mb-4">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 bg-[#0B3D2E] rounded-sm flex items-center justify-center">
+                    <div className="w-10 h-10 bg-emerald-900 rounded-sm flex items-center justify-center">
                       <FileCheck className="w-6 h-6 text-white" />
                     </div>
                     <div className="flex-1">
@@ -574,11 +599,11 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                   </div>
                   <div className="flex items-center justify-between text-xs text-gray-600 mb-2">
                     <span>Progress</span>
-                    <span className="font-semibold text-[#0B3D2E]">{overallProgress}%</span>
+                    <span className="font-semibold text-emerald-900">{overallProgress}%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div
-                      className="bg-[#0B3D2E] h-2 rounded-full transition-all"
+                      className="bg-emerald-900 h-2 rounded-full transition-all"
                       style={{ width: `${overallProgress}%` }}
                     />
                   </div>
@@ -590,10 +615,10 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
               )}
 
               {/* Create New Assessment Button */}
-              <button className={`w-full mb-4 border border-dashed border-gray-300 rounded hover:border-[#0B3D2E] hover:bg-[#0B3D2E]/5 transition-all group ${isSidebarCollapsed ? 'p-2' : 'p-4'}`}>
+              <button className={`w-full mb-4 border border-dashed border-gray-300 rounded hover:border-emerald-900 hover:bg-emerald-900/5 transition-all group ${isSidebarCollapsed ? 'p-2' : 'p-4'}`}>
                 <div className={`flex items-center ${isSidebarCollapsed ? 'justify-center' : 'gap-3'}`}>
-                  <div className={`bg-[#F2E9E4] group-hover:bg-[#0B3D2E]/20 rounded flex items-center justify-center transition-colors ${isSidebarCollapsed ? 'w-8 h-8' : 'w-10 h-10'}`}>
-                    <Plus className={`${isSidebarCollapsed ? 'w-4 h-4' : 'w-5 h-5'} text-[#0B3D2E]`} />
+                  <div className={`bg-stone-200 group-hover:bg-emerald-900/20 rounded flex items-center justify-center transition-colors ${isSidebarCollapsed ? 'w-8 h-8' : 'w-10 h-10'}`}>
+                    <Plus className={`${isSidebarCollapsed ? 'w-4 h-4' : 'w-5 h-5'} text-emerald-900`} />
                   </div>
                   {!isSidebarCollapsed && (
                     <div className="text-left flex-1">
@@ -611,12 +636,12 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                     <button
                       onClick={() => setSelectedAssessmentId(assessment.id)}
                       className={`w-full text-left rounded border transition-all ${assessment.id === selectedAssessmentId
-                        ? 'bg-[#0B3D2E]/10 border-[#0B3D2E] ring-2 ring-[#0B3D2E]/20'
-                        : 'bg-white border-gray-200 hover:border-[#0B3D2E] hover:bg-gray-50'
+                        ? 'bg-emerald-900/10 border-emerald-900 ring-2 ring-emerald-900/20'
+                        : 'bg-white border-gray-200 hover:border-emerald-900 hover:bg-gray-50'
                         } ${isSidebarCollapsed ? 'p-2 flex justify-center' : 'p-3'}`}
                     >
                       {isSidebarCollapsed ? (
-                        <FileCheck className={`w-5 h-5 ${assessment.id === selectedAssessmentId ? 'text-[#0B3D2E]' : 'text-gray-400'}`} />
+                        <FileCheck className={`w-5 h-5 ${assessment.id === selectedAssessmentId ? 'text-emerald-900' : 'text-gray-400'}`} />
                       ) : (
                         <>
                           <div className="flex items-start justify-between mb-2">
@@ -630,7 +655,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                           </div>
                           <div className="w-full bg-gray-200 rounded-full h-1">
                             <div
-                              className="bg-[#0B3D2E] h-1 rounded-full transition-all"
+                              className="bg-emerald-900 h-1 rounded-full transition-all"
                               style={{ width: `${assessment.progress}%` }}
                             />
                           </div>
@@ -643,8 +668,8 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                       <div className="hidden group-hover/item:block absolute left-full top-0 ml-2 z-[60] py-1 pointer-events-none">
                         <div className="bg-white border border-gray-200 rounded-sm p-4 w-60 pointer-events-auto">
                           <div className="flex items-start justify-between mb-3">
-                            <div className="w-10 h-10 bg-[#F2E9E4] rounded-sm flex items-center justify-center flex-shrink-0">
-                              <FileCheck className="w-5 h-5 text-[#0B3D2E]" />
+                            <div className="w-10 h-10 bg-stone-200 rounded-sm flex items-center justify-center flex-shrink-0">
+                              <FileCheck className="w-5 h-5 text-emerald-900" />
                             </div>
                             <span className="text-[10px] px-2 py-0.5 bg-gray-100 text-gray-600 rounded font-bold uppercase tracking-wider">
                               {assessment.status}
@@ -663,34 +688,28 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
           </div>
 
           {/* Right Content Area - Unified Workbench */}
-          <div className="flex-1 flex flex-col overflow-hidden bg-[#fbfcfd] border-l border-gray-200">
+          <div className="flex-1 flex flex-col overflow-hidden bg-white rounded-tl-lg mt-2 ml-2 shadow-md">
             {selectedAssessmentId && (
               <div className="flex-shrink-0">
-                {/* Selected Assessment Context Bar */}
-                <div className="px-4 sm:px-6 py-2.5 border-b border-gray-200 bg-gradient-to-r from-[#F2E9E4] to-white">
-                  <div className="flex items-center justify-between gap-4 flex-wrap">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-[#0B3D2E] rounded flex items-center justify-center">
-                        <FileCheck className="w-5 h-5 text-white" />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h3 className="text-base font-semibold text-gray-900">{selectedAssessment.label}</h3>
-                          <div className={`flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider ${statusInfo.color} border border-current opacity-80`}>
-                            <StatusIcon className="w-2.5 h-2.5" />
-                            <span>{statusInfo.label}</span>
-                          </div>
-                        </div>
-                        <p className="text-xs text-gray-600 mt-0.5">Created {selectedAssessment.date}</p>
-                      </div>
-                    </div>
-
-                  </div>
-                </div>
-
                 {/* Tab Navigation - Floor to Ceiling Grid */}
                 <div className="bg-white border-b border-gray-200 flex-shrink-0">
                   <div className="flex h-10 sm:h-12">
+                    {/* Assessment Info */}
+                    <div className="hidden lg:flex items-center gap-2.5 px-4 border-r border-gray-200 flex-shrink-0 lg:w-64 bg-gray-50">
+                      <div className="w-7 h-7 bg-emerald-900 rounded flex items-center justify-center flex-shrink-0">
+                        <FileCheck className="w-3.5 h-3.5 text-white" />
+                      </div>
+                      <div className="flex flex-col justify-center min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-semibold text-gray-900 truncate">{selectedAssessment.label}</span>
+                          <span className={`text-[8px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider flex-shrink-0 ${statusInfo.color} border border-current opacity-80`}>
+                            {statusInfo.label}
+                          </span>
+                        </div>
+                        <span className="text-[10px] text-gray-500">Created {selectedAssessment.date}</span>
+                      </div>
+                    </div>
+
                     {visibleTabs.map((tab) => {
                       const Icon = tab.icon;
                       const isActive = activeTab === tab.id;
@@ -699,17 +718,17 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                           key={tab.id}
                           onClick={() => setActiveTab(tab.id)}
                           className={`flex-1 flex flex-col sm:flex-row items-center justify-center gap-1.5 sm:gap-3 px-2 sm:px-4 transition-all relative border-r border-gray-100 last:border-r-0 ${isActive
-                            ? 'text-[#0B3D2E] bg-[#0B3D2E]/5'
+                            ? 'text-emerald-900 bg-emerald-900/5'
                             : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
                             }`}
                         >
-                          <Icon className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isActive ? 'text-[#0B3D2E]' : 'text-gray-400'}`} />
-                          <span className={`text-[9px] sm:text-[11px] font-bold uppercase tracking-widest whitespace-nowrap flex items-center gap-1 ${isActive ? 'text-[#0B3D2E]' : 'text-gray-500'}`}>
+                          <Icon className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isActive ? 'text-emerald-900' : 'text-gray-400'}`} />
+                          <span className={`text-[9px] sm:text-[11px] font-bold uppercase tracking-widest whitespace-nowrap flex items-center gap-1 ${isActive ? 'text-emerald-900' : 'text-gray-500'}`}>
                             {tab.label}
                             {tab.id === 'assessment' && allContactsComplete && <CheckCircle className="w-3.5 h-3.5 text-green-500 fill-green-50" />}
                           </span>
                           {isActive && (
-                            <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#0B3D2E]" />
+                            <div className="absolute bottom-0 left-0 right-0 h-1 bg-emerald-900" />
                           )}
                         </button>
                       );
@@ -721,7 +740,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                         <TooltipTrigger asChild>
                           <button
                             onClick={() => setIsVisibilityDropdownOpen(!isVisibilityDropdownOpen)}
-                            className={`w-full h-full flex flex-col items-center justify-center transition-colors ${isVisibilityDropdownOpen ? 'bg-[#0B3D2E]/5 text-[#0B3D2E]' : 'text-gray-400 hover:bg-gray-50 hover:text-gray-700'}`}
+                            className={`w-full h-full flex flex-col items-center justify-center transition-colors ${isVisibilityDropdownOpen ? 'bg-emerald-900/5 text-emerald-900' : 'text-gray-400 hover:bg-gray-50 hover:text-gray-700'}`}
                           >
                             <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                           </button>
@@ -737,7 +756,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                             className="fixed inset-0 z-40"
                             onClick={() => setIsVisibilityDropdownOpen(false)}
                           />
-                          <div className="absolute right-0 top-full mt-0 bg-white border border-gray-200 rounded-sm py-2 min-w-[240px] z-[60] animate-in fade-in zoom-in duration-200 origin-top-right border-t-2 border-t-[#0B3D2E]">
+                          <div className="absolute right-0 top-full mt-0 bg-white border border-gray-200 rounded-sm py-2 min-w-[240px] z-[60] animate-in fade-in zoom-in duration-200 origin-top-right border-t-2 border-t-emerald-900">
                             <div className="px-4 py-2 border-b border-gray-50 mb-1">
                               <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Show/Hide Tabs</span>
                             </div>
@@ -751,7 +770,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                   className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-50 transition-colors group/tab"
                                 >
                                   <div className="flex items-center gap-3">
-                                    <div className={`p-1.5 rounded transition-colors ${isHidden ? 'bg-gray-50 text-gray-400' : 'bg-[#F2E9E4] text-[#0B3D2E]'}`}>
+                                    <div className={`p-1.5 rounded transition-colors ${isHidden ? 'bg-gray-50 text-gray-400' : 'bg-stone-200 text-emerald-900'}`}>
                                       <Icon className="w-3.5 h-3.5" />
                                     </div>
                                     <span className={`text-xs font-medium transition-colors ${isHidden ? 'text-gray-400' : 'text-gray-700'}`}>{tab.label}</span>
@@ -759,7 +778,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                   {isHidden ? (
                                     <EyeOff className="w-3.5 h-3.5 text-gray-300" />
                                   ) : (
-                                    <Eye className="w-3.5 h-3.5 text-[#0B3D2E]" />
+                                    <Eye className="w-3.5 h-3.5 text-emerald-900" />
                                   )}
                                 </button>
                               );
@@ -781,7 +800,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                   {/* Mobile Assessment Header / Module Switcher */}
                   <div className="lg:hidden bg-white border-b border-gray-100 p-4 sticky top-0 z-20 shadow-sm flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 bg-[#0B3D2E] text-white rounded">
+                      <div className="p-2 bg-emerald-900 text-white rounded">
                         {React.createElement(assessmentSections.find(s => s.id === activeAssessmentSection)?.icon || User, { className: "w-4 h-4" })}
                       </div>
                       <div>
@@ -793,7 +812,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                     </div>
                     <button
                       onClick={() => setShowAssessmentMobileNav(!showAssessmentMobileNav)}
-                      className="p-2 bg-gray-50 text-gray-400 rounded hover:text-[#0B3D2E] transition-colors"
+                      className="p-2 bg-gray-50 text-gray-400 rounded hover:text-emerald-900 transition-colors"
                     >
                       <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${showAssessmentMobileNav ? 'rotate-180' : ''}`} />
                     </button>
@@ -811,10 +830,10 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                 scrollToSection(section.id);
                                 setShowAssessmentMobileNav(false);
                               }}
-                              className={`w-full text-left p-4 rounded-sm flex items-center gap-4 ${isActive ? 'bg-[#0B3D2E]/5 text-[#0B3D2E]' : 'text-gray-600 hover:bg-gray-50'
+                              className={`w-full text-left p-4 rounded-sm flex items-center gap-4 ${isActive ? 'bg-emerald-900/5 text-emerald-900' : 'text-gray-600 hover:bg-gray-50'
                                 }`}
                             >
-                              <Icon className="w-5 h-5 text-[#0B3D2E]" />
+                              <Icon className="w-5 h-5 text-emerald-900" />
                               <span className="text-sm font-bold">{section.label}</span>
                               {isActive && <CheckCircle className="w-4 h-4 ml-auto" />}
                             </button>
@@ -825,7 +844,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                   </div>
 
                   {/* Left Mini-Sidebar (Desktop Only) */}
-                  <div className="hidden lg:flex flex-col lg:w-64 border-r border-gray-200 flex-shrink-0 bg-[#f8fafc]">
+                  <div className="hidden lg:flex flex-col lg:w-64 border-r border-gray-200 flex-shrink-0 bg-white">
                     {/* Contacts list — fixed height, scrollable */}
                     {contacts.length > 0 && (
                       <div className="flex-shrink-0 border-b border-gray-200">
@@ -847,7 +866,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                 }}
                                 className={`flex items-center gap-2.5 px-2.5 py-2 rounded-sm cursor-pointer transition-all ${
                                   isActive
-                                    ? 'bg-[#0B3D2E] text-white'
+                                    ? 'bg-emerald-900 text-white'
                                     : isSelected
                                       ? 'bg-white border border-gray-100 hover:bg-gray-50'
                                       : 'opacity-50 hover:opacity-75'
@@ -858,7 +877,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                   {isSelected ? (
                                     <div className="flex items-center gap-1.5 mt-0.5">
                                       <div className={`flex-1 h-1 rounded-full overflow-hidden ${isActive ? 'bg-white/20' : 'bg-gray-100'}`}>
-                                        <div className={`h-full rounded-full transition-all ${isActive ? 'bg-white' : 'bg-[#0B3D2E]'}`} style={{ width: `${progress}%` }} />
+                                        <div className={`h-full rounded-full transition-all ${isActive ? 'bg-white' : 'bg-emerald-900'}`} style={{ width: `${progress}%` }} />
                                       </div>
                                       <span className={`text-[9px] font-bold ${isActive ? 'text-white/60' : 'text-gray-400'}`}>{progress}%</span>
                                     </div>
@@ -872,8 +891,8 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                     isActive
                                       ? 'text-white/40 hover:text-white'
                                       : isSelected
-                                        ? 'text-[#0B3D2E]/40 hover:text-red-500'
-                                        : 'text-gray-300 hover:text-[#0B3D2E]'
+                                        ? 'text-emerald-900/40 hover:text-red-500'
+                                        : 'text-gray-300 hover:text-emerald-900'
                                   }`}
                                   title={isSelected ? 'Remove from assessment' : 'Add to assessment'}
                                 >
@@ -888,7 +907,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
 
                     {/* Focus modules — scrollable */}
                     <div className="overflow-y-auto flex-1">
-                      <div className="px-4 pt-4 pb-2">
+                      <div className="px-4 pt-4 pb-2 sticky top-0 bg-slate-50 z-10">
                         <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Key Details</label>
                       </div>
                       <div className="divide-y divide-gray-100">
@@ -901,9 +920,9 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                             <button
                               key={section.id}
                               onClick={() => scrollToSection(section.id)}
-                              className={`w-full text-left px-4 py-2.5 transition-all group ${isActive
-                                ? 'bg-white'
-                                : 'hover:bg-[#0B3D2E]/5 text-gray-600'
+                              className={`w-full text-left px-4 py-2.5 transition-all group border-l-2 ${isActive
+                                ? 'bg-emerald-900/5 border-l-emerald-900'
+                                : 'hover:bg-gray-50 text-gray-600 border-l-transparent'
                                 }`}
                             >
                               <div className="flex items-center justify-between gap-2">
@@ -913,7 +932,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                               <div className="flex items-center gap-2 mt-1.5 w-full">
                                 <div className="h-1 flex-1 bg-gray-100 rounded-full overflow-hidden">
                                   <div
-                                    className={`h-full transition-all duration-700 ${isComplete ? 'bg-green-500' : 'bg-[#0B3D2E]'}`}
+                                    className={`h-full transition-all duration-700 ${isComplete ? 'bg-green-500' : 'bg-emerald-900'}`}
                                     style={{ width: `${progressPercentage}%` }}
                                   />
                                 </div>
@@ -930,7 +949,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                   </div>
 
                   {/* Right Content Area - Main Content Background */}
-                  <div ref={scrollContainerRef} className="flex-1 overflow-y-auto bg-[#f8fafc] scroll-smooth pb-12">
+                  <div ref={scrollContainerRef} className="flex-1 overflow-y-auto bg-slate-50 scroll-smooth pb-12">
                     <div className="p-4 sm:p-4 lg:p-6">
                       <div className="max-w-[1000px] mx-auto">
 
@@ -957,27 +976,27 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                 <h3 className="text-base font-bold text-gray-900 mb-4">Basic Information</h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                   <div>
-                                    <label className={`block text-[10px] font-bold uppercase tracking-widest mb-2 ml-1 transition-colors ${personalForm.firstName.trim() ? 'text-[#0B3D2E]/60' : 'text-gray-400'}`}>First Name</label>
+                                    <label className={`block text-[10px] font-bold uppercase tracking-widest mb-2 ml-1 transition-colors ${personalForm.firstName.trim() ? 'text-emerald-900/60' : 'text-gray-400'}`}>First Name</label>
                                     <input
                                       type="text"
                                       value={personalForm.firstName} onChange={e => setPersonalForm(f => ({ ...f, firstName: e.target.value }))}
-                                      className="w-full h-9 px-4 border border-gray-200 rounded-sm text-sm bg-gray-50/50 focus:ring-2 focus:ring-[#0B3D2E]/20 focus:border-[#0B3D2E] transition-all font-medium"
+                                      className="w-full h-9 px-4 border border-gray-200 rounded-sm text-sm bg-gray-50/50 focus:ring-2 focus:ring-emerald-900/20 focus:border-emerald-900 transition-all font-medium"
                                     />
                                   </div>
                                   <div>
-                                    <label className={`block text-[10px] font-bold uppercase tracking-widest mb-2 ml-1 transition-colors ${personalForm.lastName.trim() ? 'text-[#0B3D2E]/60' : 'text-gray-400'}`}>Last Name</label>
+                                    <label className={`block text-[10px] font-bold uppercase tracking-widest mb-2 ml-1 transition-colors ${personalForm.lastName.trim() ? 'text-emerald-900/60' : 'text-gray-400'}`}>Last Name</label>
                                     <input
                                       type="text"
                                       value={personalForm.lastName} onChange={e => setPersonalForm(f => ({ ...f, lastName: e.target.value }))}
-                                      className="w-full h-9 px-4 border border-gray-200 rounded-sm text-sm bg-gray-50/50 focus:ring-2 focus:ring-[#0B3D2E]/20 focus:border-[#0B3D2E] transition-all font-medium"
+                                      className="w-full h-9 px-4 border border-gray-200 rounded-sm text-sm bg-gray-50/50 focus:ring-2 focus:ring-emerald-900/20 focus:border-emerald-900 transition-all font-medium"
                                     />
                                   </div>
                                   <div className="sm:col-span-2 lg:col-span-1">
-                                    <label className={`block text-[10px] font-bold uppercase tracking-widest mb-2 ml-1 transition-colors ${personalForm.dateOfBirth.trim() ? 'text-[#0B3D2E]/60' : 'text-gray-400'}`}>Date of Birth</label>
+                                    <label className={`block text-[10px] font-bold uppercase tracking-widest mb-2 ml-1 transition-colors ${personalForm.dateOfBirth.trim() ? 'text-emerald-900/60' : 'text-gray-400'}`}>Date of Birth</label>
                                     <input
                                       type="text"
                                       value={personalForm.dateOfBirth} onChange={e => setPersonalForm(f => ({ ...f, dateOfBirth: e.target.value }))}
-                                      className="w-full h-9 px-4 border border-gray-200 rounded-sm text-sm bg-gray-50/50 focus:ring-2 focus:ring-[#0B3D2E]/20 focus:border-[#0B3D2E] transition-all font-medium"
+                                      className="w-full h-9 px-4 border border-gray-200 rounded-sm text-sm bg-gray-50/50 focus:ring-2 focus:ring-emerald-900/20 focus:border-emerald-900 transition-all font-medium"
                                     />
                                   </div>
                                 </div>
@@ -986,9 +1005,9 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                               <div className="bg-white rounded-sm border border-gray-100 p-4">
                                 <h3 className="text-base font-bold text-gray-900 mb-4">Localization</h3>
                                 <div>
-                                  <label className={`block text-[10px] font-bold uppercase tracking-widest mb-2 ml-1 transition-colors ${personalForm.residence ? 'text-[#0B3D2E]/60' : 'text-gray-400'}`}>Primary Residence</label>
+                                  <label className={`block text-[10px] font-bold uppercase tracking-widest mb-2 ml-1 transition-colors ${personalForm.residence ? 'text-emerald-900/60' : 'text-gray-400'}`}>Primary Residence</label>
                                   <div className="relative">
-                                    <select value={personalForm.residence} onChange={e => setPersonalForm(f => ({ ...f, residence: e.target.value }))} className="w-full h-9 pl-4 pr-10 border border-gray-200 rounded-sm text-sm bg-gray-50/50 appearance-none cursor-pointer focus:ring-2 focus:ring-[#0B3D2E]/20 focus:border-[#0B3D2E] transition-all font-medium">
+                                    <select value={personalForm.residence} onChange={e => setPersonalForm(f => ({ ...f, residence: e.target.value }))} className="w-full h-9 pl-4 pr-10 border border-gray-200 rounded-sm text-sm bg-gray-50/50 appearance-none cursor-pointer focus:ring-2 focus:ring-emerald-900/20 focus:border-emerald-900 transition-all font-medium">
                                       <option value="">Select country</option>
                                       <option value="Australia">Australia</option>
                                       <option value="New Zealand">New Zealand</option>
@@ -1015,12 +1034,12 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                     key={choice}
                                     onClick={() => setEnrolmentForm(choice)}
                                     className={`w-full sm:w-auto px-3 py-1.5 rounded-sm text-sm font-bold flex items-center justify-center sm:justify-start gap-2 transition-all border ${enrolmentForm === choice
-                                      ? 'bg-[#0B3D2E]/5 text-[#0B3D2E] border-[#0B3D2E]'
-                                      : 'bg-white text-gray-400 border-gray-100 hover:border-[#0B3D2E]/30 hover:bg-gray-50'
+                                      ? 'bg-emerald-900/5 text-emerald-900 border-emerald-900'
+                                      : 'bg-white text-gray-400 border-gray-100 hover:border-emerald-900/30 hover:bg-gray-50'
                                       }`}
                                   >
-                                    <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 transition-all ${enrolmentForm === choice ? 'border-2 border-[#0B3D2E]' : 'border border-gray-200'}`}>
-                                      {enrolmentForm === choice && <div className="w-1 h-1 rounded-full bg-[#0B3D2E]" />}
+                                    <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 transition-all ${enrolmentForm === choice ? 'border-2 border-emerald-900' : 'border border-gray-200'}`}>
+                                      {enrolmentForm === choice && <div className="w-1 h-1 rounded-full bg-emerald-900" />}
                                     </div>
                                     {choice}
                                   </button>
@@ -1041,7 +1060,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                 </div>
                                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full 2xl:w-auto 2xl:min-w-[450px]">
                                   <div className="relative flex-1">
-                                    <select className="w-full h-9 pl-4 pr-10 border border-gray-200 rounded-sm text-sm bg-gray-50/50 appearance-none cursor-pointer focus:ring-2 focus:ring-[#0B3D2E]/20 focus:border-[#0B3D2E] transition-all font-bold text-gray-800" value={providerForm.provider} onChange={e => setProviderForm(f => ({ ...f, provider: e.target.value, providerUnknown: false }))} disabled={providerForm.providerUnknown}>
+                                    <select className="w-full h-9 pl-4 pr-10 border border-gray-200 rounded-sm text-sm bg-gray-50/50 appearance-none cursor-pointer focus:ring-2 focus:ring-emerald-900/20 focus:border-emerald-900 transition-all font-bold text-gray-800" value={providerForm.provider} onChange={e => setProviderForm(f => ({ ...f, provider: e.target.value, providerUnknown: false }))} disabled={providerForm.providerUnknown}>
                                       {Array.from(new Set(ALL_FUNDS.map(f => f.provider))).sort().map(p => (
                                         <option key={p} value={p}>{p}</option>
                                       ))}
@@ -1051,7 +1070,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                     </div>
                                   </div>
                                   <label className="flex items-center justify-center gap-2 px-5 py-2.5 bg-gray-50 rounded cursor-pointer hover:bg-gray-100 transition-colors shrink-0 sm:min-w-[120px]">
-                                    <input type="checkbox" checked={providerForm.providerUnknown} onChange={e => setProviderForm(f => ({ ...f, providerUnknown: e.target.checked, provider: e.target.checked ? '' : f.provider }))} className="rounded border-gray-300 w-4 h-4 text-[#0B3D2E] focus:ring-[#0B3D2E]" />
+                                    <input type="checkbox" checked={providerForm.providerUnknown} onChange={e => setProviderForm(f => ({ ...f, providerUnknown: e.target.checked, provider: e.target.checked ? '' : f.provider }))} className="rounded border-gray-300 w-4 h-4 text-emerald-900 focus:ring-emerald-900" />
                                     <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Unknown</span>
                                   </label>
                                 </div>
@@ -1065,7 +1084,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                 </div>
                                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full 2xl:w-auto 2xl:min-w-[450px]">
                                   <div className="relative flex-1">
-                                    <select className="w-full h-9 pl-4 pr-10 border border-gray-200 rounded-sm text-sm bg-gray-50/50 appearance-none cursor-pointer focus:ring-2 focus:ring-[#0B3D2E]/20 focus:border-[#0B3D2E] transition-all font-bold text-gray-800" value={providerForm.fund} onChange={e => setProviderForm(f => ({ ...f, fund: e.target.value, fundUnknown: false }))} disabled={providerForm.fundUnknown}>
+                                    <select className="w-full h-9 pl-4 pr-10 border border-gray-200 rounded-sm text-sm bg-gray-50/50 appearance-none cursor-pointer focus:ring-2 focus:ring-emerald-900/20 focus:border-emerald-900 transition-all font-bold text-gray-800" value={providerForm.fund} onChange={e => setProviderForm(f => ({ ...f, fund: e.target.value, fundUnknown: false }))} disabled={providerForm.fundUnknown}>
                                       {Array.from(new Set(ALL_FUNDS.map(f => f.type))).sort().map(t => (
                                         <option key={t} value={t}>{t}</option>
                                       ))}
@@ -1075,7 +1094,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                     </div>
                                   </div>
                                   <label className="flex items-center justify-center gap-2 px-5 py-2.5 bg-gray-50 rounded cursor-pointer hover:bg-gray-100 transition-colors shrink-0 sm:min-w-[120px]">
-                                    <input type="checkbox" checked={providerForm.fundUnknown} onChange={e => setProviderForm(f => ({ ...f, fundUnknown: e.target.checked, fund: e.target.checked ? '' : f.fund }))} className="rounded border-gray-300 w-4 h-4 text-[#0B3D2E] focus:ring-[#0B3D2E]" />
+                                    <input type="checkbox" checked={providerForm.fundUnknown} onChange={e => setProviderForm(f => ({ ...f, fundUnknown: e.target.checked, fund: e.target.checked ? '' : f.fund }))} className="rounded border-gray-300 w-4 h-4 text-emerald-900 focus:ring-emerald-900" />
                                     <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Unknown</span>
                                   </label>
                                 </div>
@@ -1089,17 +1108,17 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                 </div>
                                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full 2xl:w-auto 2xl:min-w-[450px]">
                                   <div className="flex items-center gap-0 w-full flex-1 relative group">
-                                    <div className="h-9 w-10 bg-gray-50 border border-r-0 border-gray-200 rounded-l-md flex items-center justify-center text-[#0B3D2E] font-bold group-focus-within:border-[#0B3D2E] group-focus-within:bg-[#0B3D2E]/5 transition-all">$</div>
+                                    <div className="h-9 w-10 bg-gray-50 border border-r-0 border-gray-200 rounded-l-md flex items-center justify-center text-emerald-900 font-bold group-focus-within:border-emerald-900 group-focus-within:bg-emerald-900/5 transition-all">$</div>
                                     <input
                                       type="text"
                                       value={providerForm.balance}
                                       onChange={e => setProviderForm(f => ({ ...f, balance: e.target.value, balanceUnknown: false }))}
                                       disabled={providerForm.balanceUnknown}
-                                      className="flex-1 h-9 px-4 border border-l-0 border-gray-200 rounded-r-md text-sm bg-gray-50/50 focus:outline-none focus:ring-0 focus:border-[#0B3D2E] group-focus-within:border-[#0B3D2E] transition-all font-bold text-gray-900 w-full disabled:opacity-40"
+                                      className="flex-1 h-9 px-4 border border-l-0 border-gray-200 rounded-r-md text-sm bg-gray-50/50 focus:outline-none focus:ring-0 focus:border-emerald-900 group-focus-within:border-emerald-900 transition-all font-bold text-gray-900 w-full disabled:opacity-40"
                                     />
                                   </div>
                                   <label className="flex items-center justify-center gap-2 px-5 py-2.5 bg-gray-50 rounded cursor-pointer hover:bg-gray-100 transition-colors shrink-0 sm:min-w-[120px]">
-                                    <input type="checkbox" checked={providerForm.balanceUnknown} onChange={e => setProviderForm(f => ({ ...f, balanceUnknown: e.target.checked, balance: e.target.checked ? '' : f.balance }))} className="rounded border-gray-300 w-4 h-4 text-[#0B3D2E] focus:ring-[#0B3D2E]" />
+                                    <input type="checkbox" checked={providerForm.balanceUnknown} onChange={e => setProviderForm(f => ({ ...f, balanceUnknown: e.target.checked, balance: e.target.checked ? '' : f.balance }))} className="rounded border-gray-300 w-4 h-4 text-emerald-900 focus:ring-emerald-900" />
                                     <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Unknown</span>
                                   </label>
                                 </div>
@@ -1110,7 +1129,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                   <h3 className="text-lg font-bold text-gray-900 mb-1">Joining Date</h3>
                                   <p className="text-xs text-gray-500 mb-3 font-medium">When did they first enroll in KiwiSaver?</p>
                                   <div className="relative">
-                                    <select className="w-full h-9 pl-4 pr-10 border border-gray-200 rounded-sm text-sm bg-gray-50/50 appearance-none cursor-pointer focus:ring-2 focus:ring-[#0B3D2E]/20 focus:border-[#0B3D2E] transition-all font-bold text-gray-800" value={providerForm.joiningYear} onChange={e => setProviderForm(f => ({ ...f, joiningYear: e.target.value }))}>
+                                    <select className="w-full h-9 pl-4 pr-10 border border-gray-200 rounded-sm text-sm bg-gray-50/50 appearance-none cursor-pointer focus:ring-2 focus:ring-emerald-900/20 focus:border-emerald-900 transition-all font-bold text-gray-800" value={providerForm.joiningYear} onChange={e => setProviderForm(f => ({ ...f, joiningYear: e.target.value }))}>
                                       {Array.from({ length: 26 }, (_, i) => 2026 - i).map(year => (
                                         <option key={year} value={year}>{year}</option>
                                       ))}
@@ -1154,7 +1173,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                               ? 'border-green-400 focus:ring-green-500/20 focus:border-green-500'
                                               : hasInput && !isValid
                                                 ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500'
-                                                : 'border-gray-200 focus:ring-[#0B3D2E]/20 focus:border-[#0B3D2E]'
+                                                : 'border-gray-200 focus:ring-emerald-900/20 focus:border-emerald-900'
                                           }`}
                                         />
                                         {hasInput && !isValid && (
@@ -1182,9 +1201,9 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                 <h3 className="text-lg font-bold text-gray-900 mb-3">Employment Status</h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-4">
                                   <div>
-                                    <label className={`block text-[10px] font-bold uppercase tracking-widest mb-2 ml-1 transition-colors ${employmentForm.status ? 'text-[#0B3D2E]/60' : 'text-gray-400'}`}>Current Status</label>
+                                    <label className={`block text-[10px] font-bold uppercase tracking-widest mb-2 ml-1 transition-colors ${employmentForm.status ? 'text-emerald-900/60' : 'text-gray-400'}`}>Current Status</label>
                                     <div className="relative">
-                                      <select value={employmentForm.status} onChange={e => setEmploymentForm(f => ({ ...f, status: e.target.value }))} className="w-full h-9 pl-4 pr-10 border border-gray-200 rounded-sm text-sm bg-gray-50/50 appearance-none cursor-pointer focus:ring-2 focus:ring-[#0B3D2E]/20 focus:border-[#0B3D2E] transition-all font-bold">
+                                      <select value={employmentForm.status} onChange={e => setEmploymentForm(f => ({ ...f, status: e.target.value }))} className="w-full h-9 pl-4 pr-10 border border-gray-200 rounded-sm text-sm bg-gray-50/50 appearance-none cursor-pointer focus:ring-2 focus:ring-emerald-900/20 focus:border-emerald-900 transition-all font-bold">
                                         <option>Employed</option>
                                         <option>Self-employed</option>
                                         <option>Unemployed</option>
@@ -1195,14 +1214,14 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                     </div>
                                   </div>
                                   <div>
-                                    <label className={`block text-[10px] font-bold uppercase tracking-widest mb-2 ml-1 transition-colors ${employmentForm.income.trim() ? 'text-[#0B3D2E]/60' : 'text-gray-400'}`}>Annual Gross Income</label>
+                                    <label className={`block text-[10px] font-bold uppercase tracking-widest mb-2 ml-1 transition-colors ${employmentForm.income.trim() ? 'text-emerald-900/60' : 'text-gray-400'}`}>Annual Gross Income</label>
                                     <div className="flex items-center gap-0 group">
                                       <div className="h-9 w-10 bg-gray-50 border border-r-0 border-gray-200 rounded-l-md flex items-center justify-center text-gray-400 font-bold">$</div>
                                       <input
                                         type="text"
                                         value={employmentForm.income}
                                         onChange={e => setEmploymentForm(f => ({ ...f, income: e.target.value }))}
-                                        className="flex-1 h-9 px-4 border border-gray-200 rounded-r-md text-sm bg-gray-50/50 focus:ring-2 focus:ring-[#0B3D2E]/20 focus:border-[#0B3D2E] transition-all font-bold"
+                                        className="flex-1 h-9 px-4 border border-gray-200 rounded-r-md text-sm bg-gray-50/50 focus:ring-2 focus:ring-emerald-900/20 focus:border-emerald-900 transition-all font-bold"
                                       />
                                     </div>
                                   </div>
@@ -1213,9 +1232,9 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                 <h3 className="text-lg font-bold text-gray-900 mb-3">Taxation Details</h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                   <div>
-                                    <label className={`block text-[10px] font-bold uppercase tracking-widest mb-2 ml-1 transition-colors ${employmentForm.pirRate ? 'text-[#0B3D2E]/60' : 'text-gray-400'}`}>PIR Tax Rate</label>
+                                    <label className={`block text-[10px] font-bold uppercase tracking-widest mb-2 ml-1 transition-colors ${employmentForm.pirRate ? 'text-emerald-900/60' : 'text-gray-400'}`}>PIR Tax Rate</label>
                                     <div className="relative">
-                                      <select value={employmentForm.pirRate} onChange={e => setEmploymentForm(f => ({ ...f, pirRate: e.target.value }))} className="w-full h-9 pl-4 pr-10 border border-gray-200 rounded-sm text-sm bg-gray-50/50 appearance-none cursor-pointer focus:ring-2 focus:ring-[#0B3D2E]/20 focus:border-[#0B3D2E] transition-all font-bold">
+                                      <select value={employmentForm.pirRate} onChange={e => setEmploymentForm(f => ({ ...f, pirRate: e.target.value }))} className="w-full h-9 pl-4 pr-10 border border-gray-200 rounded-sm text-sm bg-gray-50/50 appearance-none cursor-pointer focus:ring-2 focus:ring-emerald-900/20 focus:border-emerald-900 transition-all font-bold">
                                         <option>28%</option>
                                         <option>17.5%</option>
                                         <option>10.5%</option>
@@ -1226,11 +1245,11 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                     </div>
                                   </div>
                                   <div>
-                                    <label className={`block text-[10px] font-bold uppercase tracking-widest mb-2 ml-1 transition-colors ${employmentForm.esctRate.trim() ? 'text-[#0B3D2E]/60' : 'text-gray-400'}`}>ESCT Rate</label>
-                                    <input type="text" value={employmentForm.esctRate} onChange={e => setEmploymentForm(f => ({ ...f, esctRate: e.target.value }))} className="w-full h-9 px-4 border border-gray-200 rounded-sm text-sm bg-gray-50/50 focus:ring-2 focus:ring-[#0B3D2E]/20 focus:border-[#0B3D2E] transition-all font-bold" />
+                                    <label className={`block text-[10px] font-bold uppercase tracking-widest mb-2 ml-1 transition-colors ${employmentForm.esctRate.trim() ? 'text-emerald-900/60' : 'text-gray-400'}`}>ESCT Rate</label>
+                                    <input type="text" value={employmentForm.esctRate} onChange={e => setEmploymentForm(f => ({ ...f, esctRate: e.target.value }))} className="w-full h-9 px-4 border border-gray-200 rounded-sm text-sm bg-gray-50/50 focus:ring-2 focus:ring-emerald-900/20 focus:border-emerald-900 transition-all font-bold" />
                                   </div>
                                   <div className="sm:col-span-2 lg:col-span-1">
-                                    <label className={`block text-[10px] font-bold uppercase tracking-widest mb-2 ml-1 transition-colors ${/^\d{3}-\d{3}-\d{3}$/.test(employmentForm.irdNumber.trim()) ? 'text-[#0B3D2E]/60' : 'text-gray-400'}`}>IRD Number</label>
+                                    <label className={`block text-[10px] font-bold uppercase tracking-widest mb-2 ml-1 transition-colors ${/^\d{3}-\d{3}-\d{3}$/.test(employmentForm.irdNumber.trim()) ? 'text-emerald-900/60' : 'text-gray-400'}`}>IRD Number</label>
                                     {(() => {
                                       const raw = employmentForm.irdNumber.trim();
                                       const isValid = /^\d{3}-\d{3}-\d{3}$/.test(raw);
@@ -1260,7 +1279,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                                 ? 'border-green-400 focus:ring-green-500/20 focus:border-green-500'
                                                 : hasInput && !isValid
                                                   ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500'
-                                                  : 'border-gray-200 focus:ring-[#0B3D2E]/20 focus:border-[#0B3D2E]'
+                                                  : 'border-gray-200 focus:ring-emerald-900/20 focus:border-emerald-900'
                                             }`}
                                           />
                                           {hasInput && !isValid && (
@@ -1283,9 +1302,9 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                 <h3 className="text-lg font-bold text-gray-900 mb-3">Contribution Rates</h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-4">
                                   <div>
-                                    <label className={`block text-sm font-bold mb-2 transition-colors ${employmentForm.employeeContrib ? 'text-[#0B3D2E]/70' : 'text-gray-700'}`}>Employee Contribution</label>
+                                    <label className={`block text-sm font-bold mb-2 transition-colors ${employmentForm.employeeContrib ? 'text-emerald-900/70' : 'text-gray-700'}`}>Employee Contribution</label>
                                     <div className="relative">
-                                      <select value={employmentForm.employeeContrib} onChange={e => setEmploymentForm(f => ({ ...f, employeeContrib: e.target.value }))} className="w-full h-9 pl-4 pr-10 border border-gray-200 rounded-sm text-sm bg-gray-50/50 appearance-none cursor-pointer focus:ring-2 focus:ring-[#0B3D2E]/20 focus:border-[#0B3D2E] transition-all font-bold">
+                                      <select value={employmentForm.employeeContrib} onChange={e => setEmploymentForm(f => ({ ...f, employeeContrib: e.target.value }))} className="w-full h-9 pl-4 pr-10 border border-gray-200 rounded-sm text-sm bg-gray-50/50 appearance-none cursor-pointer focus:ring-2 focus:ring-emerald-900/20 focus:border-emerald-900 transition-all font-bold">
                                         <option>3%</option>
                                         <option>4%</option>
                                         <option>6%</option>
@@ -1298,9 +1317,9 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                     </div>
                                   </div>
                                   <div>
-                                    <label className={`block text-sm font-bold mb-2 transition-colors ${employmentForm.employerContrib ? 'text-[#0B3D2E]/70' : 'text-gray-700'}`}>Employer Contribution</label>
+                                    <label className={`block text-sm font-bold mb-2 transition-colors ${employmentForm.employerContrib ? 'text-emerald-900/70' : 'text-gray-700'}`}>Employer Contribution</label>
                                     <div className="relative">
-                                      <select value={employmentForm.employerContrib} onChange={e => setEmploymentForm(f => ({ ...f, employerContrib: e.target.value }))} className="w-full h-9 pl-4 pr-10 border border-gray-200 rounded-sm text-sm bg-gray-50/50 appearance-none cursor-pointer focus:ring-2 focus:ring-[#0B3D2E]/20 focus:border-[#0B3D2E] transition-all font-bold">
+                                      <select value={employmentForm.employerContrib} onChange={e => setEmploymentForm(f => ({ ...f, employerContrib: e.target.value }))} className="w-full h-9 pl-4 pr-10 border border-gray-200 rounded-sm text-sm bg-gray-50/50 appearance-none cursor-pointer focus:ring-2 focus:ring-emerald-900/20 focus:border-emerald-900 transition-all font-bold">
                                         <option>3%</option>
                                         <option>4%</option>
                                         <option>Other</option>
@@ -1314,16 +1333,16 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
 
                                 <div className="mt-8 pt-8 border-t border-gray-50 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-4">
                                   <div>
-                                    <label className={`block text-sm font-bold mb-2 transition-colors ${employmentForm.voluntaryContrib.trim() ? 'text-[#0B3D2E]/70' : 'text-gray-700'}`}>Voluntary Contribution</label>
+                                    <label className={`block text-sm font-bold mb-2 transition-colors ${employmentForm.voluntaryContrib.trim() ? 'text-emerald-900/70' : 'text-gray-700'}`}>Voluntary Contribution</label>
                                     <div className="flex items-center gap-0">
                                       <div className="h-9 w-10 bg-gray-50 border border-r-0 border-gray-200 rounded-l-md flex items-center justify-center text-gray-400 font-bold">$</div>
-                                      <input type="text" placeholder="0.00" value={employmentForm.voluntaryContrib} onChange={e => setEmploymentForm(f => ({ ...f, voluntaryContrib: e.target.value }))} className="flex-1 h-9 px-4 border border-gray-200 rounded-r-md text-sm bg-gray-50/50 focus:ring-2 focus:ring-[#0B3D2E]/20 focus:border-[#0B3D2E] transition-all font-bold text-gray-900" />
+                                      <input type="text" placeholder="0.00" value={employmentForm.voluntaryContrib} onChange={e => setEmploymentForm(f => ({ ...f, voluntaryContrib: e.target.value }))} className="flex-1 h-9 px-4 border border-gray-200 rounded-r-md text-sm bg-gray-50/50 focus:ring-2 focus:ring-emerald-900/20 focus:border-emerald-900 transition-all font-bold text-gray-900" />
                                     </div>
                                   </div>
                                   <div>
-                                    <label className={`block text-sm font-bold mb-2 transition-colors ${employmentForm.frequency ? 'text-[#0B3D2E]/70' : 'text-gray-700'}`}>Frequency</label>
+                                    <label className={`block text-sm font-bold mb-2 transition-colors ${employmentForm.frequency ? 'text-emerald-900/70' : 'text-gray-700'}`}>Frequency</label>
                                     <div className="relative">
-                                      <select value={employmentForm.frequency} onChange={e => setEmploymentForm(f => ({ ...f, frequency: e.target.value }))} className="w-full h-9 pl-4 pr-10 border border-gray-200 rounded-sm text-sm bg-gray-50/50 appearance-none cursor-pointer focus:ring-2 focus:ring-[#0B3D2E]/20 focus:border-[#0B3D2E] transition-all font-bold">
+                                      <select value={employmentForm.frequency} onChange={e => setEmploymentForm(f => ({ ...f, frequency: e.target.value }))} className="w-full h-9 pl-4 pr-10 border border-gray-200 rounded-sm text-sm bg-gray-50/50 appearance-none cursor-pointer focus:ring-2 focus:ring-emerald-900/20 focus:border-emerald-900 transition-all font-bold">
                                         <option>Fortnightly</option>
                                         <option>Monthly</option>
                                         <option>One-off</option>
@@ -1351,13 +1370,13 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                     key={goal}
                                     onClick={() => setGoalsForm(goal)}
                                     className={`w-full sm:w-auto px-3 py-1.5 rounded-sm text-sm font-bold flex items-center justify-center sm:justify-start gap-2 transition-all border ${goalsForm === goal
-                                      ? 'bg-[#0B3D2E]/5 text-[#0B3D2E] border-[#0B3D2E]'
-                                      : 'bg-white text-gray-400 border-gray-100 hover:border-[#0B3D2E]/30 hover:bg-gray-50'
+                                      ? 'bg-emerald-900/5 text-emerald-900 border-emerald-900'
+                                      : 'bg-white text-gray-400 border-gray-100 hover:border-emerald-900/30 hover:bg-gray-50'
                                       }`}
                                   >
-                                    <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 transition-all ${goalsForm === goal ? 'border-2 border-[#0B3D2E]' : 'border border-gray-200'
+                                    <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 transition-all ${goalsForm === goal ? 'border-2 border-emerald-900' : 'border border-gray-200'
                                       }`}>
-                                      {goalsForm === goal && <div className="w-1 h-1 rounded-full bg-[#0B3D2E]" />}
+                                      {goalsForm === goal && <div className="w-1 h-1 rounded-full bg-emerald-900" />}
                                     </div>
                                     {goal}
                                   </button>
@@ -1383,7 +1402,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                         key={choice}
                                         onClick={() => setOtherForm(f => ({ ...f, nzWorkplace: choice }))}
                                         className={`px-3 h-8 rounded-sm text-xs font-bold transition-all ${otherForm.nzWorkplace === choice
-                                          ? 'bg-[#0B3D2E] text-white'
+                                          ? 'bg-emerald-900 text-white'
                                           : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
                                         }`}
                                       >{choice}</button>
@@ -1399,7 +1418,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                         placeholder="e.g. AMP Workplace Savings"
                                         value={otherForm.nzWorkplaceName}
                                         onChange={e => setOtherForm(f => ({ ...f, nzWorkplaceName: e.target.value }))}
-                                        className="w-full h-9 px-4 border border-gray-200 rounded-sm text-sm bg-gray-50/50 focus:ring-2 focus:ring-[#0B3D2E]/20 focus:border-[#0B3D2E] transition-all font-medium placeholder:text-gray-300"
+                                        className="w-full h-9 px-4 border border-gray-200 rounded-sm text-sm bg-gray-50/50 focus:ring-2 focus:ring-emerald-900/20 focus:border-emerald-900 transition-all font-medium placeholder:text-gray-300"
                                       />
                                     </div>
                                     <div>
@@ -1411,7 +1430,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                           placeholder="0"
                                           value={otherForm.nzWorkplaceBalance}
                                           onChange={e => setOtherForm(f => ({ ...f, nzWorkplaceBalance: e.target.value }))}
-                                          className="flex-1 h-9 px-4 border border-gray-200 rounded-r-md text-sm bg-gray-50/50 focus:ring-2 focus:ring-[#0B3D2E]/20 focus:border-[#0B3D2E] transition-all font-bold text-gray-900 placeholder:text-gray-300"
+                                          className="flex-1 h-9 px-4 border border-gray-200 rounded-r-md text-sm bg-gray-50/50 focus:ring-2 focus:ring-emerald-900/20 focus:border-emerald-900 transition-all font-bold text-gray-900 placeholder:text-gray-300"
                                         />
                                       </div>
                                     </div>
@@ -1432,7 +1451,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                         key={choice}
                                         onClick={() => setOtherForm(f => ({ ...f, overseasPension: choice }))}
                                         className={`px-3 h-8 rounded-sm text-xs font-bold transition-all ${otherForm.overseasPension === choice
-                                          ? 'bg-[#0B3D2E] text-white'
+                                          ? 'bg-emerald-900 text-white'
                                           : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
                                         }`}
                                       >{choice}</button>
@@ -1448,7 +1467,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                         placeholder="e.g. UK State Pension"
                                         value={otherForm.overseasName}
                                         onChange={e => setOtherForm(f => ({ ...f, overseasName: e.target.value }))}
-                                        className="w-full h-9 px-4 border border-gray-200 rounded-sm text-sm bg-gray-50/50 focus:ring-2 focus:ring-[#0B3D2E]/20 focus:border-[#0B3D2E] transition-all font-medium placeholder:text-gray-300"
+                                        className="w-full h-9 px-4 border border-gray-200 rounded-sm text-sm bg-gray-50/50 focus:ring-2 focus:ring-emerald-900/20 focus:border-emerald-900 transition-all font-medium placeholder:text-gray-300"
                                       />
                                     </div>
                                     <div>
@@ -1457,7 +1476,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                         <select
                                           value={otherForm.overseasCountry}
                                           onChange={e => setOtherForm(f => ({ ...f, overseasCountry: e.target.value }))}
-                                          className="w-full h-9 pl-4 pr-10 border border-gray-200 rounded-sm text-sm bg-gray-50/50 appearance-none cursor-pointer focus:ring-2 focus:ring-[#0B3D2E]/20 focus:border-[#0B3D2E] transition-all font-medium"
+                                          className="w-full h-9 pl-4 pr-10 border border-gray-200 rounded-sm text-sm bg-gray-50/50 appearance-none cursor-pointer focus:ring-2 focus:ring-emerald-900/20 focus:border-emerald-900 transition-all font-medium"
                                         >
                                           <option value="">Select country</option>
                                           <option value="United Kingdom">United Kingdom</option>
@@ -1482,7 +1501,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                           placeholder="0"
                                           value={otherForm.overseasBalance}
                                           onChange={e => setOtherForm(f => ({ ...f, overseasBalance: e.target.value }))}
-                                          className="flex-1 h-9 px-4 border border-gray-200 rounded-r-md text-sm bg-gray-50/50 focus:ring-2 focus:ring-[#0B3D2E]/20 focus:border-[#0B3D2E] transition-all font-bold text-gray-900 placeholder:text-gray-300"
+                                          className="flex-1 h-9 px-4 border border-gray-200 rounded-r-md text-sm bg-gray-50/50 focus:ring-2 focus:ring-emerald-900/20 focus:border-emerald-900 transition-all font-bold text-gray-900 placeholder:text-gray-300"
                                         />
                                       </div>
                                     </div>
@@ -1499,7 +1518,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                   rows={3}
                                   value={otherForm.notes}
                                   onChange={e => setOtherForm(f => ({ ...f, notes: e.target.value }))}
-                                  className="w-full px-3 py-2.5 border border-gray-200 rounded text-sm font-medium resize-none bg-gray-50/30 focus:ring-2 focus:ring-[#0B3D2E]/20 focus:border-[#0B3D2E] transition-all placeholder:text-gray-300"
+                                  className="w-full px-3 py-2.5 border border-gray-200 rounded text-sm font-medium resize-none bg-gray-50/30 focus:ring-2 focus:ring-emerald-900/20 focus:border-emerald-900 transition-all placeholder:text-gray-300"
                                 />
                               </div>
                             </div>
@@ -1531,7 +1550,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                             <button
                               key={section.id}
                               className={`flex items-center gap-3 px-4 py-3 rounded text-left transition-colors whitespace-nowrap lg:w-full ${section.active
-                                ? 'bg-[#0B3D2E] text-white shadow-sm'
+                                ? 'bg-emerald-900 text-white shadow-sm'
                                 : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
                                 }`}
                             >
@@ -1599,7 +1618,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                   <button
                                     key={type}
                                     className={`flex-1 sm:flex-none px-4 py-2 rounded text-sm font-medium transition-colors ${meetingData.type === type
-                                      ? 'bg-[#0B3D2E] text-white'
+                                      ? 'bg-emerald-900 text-white'
                                       : 'bg-white text-gray-700 hover:bg-gray-200 border border-gray-200'
                                       }`}
                                   >
@@ -1645,7 +1664,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                             </div>
 
                             <div className="flex items-center justify-end gap-2 pt-4">
-                              <button className="text-sm text-[#0B3D2E] hover:text-[#081C15] font-medium">
+                              <button className="text-sm text-emerald-900 hover:text-emerald-950 font-medium">
                                 Generate Teams Link
                               </button>
                             </div>
@@ -1660,7 +1679,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                             </button>
                             <button
                               onClick={() => setActiveTab('risk')}
-                              className="w-full sm:ml-auto sm:w-auto px-10 py-2.5 bg-[#0B3D2E] text-white text-sm rounded hover:bg-[#081C15] transition-all font-bold shadow-sm active:scale-95"
+                              className="w-full sm:ml-auto sm:w-auto px-10 py-2.5 bg-emerald-900 text-white text-sm rounded hover:bg-emerald-950 transition-all font-bold shadow-sm active:scale-95"
                             >
                               Next Step: Risk Profile
                             </button>
@@ -1679,11 +1698,11 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                       <div className="mb-4">
                         <div className="flex items-center justify-between mb-2">
                           <h3 className="text-lg font-semibold text-gray-900">KiwiSaver Risk Assessment</h3>
-                          <span className="text-sm text-[#0B3D2E] font-medium">for {clientName}</span>
+                          <span className="text-sm text-emerald-900 font-medium">for {clientName}</span>
                         </div>
-                        <div className="bg-[#0B3D2E]/10 border border-[#0B3D2E] rounded p-4 mt-4">
+                        <div className="bg-emerald-900/10 border border-emerald-900 rounded p-4 mt-4">
                           <div className="flex items-start gap-3">
-                            <Info className="w-5 h-5 text-[#0B3D2E] flex-shrink-0 mt-0.5" />
+                            <Info className="w-5 h-5 text-emerald-900 flex-shrink-0 mt-0.5" />
                             <p className="text-sm text-gray-700">
                               Your Risk Tolerance Score <span className="font-semibold">Aggressive</span>
                             </p>
@@ -1706,13 +1725,13 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                 {q.options.map((option) => (
                                   <label
                                     key={option}
-                                    className="flex items-center gap-3 p-3 bg-white border border-gray-200 rounded cursor-pointer hover:border-[#0B3D2E] transition-colors"
+                                    className="flex items-center gap-3 p-3 bg-white border border-gray-200 rounded cursor-pointer hover:border-emerald-900 transition-colors"
                                   >
                                     <input
                                       type="radio"
                                       name={`question-${q.id}`}
                                       checked={q.selected === option}
-                                      className="w-4 h-4 text-[#0B3D2E]"
+                                      className="w-4 h-4 text-emerald-900"
                                       readOnly
                                     />
                                     <span className="text-sm text-gray-700">{option}</span>
@@ -1733,7 +1752,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                         </button>
                         <button
                           onClick={() => setActiveTab('projection')}
-                          className="px-4 py-2 bg-[#0B3D2E] text-white text-sm rounded hover:bg-[#081C15] transition-colors"
+                          className="px-4 py-2 bg-emerald-900 text-white text-sm rounded hover:bg-emerald-950 transition-colors"
                         >
                           Next
                         </button>
@@ -1753,15 +1772,15 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                           <h3 className="text-sm font-semibold text-gray-900 mb-3">Graph Data</h3>
                           <div className="space-y-3">
                             <div className="flex items-center gap-2">
-                              <div className="w-8 h-8 rounded-full bg-[#0B3D2E]/10 flex items-center justify-center">
-                                <User className="w-4 h-4 text-[#0B3D2E]" />
+                              <div className="w-8 h-8 rounded-full bg-emerald-900/10 flex items-center justify-center">
+                                <User className="w-4 h-4 text-emerald-900" />
                               </div>
                               <div>
                                 <p className="text-xs text-gray-500">Another User</p>
                                 <p className="text-xs text-gray-400">Primary Contact</p>
                               </div>
                             </div>
-                            <button className="w-full px-4 py-2 bg-[#0B3D2E] text-white text-sm rounded hover:bg-[#081C15] transition-colors">
+                            <button className="w-full px-4 py-2 bg-emerald-900 text-white text-sm rounded hover:bg-emerald-950 transition-colors">
                               Save Scenarios
                             </button>
                           </div>
@@ -1835,22 +1854,22 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                               <div className="bg-white p-4 rounded border border-gray-200">
                                 <p className="text-xs text-gray-500 mb-1">Projected Balance at Retirement</p>
-                                <p className="text-xl font-bold text-[#081C15]">$542</p>
+                                <p className="text-xl font-bold text-emerald-950">$542</p>
                                 <p className="text-xs text-gray-500 mt-1">Another User (65y)</p>
                               </div>
                               <div className="bg-white p-4 rounded border border-gray-200">
                                 <p className="text-xs text-gray-500 mb-1">Next Contribution Date</p>
-                                <p className="text-xl font-bold text-[#081C15]">$542</p>
+                                <p className="text-xl font-bold text-emerald-950">$542</p>
                                 <p className="text-xs text-gray-500 mt-1">Another User (70y)</p>
                               </div>
                               <div className="bg-white p-4 rounded border border-gray-200">
                                 <p className="text-xs text-gray-500 mb-1">Weekly / Bi-Weekly</p>
-                                <p className="text-xl font-bold text-[#081C15]">$65wk</p>
+                                <p className="text-xl font-bold text-emerald-950">$65wk</p>
                                 <p className="text-xs text-gray-500 mt-1">Monthly / Annually</p>
                               </div>
                               <div className="bg-white p-4 rounded border border-gray-200">
                                 <p className="text-xs text-gray-500 mb-1">Employer Contributions</p>
-                                <p className="text-xl font-bold text-[#081C15]">$850</p>
+                                <p className="text-xl font-bold text-emerald-950">$850</p>
                                 <p className="text-xs text-gray-500 mt-1">Current / Expected</p>
                               </div>
                             </div>
@@ -1865,7 +1884,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                             </button>
                             <button
                               onClick={() => setActiveTab('comparison')}
-                              className="px-4 py-2 bg-[#0B3D2E] text-white text-sm rounded hover:bg-[#081C15] transition-colors"
+                              className="px-4 py-2 bg-emerald-900 text-white text-sm rounded hover:bg-emerald-950 transition-colors"
                             >
                               Next
                             </button>
@@ -1900,22 +1919,22 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           {/* Current Fund */}
                           <div className={`p-4 rounded border transition-all ${selectedFunds.includes('current')
-                            ? 'border-[#0B3D2E] bg-[#0B3D2E]/5 ring-4 ring-[#0B3D2E]/5'
+                            ? 'border-emerald-900 bg-emerald-900/5 ring-4 ring-emerald-900/5'
                             : 'border-gray-100 hover:border-gray-200 bg-gray-50/30'
                             }`}>
                             <div className="flex items-start justify-between mb-4">
                               <div className="flex flex-col gap-1">
-                                <span className="inline-flex w-fit px-2 py-1 bg-[#0B3D2E] text-white text-[10px] font-bold uppercase tracking-wider rounded shadow-sm">
+                                <span className="inline-flex w-fit px-2 py-1 bg-emerald-900 text-white text-[10px] font-bold uppercase tracking-wider rounded shadow-sm">
                                   Current
                                 </span>
                               </div>
-                              <div className="w-5 h-5 bg-[#0B3D2E] rounded-full flex items-center justify-center shadow-sm">
+                              <div className="w-5 h-5 bg-emerald-900 rounded-full flex items-center justify-center shadow-sm">
                                 <CheckCircle className="w-3.5 h-3.5 text-white" />
                               </div>
                             </div>
 
                             <div className="mb-4">
-                              <label className="text-[9px] font-bold text-[#0B3D2E] uppercase tracking-widest block mb-1.5 ml-1">Select Fund</label>
+                              <label className="text-[9px] font-bold text-emerald-900 uppercase tracking-widest block mb-1.5 ml-1">Select Fund</label>
                               <div className="relative group/select">
                                 <select
                                   value={funds.current.id}
@@ -1923,13 +1942,13 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                     const selected = ALL_FUNDS.find(f => f.id === e.target.value);
                                     if (selected) setFunds(prev => ({ ...prev, current: selected }));
                                   }}
-                                  className="w-full bg-white border border-gray-200 rounded-sm px-4 py-3 text-sm font-bold text-gray-900 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#0B3D2E]/20 focus:border-[#0B3D2E] transition-all shadow-sm group-hover/select:border-gray-300 pr-10"
+                                  className="w-full bg-white border border-gray-200 rounded-sm px-4 py-3 text-sm font-bold text-gray-900 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-900/20 focus:border-emerald-900 transition-all shadow-sm group-hover/select:border-gray-300 pr-10"
                                 >
                                   {ALL_FUNDS.map(f => (
                                     <option key={f.id} value={f.id}>{f.name}</option>
                                   ))}
                                 </select>
-                                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 group-hover/select:text-[#0B3D2E] transition-colors">
+                                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 group-hover/select:text-emerald-900 transition-colors">
                                   <ChevronDown className="w-4 h-4" />
                                 </div>
                               </div>
@@ -1958,7 +1977,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                             <div className="pt-4 border-t border-dashed border-gray-200">
                               <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Internal Reason</p>
                               <textarea
-                                className="w-full border border-gray-200 rounded p-3 text-xs focus:ring-2 focus:ring-[#0B3D2E]/20 focus:border-[#0B3D2E] transition-all bg-white"
+                                className="w-full border border-gray-200 rounded p-3 text-xs focus:ring-2 focus:ring-emerald-900/20 focus:border-emerald-900 transition-all bg-white"
                                 rows={3}
                                 placeholder="Why keep with current fund?"
                                 value={justifications.current}
@@ -2027,7 +2046,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                             <div className="pt-4 border-t border-dashed border-gray-200">
                               <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Advice Comment</p>
                               <textarea
-                                className="w-full border border-gray-200 rounded p-3 text-xs focus:ring-2 focus:ring-[#0B3D2E]/20 focus:border-[#0B3D2E] transition-all bg-white"
+                                className="w-full border border-gray-200 rounded p-3 text-xs focus:ring-2 focus:ring-emerald-900/20 focus:border-emerald-900 transition-all bg-white"
                                 rows={3}
                                 placeholder="Why we recommend this fund?"
                                 value={justifications.recommended}
@@ -2037,16 +2056,16 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                           </div>
 
                           {/* Alternative Fund Card */}
-                          <div className="p-4 rounded border border-dashed border-gray-200 hover:border-[#0B3D2E]/40 hover:bg-gray-50/50 transition-all flex flex-col items-center justify-center min-h-[400px] group/alt">
+                          <div className="p-4 rounded border border-dashed border-gray-200 hover:border-emerald-900/40 hover:bg-gray-50/50 transition-all flex flex-col items-center justify-center min-h-[400px] group/alt">
                             <div className="text-center">
-                              <div className="w-14 h-14 bg-gray-100 group-hover/alt:bg-[#F2E9E4] rounded-full flex items-center justify-center mx-auto mb-4 transition-colors">
-                                <Plus className="w-6 h-6 text-gray-400 group-hover/alt:text-[#0B3D2E]" />
+                              <div className="w-14 h-14 bg-gray-100 group-hover/alt:bg-stone-200 rounded-full flex items-center justify-center mx-auto mb-4 transition-colors">
+                                <Plus className="w-6 h-6 text-gray-400 group-hover/alt:text-emerald-900" />
                               </div>
                               <h4 className="text-sm font-semibold text-gray-900 mb-2 font-bold uppercase tracking-widest text-[10px]">Compare Another</h4>
                               <p className="text-xs text-gray-500 mb-4 max-w-[160px]">
                                 Add a secondary alternative to provide a broader comparison.
                               </p>
-                              <button className="px-5 py-2.5 bg-white border border-gray-200 text-xs font-bold uppercase tracking-wider text-gray-600 rounded hover:border-[#0B3D2E] hover:text-[#0B3D2E] transition-all shadow-sm">
+                              <button className="px-5 py-2.5 bg-white border border-gray-200 text-xs font-bold uppercase tracking-wider text-gray-600 rounded hover:border-emerald-900 hover:text-emerald-900 transition-all shadow-sm">
                                 Add Fund
                               </button>
                             </div>
@@ -2065,7 +2084,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                             onClick={handleGenerateReport}
                             disabled={selectedFunds.length < 2}
                             className={`flex items-center gap-2 px-6 py-3 rounded text-xs font-bold uppercase tracking-widest transition-all ${selectedFunds.length >= 2
-                              ? 'bg-[#0B3D2E] text-white hover:bg-[#081C15] '
+                              ? 'bg-emerald-900 text-white hover:bg-emerald-950 '
                               : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                               }`}
                           >
@@ -2081,7 +2100,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                           <div className="bg-white rounded-sm border border-gray-200 p-4 shadow-sm">
                             <button
                               onClick={() => setShowReportPreview(false)}
-                              className="w-full mb-4 px-4 py-3 bg-white border border-gray-200 text-xs font-bold uppercase tracking-widest text-gray-500 hover:border-[#0B3D2E] hover:text-[#0B3D2E] rounded-sm transition-all flex items-center justify-center gap-2 group shadow-sm hover: active:scale-[0.98]"
+                              className="w-full mb-4 px-4 py-3 bg-white border border-gray-200 text-xs font-bold uppercase tracking-widest text-gray-500 hover:border-emerald-900 hover:text-emerald-900 rounded-sm transition-all flex items-center justify-center gap-2 group shadow-sm hover: active:scale-[0.98]"
                             >
                               <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1" />
                               Back to Comparison
@@ -2097,7 +2116,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                   key={num}
                                   onClick={() => setSelectedScenario(num)}
                                   className={`w-full text-left px-4 py-3 rounded-sm text-sm font-medium transition-all ${selectedScenario === num
-                                    ? 'bg-[#0B3D2E] text-white '
+                                    ? 'bg-emerald-900 text-white '
                                     : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
                                     }`}
                                 >
@@ -2114,7 +2133,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                   if (!fund) return null;
                                   return (
                                     <div key={fundKey} className="flex items-center gap-3 p-3 bg-gray-50/50 rounded-sm border border-gray-100">
-                                      <div className={`w-2 h-2 rounded-full ${fundKey === 'current' ? 'bg-[#0B3D2E]' : fundKey === 'recommended' ? 'bg-green-600' : 'bg-amber-500'}`} />
+                                      <div className={`w-2 h-2 rounded-full ${fundKey === 'current' ? 'bg-emerald-900' : fundKey === 'recommended' ? 'bg-green-600' : 'bg-amber-500'}`} />
                                       <div>
                                         <p className="text-[11px] font-bold text-gray-900 leading-tight">{fund.name}</p>
                                         <p className="text-[9px] text-gray-500 font-medium uppercase tracking-tighter mt-0.5">
@@ -2130,7 +2149,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                             <div className="pt-5 border-t border-gray-100">
                               <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">Contacts</h4>
                               <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-sm border border-gray-100">
-                                <div className="w-10 h-10 rounded-sm bg-[#0B3D2E] text-white flex items-center justify-center text-sm font-bold shadow-sm">
+                                <div className="w-10 h-10 rounded-sm bg-emerald-900 text-white flex items-center justify-center text-sm font-bold shadow-sm">
                                   {clientName.split(' ').map(n => n[0]).join('')}
                                 </div>
                                 <div>
@@ -2142,7 +2161,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                           </div>
 
                           {/* Export Options */}
-                          <div className="bg-[#0B3D2E] rounded-sm p-4 text-white ">
+                          <div className="bg-emerald-900 rounded-sm p-4 text-white ">
                             <h4 className="text-[10px] font-bold text-white/60 uppercase tracking-widest mb-4">Action Required</h4>
                             <p className="text-xs leading-relaxed mb-4 opacity-90">
                               Review the generated Statement of Advice. If accurate, proceed to internal review or send directly to the client.
@@ -2151,7 +2170,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                               {workflowStatus === 'draft' && (
                                 <button
                                   onClick={handleSendForReview}
-                                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white text-[#0B3D2E] text-[10px] font-bold uppercase tracking-widest rounded-sm hover:bg-white/95 transition-all "
+                                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white text-emerald-900 text-[10px] font-bold uppercase tracking-widest rounded-sm hover:bg-white/95 transition-all "
                                 >
                                   <Send className="w-3.5 h-3.5" />
                                   Send for Review
@@ -2177,22 +2196,22 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                             <div className="bg-white border-b border-gray-200">
                               <div className="px-6 py-3 flex items-center justify-between">
                                 <div className="flex items-center gap-4">
-                                  <button className="flex items-center gap-2 text-xs font-semibold text-gray-600 hover:text-[#0B3D2E] transition-colors group">
+                                  <button className="flex items-center gap-2 text-xs font-semibold text-gray-600 hover:text-emerald-900 transition-colors group">
                                     <Save className="w-4 h-4 transition-transform group-hover:scale-110" />
                                     Save Draft
                                   </button>
                                   <button
                                     onClick={handleSendForReview}
-                                    className="flex items-center gap-2 text-xs font-semibold text-gray-600 hover:text-[#0B3D2E] transition-colors group"
+                                    className="flex items-center gap-2 text-xs font-semibold text-gray-600 hover:text-emerald-900 transition-colors group"
                                   >
                                     <Send className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                                     Send for Review
                                   </button>
-                                  <button className="flex items-center gap-2 text-xs font-semibold text-gray-600 hover:text-[#0B3D2E] transition-colors group">
+                                  <button className="flex items-center gap-2 text-xs font-semibold text-gray-600 hover:text-emerald-900 transition-colors group">
                                     <Layers className="w-4 h-4" />
                                     Variables Highlighted
                                   </button>
-                                  <button className="flex items-center gap-2 text-xs font-semibold text-gray-600 hover:text-[#0B3D2E] transition-colors group">
+                                  <button className="flex items-center gap-2 text-xs font-semibold text-gray-600 hover:text-emerald-900 transition-colors group">
                                     <Download className="w-4 h-4 transition-transform group-hover:translate-y-0.5" />
                                     Download PDF
                                   </button>
@@ -2221,10 +2240,10 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                             <div className="flex-1 bg-gray-100/50 p-6 overflow-y-auto">
                               <div className="max-w-[800px] mx-auto bg-white rounded-sm p-16 min-h-[1056px] relative ring-1 ring-gray-200">
                                 {/* Page Decoration */}
-                                <div className="absolute top-0 left-0 w-full h-2 bg-[#0B3D2E]" />
+                                <div className="absolute top-0 left-0 w-full h-2 bg-emerald-900" />
 
                                 <div className="mt-8 mb-20">
-                                  <PiggyBank className="w-10 h-10 text-[#0B3D2E] mb-4" />
+                                  <PiggyBank className="w-10 h-10 text-emerald-900 mb-4" />
                                   <h1 className="text-5xl font-bold text-gray-900 mb-2 tracking-tighter">KiwiSaver</h1>
                                   <h2 className="text-3xl font-light text-gray-400 -mt-1 tracking-tight">Statement of Advice</h2>
                                 </div>
@@ -2244,7 +2263,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
 
                                   {/* Comparison Details Section */}
                                   <div className="pt-12 border-t border-gray-100">
-                                    <p className="text-xs font-bold text-[#0B3D2E] uppercase tracking-widest mb-4">Recommendation Analysis</p>
+                                    <p className="text-xs font-bold text-emerald-900 uppercase tracking-widest mb-4">Recommendation Analysis</p>
                                     <div className="grid grid-cols-1 gap-4">
                                       {selectedFunds.map((fundKey) => {
                                         const fund = funds[fundKey as keyof typeof funds];
@@ -2256,7 +2275,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                                 <p className="text-sm font-bold text-gray-900">{fund.name}</p>
                                                 <p className="text-[10px] text-gray-500 font-medium uppercase tracking-wider mt-1">{fund.provider}</p>
                                               </div>
-                                              <span className={`px-2 py-1 rounded text-[9px] font-bold uppercase tracking-widest ${fundKey === 'current' ? 'bg-[#0B3D2E] text-white' : fundKey === 'recommended' ? 'bg-green-600 text-white' : 'bg-amber-100 text-amber-700'}`}>
+                                              <span className={`px-2 py-1 rounded text-[9px] font-bold uppercase tracking-widest ${fundKey === 'current' ? 'bg-emerald-900 text-white' : fundKey === 'recommended' ? 'bg-green-600 text-white' : 'bg-amber-100 text-amber-700'}`}>
                                                 {fundKey === 'current' ? 'Current Fund' : fundKey === 'recommended' ? 'Our Recommendation' : 'Alternative Option'}
                                               </span>
                                             </div>
@@ -2309,9 +2328,9 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                                 <div className="absolute bottom-12 right-16 flex items-center gap-3">
                                   <div className="text-right">
                                     <p className="text-[9px] font-bold text-gray-900 uppercase tracking-widest leading-none">Powered by</p>
-                                    <p className="text-sm font-bold text-[#0B3D2E] leading-tight">Antigravity</p>
+                                    <p className="text-sm font-bold text-emerald-900 leading-tight">Antigravity</p>
                                   </div>
-                                  <div className="w-8 h-8 bg-[#0B3D2E] rounded"></div>
+                                  <div className="w-8 h-8 bg-emerald-900 rounded"></div>
                                 </div>
                               </div>
 
@@ -2395,8 +2414,8 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
               className="w-full flex items-center justify-between p-4 bg-white hover:bg-gray-50 transition-colors"
             >
               <div className="flex items-center gap-3 flex-1">
-                <div className="w-8 h-8 rounded-full bg-[#0B3D2E]/10 flex items-center justify-center">
-                  <Icon className="w-4 h-4 text-[#0B3D2E]" />
+                <div className="w-8 h-8 rounded-full bg-emerald-900/10 flex items-center justify-center">
+                  <Icon className="w-4 h-4 text-emerald-900" />
                 </div>
                 <div className="text-left flex-1">
                   <div className="flex items-center gap-3">
@@ -2405,7 +2424,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                       <div className="flex items-center gap-2 flex-1 max-w-[120px]">
                         <div className="h-1 flex-1 bg-gray-100 rounded-full overflow-hidden">
                           <div
-                            className={`h-full transition-all duration-500 ${progressPercentage === 100 ? 'bg-green-500' : 'bg-[#0B3D2E]'}`}
+                            className={`h-full transition-all duration-500 ${progressPercentage === 100 ? 'bg-green-500' : 'bg-emerald-900'}`}
                             style={{ width: `${progressPercentage}%` }}
                           />
                         </div>
@@ -2415,7 +2434,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                       </div>
                     )}
                   </div>
-                  {subtitle && <p className="text-xs text-[#0B3D2E] mt-0.5">{subtitle}</p>}
+                  {subtitle && <p className="text-xs text-emerald-900 mt-0.5">{subtitle}</p>}
                 </div>
               </div>
               <ChevronRight className={`w-5 h-5 text-gray-400 transition-transform ${isOpen ? 'rotate-90' : ''}`} />

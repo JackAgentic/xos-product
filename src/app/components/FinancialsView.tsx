@@ -342,7 +342,7 @@ export function FinancialsView({
             <h2 className="text-lg font-semibold">Financial Snapshots</h2>
             <button
               onClick={() => setIsAddingSnapshot(true)}
-              className="p-2 bg-[#0B3D2E] text-white rounded-sm hover:bg-[#081C15] transition-colors"
+              className="p-2 bg-emerald-900 text-white rounded-sm hover:bg-emerald-950 transition-colors"
             >
               <Plus className="w-4 h-4" />
             </button>
@@ -354,14 +354,14 @@ export function FinancialsView({
             <input
               type="text"
               placeholder="Search snapshots..."
-              className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] text-sm"
+              className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 text-sm"
             />
           </div>
         </div>
 
         {/* Add Snapshot Form */}
         {isAddingSnapshot && (
-          <div className="p-4 border-b border-gray-200 bg-[#F2E9E4]">
+          <div className="p-4 border-b border-gray-200 bg-stone-200">
             <div className="mb-3">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Snapshot Name
@@ -371,14 +371,14 @@ export function FinancialsView({
                 value={newSnapshotName}
                 onChange={(e) => setNewSnapshotName(e.target.value)}
                 placeholder="e.g., Q2 2026 Review"
-                className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E]"
+                className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900"
                 autoFocus
               />
             </div>
             <div className="flex gap-2">
               <button
                 onClick={handleAddSnapshot}
-                className="flex-1 px-3 py-2 bg-[#0B3D2E] text-white rounded-sm hover:bg-[#081C15] transition-colors text-sm font-medium"
+                className="flex-1 px-3 py-2 bg-emerald-900 text-white rounded-sm hover:bg-emerald-950 transition-colors text-sm font-medium"
               >
                 Create
               </button>
@@ -405,7 +405,7 @@ export function FinancialsView({
               <p className="text-gray-500 text-sm mb-4">No financial snapshots found</p>
               <button
                 onClick={() => setIsAddingSnapshot(true)}
-                className="text-[#0B3D2E] hover:text-[#081C15] text-sm font-medium"
+                className="text-emerald-900 hover:text-emerald-950 text-sm font-medium"
               >
                 Create your first snapshot
               </button>
@@ -418,7 +418,7 @@ export function FinancialsView({
                   onClick={() => setSelectedSnapshot(snapshot)}
                   className={`p-3 mb-2 rounded-sm border cursor-pointer transition-colors relative ${
                     selectedSnapshot?.id === snapshot.id
-                      ? 'border-[#0B3D2E] bg-[#F2E9E4]'
+                      ? 'border-emerald-900 bg-stone-200'
                       : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                   }`}
                 >
@@ -471,7 +471,7 @@ export function FinancialsView({
                       <div className="mb-2">
                         <div className="w-full bg-gray-200 rounded-full h-1.5">
                           <div
-                            className="bg-[#0B3D2E] h-1.5 rounded-full transition-all"
+                            className="bg-emerald-900 h-1.5 rounded-full transition-all"
                             style={{ width: `${snapshot.progress}%` }}
                           />
                         </div>
@@ -554,7 +554,7 @@ export function FinancialsView({
                         onClick={() => setActiveTab(tab.id)}
                         className={`flex items-center gap-2 px-6 py-3 text-sm font-medium whitespace-nowrap transition-colors ${
                           activeTab === tab.id
-                            ? 'text-[#0B3D2E] border-b-2 border-[#0B3D2E] bg-[#F2E9E4]/30'
+                            ? 'text-emerald-900 border-b-2 border-emerald-900 bg-stone-200/30'
                             : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                         }`}
                       >
@@ -578,7 +578,7 @@ export function FinancialsView({
                       </div>
                       <button
                         onClick={addAsset}
-                        className="flex items-center gap-2 px-4 py-2 bg-[#0B3D2E] text-white rounded-sm hover:bg-[#081C15] transition-colors h-10"
+                        className="flex items-center gap-2 px-4 py-2 bg-emerald-900 text-white rounded-sm hover:bg-emerald-950 transition-colors h-10"
                       >
                         <Plus className="w-4 h-4" />
                         Add Asset
@@ -591,7 +591,7 @@ export function FinancialsView({
                         <p className="text-gray-500 mb-4">No assets added yet</p>
                         <button
                           onClick={addAsset}
-                          className="text-[#0B3D2E] hover:text-[#081C15] font-medium text-sm"
+                          className="text-emerald-900 hover:text-emerald-950 font-medium text-sm"
                         >
                           Add your first asset
                         </button>
@@ -616,7 +616,7 @@ export function FinancialsView({
                                 <select
                                   value={asset.type}
                                   onChange={(e) => updateAsset(asset.id, 'type', e.target.value)}
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                                 >
                                   <option value="">Select type</option>
                                   {assetTypes.map((type) => (
@@ -632,7 +632,7 @@ export function FinancialsView({
                                   value={asset.value}
                                   onChange={(e) => updateAsset(asset.id, 'value', e.target.value)}
                                   placeholder="$100,000"
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                                 />
                               </div>
 
@@ -643,7 +643,7 @@ export function FinancialsView({
                                   value={asset.description}
                                   onChange={(e) => updateAsset(asset.id, 'description', e.target.value)}
                                   placeholder="e.g., Main residence, Investment portfolio"
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                                 />
                               </div>
 
@@ -652,7 +652,7 @@ export function FinancialsView({
                                 <select
                                   value={asset.ownership}
                                   onChange={(e) => updateAsset(asset.id, 'ownership', e.target.value)}
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                                 >
                                   <option value="">Select ownership</option>
                                   <option value="individual">Individual</option>
@@ -679,7 +679,7 @@ export function FinancialsView({
                       </div>
                       <button
                         onClick={addLiability}
-                        className="flex items-center gap-2 px-4 py-2 bg-[#0B3D2E] text-white rounded-sm hover:bg-[#081C15] transition-colors h-10"
+                        className="flex items-center gap-2 px-4 py-2 bg-emerald-900 text-white rounded-sm hover:bg-emerald-950 transition-colors h-10"
                       >
                         <Plus className="w-4 h-4" />
                         Add Liability
@@ -692,7 +692,7 @@ export function FinancialsView({
                         <p className="text-gray-500 mb-4">No liabilities added yet</p>
                         <button
                           onClick={addLiability}
-                          className="text-[#0B3D2E] hover:text-[#081C15] font-medium text-sm"
+                          className="text-emerald-900 hover:text-emerald-950 font-medium text-sm"
                         >
                           Add your first liability
                         </button>
@@ -717,7 +717,7 @@ export function FinancialsView({
                                 <select
                                   value={liability.type}
                                   onChange={(e) => updateLiability(liability.id, 'type', e.target.value)}
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                                 >
                                   <option value="">Select type</option>
                                   {liabilityTypes.map((type) => (
@@ -733,7 +733,7 @@ export function FinancialsView({
                                   value={liability.balance}
                                   onChange={(e) => updateLiability(liability.id, 'balance', e.target.value)}
                                   placeholder="$250,000"
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                                 />
                               </div>
 
@@ -744,7 +744,7 @@ export function FinancialsView({
                                   value={liability.description}
                                   onChange={(e) => updateLiability(liability.id, 'description', e.target.value)}
                                   placeholder="e.g., Home mortgage, Car loan"
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                                 />
                               </div>
 
@@ -755,7 +755,7 @@ export function FinancialsView({
                                   value={liability.interestRate}
                                   onChange={(e) => updateLiability(liability.id, 'interestRate', e.target.value)}
                                   placeholder="5.5%"
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                                 />
                               </div>
 
@@ -766,7 +766,7 @@ export function FinancialsView({
                                   value={liability.payment}
                                   onChange={(e) => updateLiability(liability.id, 'payment', e.target.value)}
                                   placeholder="$1,500"
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                                 />
                               </div>
                             </div>
@@ -789,7 +789,7 @@ export function FinancialsView({
                         </div>
                         <button
                           onClick={addIncome}
-                          className="flex items-center gap-2 px-4 py-2 bg-[#0B3D2E] text-white rounded-sm hover:bg-[#081C15] transition-colors h-10"
+                          className="flex items-center gap-2 px-4 py-2 bg-emerald-900 text-white rounded-sm hover:bg-emerald-950 transition-colors h-10"
                         >
                           <Plus className="w-4 h-4" />
                           Add Income
@@ -801,7 +801,7 @@ export function FinancialsView({
                           <p className="text-gray-500 mb-3">No income sources added</p>
                           <button
                             onClick={addIncome}
-                            className="text-[#0B3D2E] hover:text-[#081C15] font-medium text-sm"
+                            className="text-emerald-900 hover:text-emerald-950 font-medium text-sm"
                           >
                             Add income source
                           </button>
@@ -828,7 +828,7 @@ export function FinancialsView({
                                     value={income.source}
                                     onChange={(e) => updateIncome(income.id, 'source', e.target.value)}
                                     placeholder="e.g., Salary, Rental"
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                                   />
                                 </div>
 
@@ -839,7 +839,7 @@ export function FinancialsView({
                                     value={income.amount}
                                     onChange={(e) => updateIncome(income.id, 'amount', e.target.value)}
                                     placeholder="$5,000"
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                                   />
                                 </div>
 
@@ -848,7 +848,7 @@ export function FinancialsView({
                                   <select
                                     value={income.frequency}
                                     onChange={(e) => updateIncome(income.id, 'frequency', e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                                   >
                                     <option value="weekly">Weekly</option>
                                     <option value="fortnightly">Fortnightly</option>
@@ -872,7 +872,7 @@ export function FinancialsView({
                         </div>
                         <button
                           onClick={addExpense}
-                          className="flex items-center gap-2 px-4 py-2 bg-[#0B3D2E] text-white rounded-sm hover:bg-[#081C15] transition-colors h-10"
+                          className="flex items-center gap-2 px-4 py-2 bg-emerald-900 text-white rounded-sm hover:bg-emerald-950 transition-colors h-10"
                         >
                           <Plus className="w-4 h-4" />
                           Add Expense
@@ -884,7 +884,7 @@ export function FinancialsView({
                           <p className="text-gray-500 mb-3">No expenses added</p>
                           <button
                             onClick={addExpense}
-                            className="text-[#0B3D2E] hover:text-[#081C15] font-medium text-sm"
+                            className="text-emerald-900 hover:text-emerald-950 font-medium text-sm"
                           >
                             Add expense
                           </button>
@@ -911,7 +911,7 @@ export function FinancialsView({
                                     value={expense.category}
                                     onChange={(e) => updateExpense(expense.id, 'category', e.target.value)}
                                     placeholder="e.g., Housing, Food"
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                                   />
                                 </div>
 
@@ -922,7 +922,7 @@ export function FinancialsView({
                                     value={expense.amount}
                                     onChange={(e) => updateExpense(expense.id, 'amount', e.target.value)}
                                     placeholder="$2,000"
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                                   />
                                 </div>
 
@@ -931,7 +931,7 @@ export function FinancialsView({
                                   <select
                                     value={expense.frequency}
                                     onChange={(e) => updateExpense(expense.id, 'frequency', e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                                   >
                                     <option value="weekly">Weekly</option>
                                     <option value="fortnightly">Fortnightly</option>
@@ -958,7 +958,7 @@ export function FinancialsView({
                       </div>
                       <button
                         onClick={addGoal}
-                        className="flex items-center gap-2 px-4 py-2 bg-[#0B3D2E] text-white rounded-sm hover:bg-[#081C15] transition-colors h-10"
+                        className="flex items-center gap-2 px-4 py-2 bg-emerald-900 text-white rounded-sm hover:bg-emerald-950 transition-colors h-10"
                       >
                         <Plus className="w-4 h-4" />
                         Add Goal
@@ -971,7 +971,7 @@ export function FinancialsView({
                         <p className="text-gray-500 mb-4">No financial goals set yet</p>
                         <button
                           onClick={addGoal}
-                          className="text-[#0B3D2E] hover:text-[#081C15] font-medium text-sm"
+                          className="text-emerald-900 hover:text-emerald-950 font-medium text-sm"
                         >
                           Add your first goal
                         </button>
@@ -998,7 +998,7 @@ export function FinancialsView({
                                   value={goal.name}
                                   onChange={(e) => updateGoal(goal.id, 'name', e.target.value)}
                                   placeholder="e.g., Retirement Fund, House Deposit"
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                                 />
                               </div>
 
@@ -1009,7 +1009,7 @@ export function FinancialsView({
                                   value={goal.targetAmount}
                                   onChange={(e) => updateGoal(goal.id, 'targetAmount', e.target.value)}
                                   placeholder="$500,000"
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                                 />
                               </div>
 
@@ -1019,7 +1019,7 @@ export function FinancialsView({
                                   type="date"
                                   value={goal.targetDate}
                                   onChange={(e) => updateGoal(goal.id, 'targetDate', e.target.value)}
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                                 />
                               </div>
 
@@ -1028,7 +1028,7 @@ export function FinancialsView({
                                 <select
                                   value={goal.priority}
                                   onChange={(e) => updateGoal(goal.id, 'priority', e.target.value)}
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                                 >
                                   <option value="low">Low</option>
                                   <option value="medium">Medium</option>
@@ -1075,17 +1075,17 @@ export function FinancialsView({
                         <div className="text-xs text-red-600 mt-1">{liabilities.length} items</div>
                       </div>
 
-                      <div className="p-6 bg-gradient-to-br from-[#F2E9E4] to-[#d1e5ed] rounded-sm border border-[#0B3D2E]">
-                        <div className="flex items-center gap-2 text-[#081C15] mb-2">
+                      <div className="p-6 bg-gradient-to-br from-stone-200 to-sky-100 rounded-sm border border-emerald-900">
+                        <div className="flex items-center gap-2 text-emerald-950 mb-2">
                           <DollarSign className="w-5 h-5" />
                           <span className="text-sm font-medium">Net Worth</span>
                         </div>
                         <div className={`text-2xl font-bold ${
-                          calculateTotals().netWorth >= 0 ? 'text-[#081C15]' : 'text-red-900'
+                          calculateTotals().netWorth >= 0 ? 'text-emerald-950' : 'text-red-900'
                         }`}>
                           {formatCurrency(calculateTotals().netWorth)}
                         </div>
-                        <div className="text-xs text-[#0B3D2E] mt-1">
+                        <div className="text-xs text-emerald-900 mt-1">
                           {calculateTotals().netWorth >= 0 ? 'Positive position' : 'Negative position'}
                         </div>
                       </div>
@@ -1157,7 +1157,7 @@ export function FinancialsView({
                         icon: <CheckCircle2 className="w-5 h-5" />
                       });
                     }}
-                    className="px-6 py-2 bg-[#0B3D2E] text-white rounded-sm hover:bg-[#081C15] transition-colors h-10 font-medium"
+                    className="px-6 py-2 bg-emerald-900 text-white rounded-sm hover:bg-emerald-950 transition-colors h-10 font-medium"
                   >
                     Save Changes
                   </button>

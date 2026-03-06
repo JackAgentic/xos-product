@@ -214,7 +214,7 @@ export function OpportunityDetails({
               onClick={() => setActivityTab('assigned')}
               className={`px-4 py-2 text-sm font-medium transition-colors ${
                 activityTab === 'assigned'
-                  ? 'text-[#0B3D2E] border-b-2 border-[#0B3D2E]'
+                  ? 'text-emerald-900 border-b-2 border-emerald-900'
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
@@ -224,7 +224,7 @@ export function OpportunityDetails({
               onClick={() => setActivityTab('unassigned')}
               className={`px-4 py-2 text-sm font-medium transition-colors ${
                 activityTab === 'unassigned'
-                  ? 'text-[#0B3D2E] border-b-2 border-[#0B3D2E]'
+                  ? 'text-emerald-900 border-b-2 border-emerald-900'
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
@@ -254,10 +254,10 @@ export function OpportunityDetails({
                   <div className="flex gap-3">
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                       activity.type === 'meeting'
-                        ? 'bg-[#F2E9E4]/50'
+                        ? 'bg-stone-200/50'
                         : 'bg-gray-100'
                     }`}>
-                      {activity.type === 'meeting' && <CalendarIcon className="w-4 h-4 text-[#0B3D2E]" />}
+                      {activity.type === 'meeting' && <CalendarIcon className="w-4 h-4 text-emerald-900" />}
                       {activity.type === 'document' && <FileText className="w-4 h-4 text-gray-600" />}
                       {activity.type === 'note' && <StickyNote className="w-4 h-4 text-gray-600" />}
                     </div>
@@ -268,7 +268,7 @@ export function OpportunityDetails({
                           <div className="text-sm text-gray-600">{activity.description}</div>
                         </div>
                         {activity.type === 'meeting' && (
-                          <span className="text-xs font-medium text-[#0B3D2E] bg-[#F2E9E4]/20 px-2 py-1 rounded">
+                          <span className="text-xs font-medium text-emerald-900 bg-stone-200/20 px-2 py-1 rounded">
                             Upcoming
                           </span>
                         )}
@@ -288,7 +288,7 @@ export function OpportunityDetails({
             </div>
 
             <button
-              className="w-full mt-4 pt-4 border-t border-gray-200 text-sm text-[#0B3D2E] hover:text-[#0B3D2E] font-medium"
+              className="w-full mt-4 pt-4 border-t border-gray-200 text-sm text-emerald-900 hover:text-emerald-900 font-medium"
             >
               View All Activities
             </button>
@@ -355,7 +355,7 @@ export function OpportunityDetails({
                       newNotes[idx] = { ...newNotes[idx], text: e.target.value };
                       setOpportunityNotes(newNotes);
                     }}
-                    className="flex-1 p-3 border border-gray-300 rounded-sm text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] focus:border-transparent"
+                    className="flex-1 p-3 border border-gray-300 rounded-sm text-sm resize-none focus:outline-none focus:ring-2 focus:ring-emerald-900 focus:border-transparent"
                     rows={2}
                   />
                   <button
@@ -390,7 +390,7 @@ export function OpportunityDetails({
                   user: "Brett O'Donnell"
                 }]);
               }}
-              className="w-full p-3 border-2 border-dashed border-gray-300 rounded-sm text-sm text-gray-600 hover:border-[#0B3D2E] hover:text-[#0B3D2E] transition-colors flex items-center justify-center gap-2"
+              className="w-full p-3 border-2 border-dashed border-gray-300 rounded-sm text-sm text-gray-600 hover:border-emerald-900 hover:text-emerald-900 transition-colors flex items-center justify-center gap-2"
             >
               <Plus className="w-4 h-4" />
               Add Note
@@ -405,7 +405,7 @@ export function OpportunityDetails({
                   className="p-3 bg-gray-50 rounded-sm"
                 >
                   <div className="flex items-start gap-3">
-                    <div className="w-1.5 h-1.5 bg-[#0B3D2E] rounded-full mt-2 flex-shrink-0"></div>
+                    <div className="w-1.5 h-1.5 bg-emerald-900 rounded-full mt-2 flex-shrink-0"></div>
                     <div className="flex-1">
                       <p className="text-sm text-gray-700 mb-2">{note.text}</p>
                       <div className="text-xs text-gray-500">

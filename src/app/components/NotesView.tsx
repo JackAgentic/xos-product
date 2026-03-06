@@ -44,7 +44,7 @@ export function NotesView({
         <div className="p-4 border-b border-gray-200 flex-shrink-0">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-lg font-semibold">Notes</h2>
-            <button className="p-2 bg-[#0B3D2E] text-white rounded-sm hover:bg-[#081C15] transition-colors">
+            <button className="p-2 bg-emerald-900 text-white rounded-sm hover:bg-emerald-950 transition-colors">
               <Plus className="w-4 h-4" />
             </button>
           </div>
@@ -55,7 +55,7 @@ export function NotesView({
               onClick={() => setNotesTab('notes')}
               className={`flex-1 py-2 rounded-sm font-medium text-sm ${
                 notesTab === 'notes'
-                  ? 'bg-[#0B3D2E] text-white'
+                  ? 'bg-emerald-900 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
@@ -65,7 +65,7 @@ export function NotesView({
               onClick={() => setNotesTab('history')}
               className={`flex-1 py-2 rounded-sm font-medium text-sm ${
                 notesTab === 'history'
-                  ? 'bg-[#0B3D2E] text-white'
+                  ? 'bg-emerald-900 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
@@ -79,7 +79,7 @@ export function NotesView({
             <input
               type="text"
               placeholder="Search notes..."
-              className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] text-sm"
+              className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 text-sm"
             />
           </div>
         </div>

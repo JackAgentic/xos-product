@@ -47,8 +47,8 @@ export function OpportunityFilterModal({
         {/* Modal Header */}
         <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between rounded-t-2xl sm:rounded-t-lg">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-[#F2E9E4] rounded-sm flex items-center justify-center">
-              <Filter className="w-5 h-5 text-[#0B3D2E]" />
+            <div className="w-10 h-10 bg-stone-200 rounded-sm flex items-center justify-center">
+              <Filter className="w-5 h-5 text-emerald-900" />
             </div>
             <h2 className="text-lg font-medium">Filter Opportunities</h2>
           </div>
@@ -69,7 +69,7 @@ export function OpportunityFilterModal({
             <select
               value={filterClient === null ? '' : filterClient}
               onChange={(e) => setFilterClient(e.target.value === '' ? null : parseInt(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#0B3D2E]"
+              className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-900"
             >
               <option value="">All Clients</option>
               {CLIENTS_LOOKUP.map((client) => (
@@ -87,7 +87,7 @@ export function OpportunityFilterModal({
             <select
               value={filterType}
               onChange={(e) => setFilterType(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#0B3D2E]"
+              className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-900"
             >
               <option value="">All Types</option>
               <option value="Mortgage">Mortgage</option>
@@ -104,22 +104,22 @@ export function OpportunityFilterModal({
               <div className="text-sm font-medium text-gray-700 mb-2">Active Filters:</div>
               <div className="flex flex-wrap gap-2">
                 {filterClient !== null && (
-                  <div className="px-3 py-1 bg-[#F2E9E4] text-[#0B3D2E] rounded-full text-sm flex items-center gap-2">
+                  <div className="px-3 py-1 bg-stone-200 text-emerald-900 rounded-full text-sm flex items-center gap-2">
                     <span>{CLIENTS_LOOKUP.find(c => c.id === filterClient)?.name}</span>
                     <button
                       onClick={() => setFilterClient(null)}
-                      className="hover:bg-[#0B3D2E] hover:text-white rounded-full p-0.5 transition-colors"
+                      className="hover:bg-emerald-900 hover:text-white rounded-full p-0.5 transition-colors"
                     >
                       <X className="w-3 h-3" />
                     </button>
                   </div>
                 )}
                 {filterType && (
-                  <div className="px-3 py-1 bg-[#F2E9E4] text-[#0B3D2E] rounded-full text-sm flex items-center gap-2">
+                  <div className="px-3 py-1 bg-stone-200 text-emerald-900 rounded-full text-sm flex items-center gap-2">
                     <span>{filterType}</span>
                     <button
                       onClick={() => setFilterType('')}
-                      className="hover:bg-[#0B3D2E] hover:text-white rounded-full p-0.5 transition-colors"
+                      className="hover:bg-emerald-900 hover:text-white rounded-full p-0.5 transition-colors"
                     >
                       <X className="w-3 h-3" />
                     </button>
@@ -144,7 +144,7 @@ export function OpportunityFilterModal({
           </button>
           <button
             onClick={() => setShowFilterModal(false)}
-            className="px-4 py-1.5 text-sm font-medium bg-[#0B3D2E] text-white rounded-sm hover:bg-[#4f7684] transition-colors"
+            className="px-4 py-1.5 text-sm font-medium bg-emerald-900 text-white rounded-sm hover:bg-slate-500 transition-colors"
           >
             Apply Filters
           </button>
@@ -176,8 +176,8 @@ export function OpportunitySortModal({
         {/* Modal Header */}
         <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between rounded-t-2xl sm:rounded-t-lg">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-[#F2E9E4] rounded-sm flex items-center justify-center">
-              <ChevronsUpDown className="w-5 h-5 text-[#0B3D2E]" />
+            <div className="w-10 h-10 bg-stone-200 rounded-sm flex items-center justify-center">
+              <ChevronsUpDown className="w-5 h-5 text-emerald-900" />
             </div>
             <h2 className="text-lg font-medium">Sort Opportunities</h2>
           </div>
@@ -198,7 +198,7 @@ export function OpportunitySortModal({
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#0B3D2E]"
+              className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-900"
             >
               <option value="date">Date</option>
               <option value="name">Opportunity Name</option>
@@ -217,7 +217,7 @@ export function OpportunitySortModal({
                 onClick={() => setSortOrder('asc')}
                 className={`px-4 py-3 rounded-sm border-2 transition-all ${
                   sortOrder === 'asc'
-                    ? 'border-[#0B3D2E] bg-[#F2E9E4] text-[#0B3D2E]'
+                    ? 'border-emerald-900 bg-stone-200 text-emerald-900'
                     : 'border-gray-200 hover:border-gray-300'
                 }`}
               >
@@ -228,7 +228,7 @@ export function OpportunitySortModal({
                 onClick={() => setSortOrder('desc')}
                 className={`px-4 py-3 rounded-sm border-2 transition-all ${
                   sortOrder === 'desc'
-                    ? 'border-[#0B3D2E] bg-[#F2E9E4] text-[#0B3D2E]'
+                    ? 'border-emerald-900 bg-stone-200 text-emerald-900'
                     : 'border-gray-200 hover:border-gray-300'
                 }`}
               >
@@ -241,7 +241,7 @@ export function OpportunitySortModal({
           {/* Current Sort Summary */}
           <div className="pt-4 border-t border-gray-200">
             <div className="text-sm font-medium text-gray-700 mb-2">Current Sort:</div>
-            <div className="px-3 py-2 bg-[#F2E9E4] text-[#0B3D2E] rounded-sm text-sm">
+            <div className="px-3 py-2 bg-stone-200 text-emerald-900 rounded-sm text-sm">
               {sortBy === 'date' && 'Date'}
               {sortBy === 'name' && 'Opportunity Name'}
               {sortBy === 'client' && 'Client Name'}
@@ -267,7 +267,7 @@ export function OpportunitySortModal({
           </button>
           <button
             onClick={() => setShowSortModal(false)}
-            className="px-4 py-1.5 text-sm font-medium bg-[#0B3D2E] text-white rounded-sm hover:bg-[#4f7684] transition-colors"
+            className="px-4 py-1.5 text-sm font-medium bg-emerald-900 text-white rounded-sm hover:bg-slate-500 transition-colors"
           >
             Apply Sort
           </button>

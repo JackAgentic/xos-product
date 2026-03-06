@@ -224,7 +224,7 @@ export function FactFindView({
               </div>
               <button
                 onClick={handleEdit}
-                className="flex items-center justify-center gap-2 px-4 py-2 bg-[#0B3D2E] text-white rounded-sm hover:bg-[#081C15] transition-colors h-10 whitespace-nowrap"
+                className="flex items-center justify-center gap-2 px-4 py-2 bg-emerald-900 text-white rounded-sm hover:bg-emerald-950 transition-colors h-10 whitespace-nowrap"
               >
                 <Edit2 className="w-4 h-4" />
                 Edit Details
@@ -233,12 +233,12 @@ export function FactFindView({
 
             {/* Entity Badge */}
             <div className="mb-4">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#F2E9E4] rounded-sm border border-[#0B3D2E]">
-                {selectedEntity === 'individual' && <UserCircle className="w-4 h-4 text-[#0B3D2E]" />}
-                {selectedEntity === 'household' && <Users className="w-4 h-4 text-[#0B3D2E]" />}
-                {selectedEntity === 'trust' && <FileText className="w-4 h-4 text-[#0B3D2E]" />}
-                {selectedEntity === 'company' && <Building className="w-4 h-4 text-[#0B3D2E]" />}
-                <span className="text-sm font-medium text-[#081C15] capitalize">{selectedEntity}</span>
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-stone-200 rounded-sm border border-emerald-900">
+                {selectedEntity === 'individual' && <UserCircle className="w-4 h-4 text-emerald-900" />}
+                {selectedEntity === 'household' && <Users className="w-4 h-4 text-emerald-900" />}
+                {selectedEntity === 'trust' && <FileText className="w-4 h-4 text-emerald-900" />}
+                {selectedEntity === 'company' && <Building className="w-4 h-4 text-emerald-900" />}
+                <span className="text-sm font-medium text-emerald-950 capitalize">{selectedEntity}</span>
               </div>
             </div>
 
@@ -247,7 +247,7 @@ export function FactFindView({
               {/* Client Info Section */}
               <div className="bg-white rounded-sm border border-gray-200 p-6">
                 <div className="flex items-center gap-2 mb-4">
-                  <UserCircle className="w-5 h-5 text-[#0B3D2E]" />
+                  <UserCircle className="w-5 h-5 text-emerald-900" />
                   <h3 className="text-lg font-semibold">Client Information</h3>
                 </div>
                 
@@ -381,7 +381,7 @@ export function FactFindView({
               {/* Contact Section */}
               <div className="bg-white rounded-sm border border-gray-200 p-6">
                 <div className="flex items-center gap-2 mb-4">
-                  <MapPin className="w-5 h-5 text-[#0B3D2E]" />
+                  <MapPin className="w-5 h-5 text-emerald-900" />
                   <h3 className="text-lg font-semibold">Contact Details</h3>
                 </div>
                 
@@ -433,7 +433,7 @@ export function FactFindView({
               {/* Compliance Section */}
               <div className="bg-white rounded-sm border border-gray-200 p-6">
                 <div className="flex items-center gap-2 mb-4">
-                  <Shield className="w-5 h-5 text-[#0B3D2E]" />
+                  <Shield className="w-5 h-5 text-emerald-900" />
                   <h3 className="text-lg font-semibold">Compliance</h3>
                 </div>
                 
@@ -456,7 +456,7 @@ export function FactFindView({
               {/* Financials Section */}
               <div className="bg-white rounded-sm border border-gray-200 p-6">
                 <div className="flex items-center gap-2 mb-4">
-                  <DollarSign className="w-5 h-5 text-[#0B3D2E]" />
+                  <DollarSign className="w-5 h-5 text-emerald-900" />
                   <h3 className="text-lg font-semibold">Financial Information</h3>
                 </div>
                 
@@ -499,7 +499,7 @@ export function FactFindView({
               {/* Dependents Section */}
               <div className="bg-white rounded-sm border border-gray-200 p-6">
                 <div className="flex items-center gap-2 mb-4">
-                  <Users className="w-5 h-5 text-[#0B3D2E]" />
+                  <Users className="w-5 h-5 text-emerald-900" />
                   <h3 className="text-lg font-semibold">Dependents</h3>
                 </div>
                 
@@ -576,12 +576,12 @@ export function FactFindView({
                   onClick={() => handleEntitySelection('individual')}
                   className={`p-4 rounded-sm border-2 text-left transition-colors ${
                     selectedEntity === 'individual'
-                      ? 'border-[#0B3D2E] bg-[#F2E9E4]'
+                      ? 'border-emerald-900 bg-stone-200'
                       : 'border-gray-200 hover:border-gray-300'
                   }`}
                 >
                   <div className="flex items-start gap-3">
-                    <div className={`p-2 rounded-sm ${selectedEntity === 'individual' ? 'bg-[#0B3D2E]' : 'bg-gray-100'}`}>
+                    <div className={`p-2 rounded-sm ${selectedEntity === 'individual' ? 'bg-emerald-900' : 'bg-gray-100'}`}>
                       <UserCircle className={`w-5 h-5 ${selectedEntity === 'individual' ? 'text-white' : 'text-gray-600'}`} />
                     </div>
                     <div>
@@ -595,12 +595,12 @@ export function FactFindView({
                   onClick={() => handleEntitySelection('household')}
                   className={`p-4 rounded-sm border-2 text-left transition-colors ${
                     selectedEntity === 'household'
-                      ? 'border-[#0B3D2E] bg-[#F2E9E4]'
+                      ? 'border-emerald-900 bg-stone-200'
                       : 'border-gray-200 hover:border-gray-300'
                   }`}
                 >
                   <div className="flex items-start gap-3">
-                    <div className={`p-2 rounded-sm ${selectedEntity === 'household' ? 'bg-[#0B3D2E]' : 'bg-gray-100'}`}>
+                    <div className={`p-2 rounded-sm ${selectedEntity === 'household' ? 'bg-emerald-900' : 'bg-gray-100'}`}>
                       <Users className={`w-5 h-5 ${selectedEntity === 'household' ? 'text-white' : 'text-gray-600'}`} />
                     </div>
                     <div>
@@ -614,12 +614,12 @@ export function FactFindView({
                   onClick={() => handleEntitySelection('trust')}
                   className={`p-4 rounded-sm border-2 text-left transition-colors ${
                     selectedEntity === 'trust'
-                      ? 'border-[#0B3D2E] bg-[#F2E9E4]'
+                      ? 'border-emerald-900 bg-stone-200'
                       : 'border-gray-200 hover:border-gray-300'
                   }`}
                 >
                   <div className="flex items-start gap-3">
-                    <div className={`p-2 rounded-sm ${selectedEntity === 'trust' ? 'bg-[#0B3D2E]' : 'bg-gray-100'}`}>
+                    <div className={`p-2 rounded-sm ${selectedEntity === 'trust' ? 'bg-emerald-900' : 'bg-gray-100'}`}>
                       <FileText className={`w-5 h-5 ${selectedEntity === 'trust' ? 'text-white' : 'text-gray-600'}`} />
                     </div>
                     <div>
@@ -633,12 +633,12 @@ export function FactFindView({
                   onClick={() => handleEntitySelection('company')}
                   className={`p-4 rounded-sm border-2 text-left transition-colors ${
                     selectedEntity === 'company'
-                      ? 'border-[#0B3D2E] bg-[#F2E9E4]'
+                      ? 'border-emerald-900 bg-stone-200'
                       : 'border-gray-200 hover:border-gray-300'
                   }`}
                 >
                   <div className="flex items-start gap-3">
-                    <div className={`p-2 rounded-sm ${selectedEntity === 'company' ? 'bg-[#0B3D2E]' : 'bg-gray-100'}`}>
+                    <div className={`p-2 rounded-sm ${selectedEntity === 'company' ? 'bg-emerald-900' : 'bg-gray-100'}`}>
                       <Building className={`w-5 h-5 ${selectedEntity === 'company' ? 'text-white' : 'text-gray-600'}`} />
                     </div>
                     <div>
@@ -653,12 +653,12 @@ export function FactFindView({
             <>
               {/* Entity Type Badge */}
               <div className="mb-4 flex items-center gap-3">
-                <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#F2E9E4] rounded-sm border border-[#0B3D2E]">
-                  {selectedEntity === 'individual' && <UserCircle className="w-4 h-4 text-[#0B3D2E]" />}
-                  {selectedEntity === 'household' && <Users className="w-4 h-4 text-[#0B3D2E]" />}
-                  {selectedEntity === 'trust' && <FileText className="w-4 h-4 text-[#0B3D2E]" />}
-                  {selectedEntity === 'company' && <Building className="w-4 h-4 text-[#0B3D2E]" />}
-                  <span className="text-sm font-medium text-[#081C15] capitalize">{selectedEntity}</span>
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-stone-200 rounded-sm border border-emerald-900">
+                  {selectedEntity === 'individual' && <UserCircle className="w-4 h-4 text-emerald-900" />}
+                  {selectedEntity === 'household' && <Users className="w-4 h-4 text-emerald-900" />}
+                  {selectedEntity === 'trust' && <FileText className="w-4 h-4 text-emerald-900" />}
+                  {selectedEntity === 'company' && <Building className="w-4 h-4 text-emerald-900" />}
+                  <span className="text-sm font-medium text-emerald-950 capitalize">{selectedEntity}</span>
                 </div>
                 <button
                   onClick={() => setEntitySelected(false)}
@@ -679,7 +679,7 @@ export function FactFindView({
                         onClick={() => setActiveTab(tab.id)}
                         className={`flex items-center gap-2 px-6 py-3 text-sm font-medium whitespace-nowrap transition-colors ${
                           activeTab === tab.id
-                            ? 'text-[#0B3D2E] border-b-2 border-[#0B3D2E] bg-[#F2E9E4]/30'
+                            ? 'text-emerald-900 border-b-2 border-emerald-900 bg-stone-200/30'
                             : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                         }`}
                       >
@@ -707,7 +707,7 @@ export function FactFindView({
                               type="text"
                               value={clientInfoData.firstName}
                               onChange={(e) => setClientInfoData({ ...clientInfoData, firstName: e.target.value })}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                               placeholder="Enter first name"
                             />
                           </div>
@@ -717,7 +717,7 @@ export function FactFindView({
                               type="text"
                               value={clientInfoData.middleName}
                               onChange={(e) => setClientInfoData({ ...clientInfoData, middleName: e.target.value })}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                               placeholder="Enter middle name"
                             />
                           </div>
@@ -727,7 +727,7 @@ export function FactFindView({
                               type="text"
                               value={clientInfoData.lastName}
                               onChange={(e) => setClientInfoData({ ...clientInfoData, lastName: e.target.value })}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                               placeholder="Enter last name"
                             />
                           </div>
@@ -737,7 +737,7 @@ export function FactFindView({
                               type="date"
                               value={clientInfoData.dateOfBirth}
                               onChange={(e) => setClientInfoData({ ...clientInfoData, dateOfBirth: e.target.value })}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                             />
                           </div>
                           <div>
@@ -745,7 +745,7 @@ export function FactFindView({
                             <select
                               value={clientInfoData.gender}
                               onChange={(e) => setClientInfoData({ ...clientInfoData, gender: e.target.value })}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                             >
                               <option value="">Select gender</option>
                               <option value="male">Male</option>
@@ -760,7 +760,7 @@ export function FactFindView({
                               type="email"
                               value={clientInfoData.email}
                               onChange={(e) => setClientInfoData({ ...clientInfoData, email: e.target.value })}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                               placeholder="email@example.com"
                             />
                           </div>
@@ -770,7 +770,7 @@ export function FactFindView({
                               type="tel"
                               value={clientInfoData.phone}
                               onChange={(e) => setClientInfoData({ ...clientInfoData, phone: e.target.value })}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                               placeholder="(123) 456-7890"
                             />
                           </div>
@@ -780,7 +780,7 @@ export function FactFindView({
                               type="tel"
                               value={clientInfoData.mobile}
                               onChange={(e) => setClientInfoData({ ...clientInfoData, mobile: e.target.value })}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                               placeholder="(123) 456-7890"
                             />
                           </div>
@@ -798,7 +798,7 @@ export function FactFindView({
                                   type="text"
                                   value={clientInfoData.partner1FirstName}
                                   onChange={(e) => setClientInfoData({ ...clientInfoData, partner1FirstName: e.target.value })}
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                                 />
                               </div>
                               <div>
@@ -807,7 +807,7 @@ export function FactFindView({
                                   type="text"
                                   value={clientInfoData.partner1LastName}
                                   onChange={(e) => setClientInfoData({ ...clientInfoData, partner1LastName: e.target.value })}
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                                 />
                               </div>
                               <div>
@@ -816,7 +816,7 @@ export function FactFindView({
                                   type="date"
                                   value={clientInfoData.partner1DOB}
                                   onChange={(e) => setClientInfoData({ ...clientInfoData, partner1DOB: e.target.value })}
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                                 />
                               </div>
                             </div>
@@ -831,7 +831,7 @@ export function FactFindView({
                                   type="text"
                                   value={clientInfoData.partner2FirstName}
                                   onChange={(e) => setClientInfoData({ ...clientInfoData, partner2FirstName: e.target.value })}
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                                 />
                               </div>
                               <div>
@@ -840,7 +840,7 @@ export function FactFindView({
                                   type="text"
                                   value={clientInfoData.partner2LastName}
                                   onChange={(e) => setClientInfoData({ ...clientInfoData, partner2LastName: e.target.value })}
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                                 />
                               </div>
                               <div>
@@ -849,7 +849,7 @@ export function FactFindView({
                                   type="date"
                                   value={clientInfoData.partner2DOB}
                                   onChange={(e) => setClientInfoData({ ...clientInfoData, partner2DOB: e.target.value })}
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                                 />
                               </div>
                             </div>
@@ -865,7 +865,7 @@ export function FactFindView({
                               type="text"
                               value={clientInfoData.trustName}
                               onChange={(e) => setClientInfoData({ ...clientInfoData, trustName: e.target.value })}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                               placeholder="Enter trust name"
                             />
                           </div>
@@ -874,7 +874,7 @@ export function FactFindView({
                             <select
                               value={clientInfoData.trustType}
                               onChange={(e) => setClientInfoData({ ...clientInfoData, trustType: e.target.value })}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                             >
                               <option value="">Select type</option>
                               <option value="family">Family Trust</option>
@@ -889,7 +889,7 @@ export function FactFindView({
                               type="date"
                               value={clientInfoData.establishmentDate}
                               onChange={(e) => setClientInfoData({ ...clientInfoData, establishmentDate: e.target.value })}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                             />
                           </div>
                           <div className="md:col-span-2">
@@ -897,7 +897,7 @@ export function FactFindView({
                             <textarea
                               value={clientInfoData.trustees}
                               onChange={(e) => setClientInfoData({ ...clientInfoData, trustees: e.target.value })}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E]"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900"
                               rows={3}
                               placeholder="List trustees"
                             />
@@ -907,7 +907,7 @@ export function FactFindView({
                             <textarea
                               value={clientInfoData.beneficiaries}
                               onChange={(e) => setClientInfoData({ ...clientInfoData, beneficiaries: e.target.value })}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E]"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900"
                               rows={3}
                               placeholder="List beneficiaries"
                             />
@@ -923,7 +923,7 @@ export function FactFindView({
                               type="text"
                               value={clientInfoData.companyName}
                               onChange={(e) => setClientInfoData({ ...clientInfoData, companyName: e.target.value })}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                               placeholder="Enter company name"
                             />
                           </div>
@@ -933,7 +933,7 @@ export function FactFindView({
                               type="text"
                               value={clientInfoData.tradingName}
                               onChange={(e) => setClientInfoData({ ...clientInfoData, tradingName: e.target.value })}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                               placeholder="Trading as..."
                             />
                           </div>
@@ -943,7 +943,7 @@ export function FactFindView({
                               type="text"
                               value={clientInfoData.companyNumber}
                               onChange={(e) => setClientInfoData({ ...clientInfoData, companyNumber: e.target.value })}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                               placeholder="123456789"
                             />
                           </div>
@@ -953,7 +953,7 @@ export function FactFindView({
                               type="date"
                               value={clientInfoData.incorporationDate}
                               onChange={(e) => setClientInfoData({ ...clientInfoData, incorporationDate: e.target.value })}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                             />
                           </div>
                           <div className="md:col-span-2">
@@ -961,7 +961,7 @@ export function FactFindView({
                             <textarea
                               value={clientInfoData.directors}
                               onChange={(e) => setClientInfoData({ ...clientInfoData, directors: e.target.value })}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E]"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900"
                               rows={3}
                               placeholder="List directors"
                             />
@@ -971,7 +971,7 @@ export function FactFindView({
                             <textarea
                               value={clientInfoData.shareholders}
                               onChange={(e) => setClientInfoData({ ...clientInfoData, shareholders: e.target.value })}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E]"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900"
                               rows={3}
                               placeholder="List shareholders with percentages"
                             />
@@ -998,7 +998,7 @@ export function FactFindView({
                                 type="text"
                                 value={contactData.residentialAddress}
                                 onChange={(e) => setContactData({ ...contactData, residentialAddress: e.target.value })}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                                 placeholder="123 Main Street"
                               />
                             </div>
@@ -1009,7 +1009,7 @@ export function FactFindView({
                                   type="text"
                                   value={contactData.residentialCity}
                                   onChange={(e) => setContactData({ ...contactData, residentialCity: e.target.value })}
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                                   placeholder="City"
                                 />
                               </div>
@@ -1019,7 +1019,7 @@ export function FactFindView({
                                   type="text"
                                   value={contactData.residentialPostcode}
                                   onChange={(e) => setContactData({ ...contactData, residentialPostcode: e.target.value })}
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                                   placeholder="12345"
                                 />
                               </div>
@@ -1035,7 +1035,7 @@ export function FactFindView({
                                 type="checkbox"
                                 checked={contactData.sameAsResidential}
                                 onChange={(e) => setContactData({ ...contactData, sameAsResidential: e.target.checked })}
-                                className="w-4 h-4 text-[#0B3D2E] border-gray-300 rounded focus:ring-[#0B3D2E]"
+                                className="w-4 h-4 text-emerald-900 border-gray-300 rounded focus:ring-emerald-900"
                               />
                               Same as residential
                             </label>
@@ -1049,7 +1049,7 @@ export function FactFindView({
                                   type="text"
                                   value={contactData.mailingAddress}
                                   onChange={(e) => setContactData({ ...contactData, mailingAddress: e.target.value })}
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                                   placeholder="PO Box 123"
                                 />
                               </div>
@@ -1060,7 +1060,7 @@ export function FactFindView({
                                     type="text"
                                     value={contactData.mailingCity}
                                     onChange={(e) => setContactData({ ...contactData, mailingCity: e.target.value })}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                                     placeholder="City"
                                   />
                                 </div>
@@ -1070,7 +1070,7 @@ export function FactFindView({
                                     type="text"
                                     value={contactData.mailingPostcode}
                                     onChange={(e) => setContactData({ ...contactData, mailingPostcode: e.target.value })}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                                     placeholder="12345"
                                   />
                                 </div>
@@ -1096,7 +1096,7 @@ export function FactFindView({
                             type="checkbox"
                             checked={complianceData.identityVerified}
                             onChange={(e) => setComplianceData({ ...complianceData, identityVerified: e.target.checked })}
-                            className="w-5 h-5 text-[#0B3D2E] border-gray-300 rounded focus:ring-[#0B3D2E] mt-0.5"
+                            className="w-5 h-5 text-emerald-900 border-gray-300 rounded focus:ring-emerald-900 mt-0.5"
                           />
                           <div>
                             <div className="font-medium text-gray-900">Identity Verification</div>
@@ -1109,7 +1109,7 @@ export function FactFindView({
                             type="checkbox"
                             checked={complianceData.amlCompleted}
                             onChange={(e) => setComplianceData({ ...complianceData, amlCompleted: e.target.checked })}
-                            className="w-5 h-5 text-[#0B3D2E] border-gray-300 rounded focus:ring-[#0B3D2E] mt-0.5"
+                            className="w-5 h-5 text-emerald-900 border-gray-300 rounded focus:ring-emerald-900 mt-0.5"
                           />
                           <div>
                             <div className="font-medium text-gray-900">AML Check</div>
@@ -1122,7 +1122,7 @@ export function FactFindView({
                             type="checkbox"
                             checked={complianceData.cddCompleted}
                             onChange={(e) => setComplianceData({ ...complianceData, cddCompleted: e.target.checked })}
-                            className="w-5 h-5 text-[#0B3D2E] border-gray-300 rounded focus:ring-[#0B3D2E] mt-0.5"
+                            className="w-5 h-5 text-emerald-900 border-gray-300 rounded focus:ring-emerald-900 mt-0.5"
                           />
                           <div>
                             <div className="font-medium text-gray-900">Customer Due Diligence (CDD)</div>
@@ -1135,7 +1135,7 @@ export function FactFindView({
                             type="checkbox"
                             checked={complianceData.privacyConsent}
                             onChange={(e) => setComplianceData({ ...complianceData, privacyConsent: e.target.checked })}
-                            className="w-5 h-5 text-[#0B3D2E] border-gray-300 rounded focus:ring-[#0B3D2E] mt-0.5"
+                            className="w-5 h-5 text-emerald-900 border-gray-300 rounded focus:ring-emerald-900 mt-0.5"
                           />
                           <div>
                             <div className="font-medium text-gray-900">Privacy Consent</div>
@@ -1148,7 +1148,7 @@ export function FactFindView({
                             type="checkbox"
                             checked={complianceData.termsAccepted}
                             onChange={(e) => setComplianceData({ ...complianceData, termsAccepted: e.target.checked })}
-                            className="w-5 h-5 text-[#0B3D2E] border-gray-300 rounded focus:ring-[#0B3D2E] mt-0.5"
+                            className="w-5 h-5 text-emerald-900 border-gray-300 rounded focus:ring-emerald-900 mt-0.5"
                           />
                           <div>
                             <div className="font-medium text-gray-900">Terms & Conditions</div>
@@ -1161,7 +1161,7 @@ export function FactFindView({
                             type="checkbox"
                             checked={complianceData.disclosureProvided}
                             onChange={(e) => setComplianceData({ ...complianceData, disclosureProvided: e.target.checked })}
-                            className="w-5 h-5 text-[#0B3D2E] border-gray-300 rounded focus:ring-[#0B3D2E] mt-0.5"
+                            className="w-5 h-5 text-emerald-900 border-gray-300 rounded focus:ring-emerald-900 mt-0.5"
                           />
                           <div>
                             <div className="font-medium text-gray-900">Disclosure Statement</div>
@@ -1186,7 +1186,7 @@ export function FactFindView({
                             type="text"
                             value={financialsData.annualIncome}
                             onChange={(e) => setFinancialsData({ ...financialsData, annualIncome: e.target.value })}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                             placeholder="$50,000"
                           />
                         </div>
@@ -1196,7 +1196,7 @@ export function FactFindView({
                           <select
                             value={financialsData.employmentStatus}
                             onChange={(e) => setFinancialsData({ ...financialsData, employmentStatus: e.target.value })}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                           >
                             <option value="">Select status</option>
                             <option value="employed">Employed</option>
@@ -1213,7 +1213,7 @@ export function FactFindView({
                             type="text"
                             value={financialsData.employer}
                             onChange={(e) => setFinancialsData({ ...financialsData, employer: e.target.value })}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                             placeholder="Company name"
                           />
                         </div>
@@ -1224,7 +1224,7 @@ export function FactFindView({
                             type="text"
                             value={financialsData.occupation}
                             onChange={(e) => setFinancialsData({ ...financialsData, occupation: e.target.value })}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                             placeholder="Job title"
                           />
                         </div>
@@ -1235,7 +1235,7 @@ export function FactFindView({
                             type="text"
                             value={financialsData.assetsValue}
                             onChange={(e) => setFinancialsData({ ...financialsData, assetsValue: e.target.value })}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                             placeholder="$500,000"
                           />
                         </div>
@@ -1246,7 +1246,7 @@ export function FactFindView({
                             type="text"
                             value={financialsData.liabilitiesValue}
                             onChange={(e) => setFinancialsData({ ...financialsData, liabilitiesValue: e.target.value })}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                             placeholder="$200,000"
                           />
                         </div>
@@ -1257,7 +1257,7 @@ export function FactFindView({
                             type="text"
                             value={financialsData.monthlyExpenses}
                             onChange={(e) => setFinancialsData({ ...financialsData, monthlyExpenses: e.target.value })}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                             placeholder="$3,000"
                           />
                         </div>
@@ -1267,7 +1267,7 @@ export function FactFindView({
                           <select
                             value={financialsData.riskProfile}
                             onChange={(e) => setFinancialsData({ ...financialsData, riskProfile: e.target.value })}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                           >
                             <option value="conservative">Conservative</option>
                             <option value="moderate">Moderate</option>
@@ -1291,7 +1291,7 @@ export function FactFindView({
                       </div>
                       <button
                         onClick={addDependent}
-                        className="flex items-center gap-2 px-4 py-2 bg-[#0B3D2E] text-white rounded-sm hover:bg-[#081C15] transition-colors h-10"
+                        className="flex items-center gap-2 px-4 py-2 bg-emerald-900 text-white rounded-sm hover:bg-emerald-950 transition-colors h-10"
                       >
                         <Plus className="w-4 h-4" />
                         Add Dependent
@@ -1304,7 +1304,7 @@ export function FactFindView({
                         <p className="text-gray-500 mb-4">No dependents added yet</p>
                         <button
                           onClick={addDependent}
-                          className="text-[#0B3D2E] hover:text-[#081C15] font-medium text-sm"
+                          className="text-emerald-900 hover:text-emerald-950 font-medium text-sm"
                         >
                           Add your first dependent
                         </button>
@@ -1330,7 +1330,7 @@ export function FactFindView({
                                   type="text"
                                   value={dependent.name}
                                   onChange={(e) => updateDependent(dependent.id, 'name', e.target.value)}
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                                   placeholder="Enter name"
                                 />
                               </div>
@@ -1340,7 +1340,7 @@ export function FactFindView({
                                 <select
                                   value={dependent.relationship}
                                   onChange={(e) => updateDependent(dependent.id, 'relationship', e.target.value)}
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                                 >
                                   <option value="">Select relationship</option>
                                   <option value="child">Child</option>
@@ -1357,7 +1357,7 @@ export function FactFindView({
                                   type="date"
                                   value={dependent.dateOfBirth}
                                   onChange={(e) => updateDependent(dependent.id, 'dateOfBirth', e.target.value)}
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] h-10"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
                                 />
                               </div>
 
@@ -1367,7 +1367,7 @@ export function FactFindView({
                                     type="checkbox"
                                     checked={dependent.financiallyDependent}
                                     onChange={(e) => updateDependent(dependent.id, 'financiallyDependent', e.target.checked)}
-                                    className="w-4 h-4 text-[#0B3D2E] border-gray-300 rounded focus:ring-[#0B3D2E]"
+                                    className="w-4 h-4 text-emerald-900 border-gray-300 rounded focus:ring-emerald-900"
                                   />
                                   <span className="text-sm text-gray-700">Financially dependent</span>
                                 </label>
@@ -1387,7 +1387,7 @@ export function FactFindView({
                   </button>
                   <button
                     onClick={handleSaveAndContinue}
-                    className="px-6 py-2 bg-[#0B3D2E] text-white rounded-sm hover:bg-[#081C15] transition-colors h-10 font-medium"
+                    className="px-6 py-2 bg-emerald-900 text-white rounded-sm hover:bg-emerald-950 transition-colors h-10 font-medium"
                   >
                     {isLastTab ? 'Save & Complete' : 'Save & Continue'}
                   </button>

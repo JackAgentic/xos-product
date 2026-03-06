@@ -27,7 +27,7 @@ export function ClientHeaderCard({
       <div className="bg-white rounded-sm border border-gray-200 p-4 h-full flex flex-col">
         <div className="flex items-start justify-between mb-4 sm:mb-6 flex-shrink-0">
           <div className="flex items-center gap-3 sm:gap-4">
-            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-[#0B3D2E] rounded flex items-center justify-center">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-emerald-900 rounded flex items-center justify-center">
               {selectedClient.type === 'person' ? (
                 <Users className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
               ) : (
@@ -41,13 +41,13 @@ export function ClientHeaderCard({
                 {visibleModules.factFind && allItemsCompleted && (
                   <button 
                     onClick={() => setFactFindModalOpen(true)}
-                    className="w-7 h-7 bg-[#F2E9E4]/50 rounded flex items-center justify-center hover:bg-[#F2E9E4] transition-colors"
+                    className="w-7 h-7 bg-stone-200/50 rounded flex items-center justify-center hover:bg-stone-200 transition-colors"
                     style={{
                       animation: 'scaleIn 500ms cubic-bezier(0.68, -0.55, 0.265, 1.55) 1000ms both'
                     }}
                     title="View fact-find details"
                   >
-                    <ClipboardCheck className="w-4 h-4 text-[#0B3D2E]" />
+                    <ClipboardCheck className="w-4 h-4 text-emerald-900" />
                   </button>
                 )}
               </div>
@@ -93,7 +93,7 @@ export function ClientHeaderCard({
               <p className="text-sm text-gray-700 leading-relaxed line-clamp-[8] flex-1">
                 The client profile centers around a household with the primary contact being "Another Client." Although specific details about the household members remain unspecified, the primary contact serves as an essential figure in any financial planning discussions. This individual's involvement suggests a collaborative approach to managing the household's financial affairs, potentially...
               </p>
-              <button className="text-sm text-gray-600 hover:text-[#1B4332] font-medium mt-2 flex-shrink-0">Read more</button>
+              <button className="text-sm text-gray-600 hover:text-emerald-800 font-medium mt-2 flex-shrink-0">Read more</button>
             </div>
           </div>
           )}

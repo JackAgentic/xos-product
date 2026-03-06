@@ -267,7 +267,7 @@ export function OpportunitiesView({
       {/* Main Content Area */}
       <div className={`
         ${mobileView === 'detail' ? 'flex flex-col overflow-y-auto' : 'hidden'} lg:flex lg:flex-col
-        flex-1 lg:overflow-y-auto bg-[#fafbfc] min-h-0 lg:h-full pb-24
+        flex-1 lg:overflow-y-auto bg-gray-50 min-h-0 lg:h-full pb-24
       `}>
         {selectedOpp ? (
           <>
@@ -293,12 +293,12 @@ export function OpportunitiesView({
                         if (e.key === 'Enter') saveOpportunityName();
                         if (e.key === 'Escape') cancelEditingName();
                       }}
-                      className="flex-1 text-lg font-semibold bg-white border border-teal-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-[#0B3D2E]"
+                      className="flex-1 text-lg font-semibold bg-white border border-teal-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-emerald-900"
                       autoFocus
                     />
                     <button
                       onClick={saveOpportunityName}
-                      className="p-2 text-[#0B3D2E] hover:bg-[#F2E9E4]/20 rounded-sm"
+                      className="p-2 text-emerald-900 hover:bg-stone-200/20 rounded-sm"
                       title="Save"
                     >
                       <CheckSquare className="w-5 h-5" />
@@ -319,7 +319,7 @@ export function OpportunitiesView({
                     <span>{selectedOpp.name}</span>
                     <button
                       onClick={startEditingName}
-                      className="p-1.5 text-gray-400 hover:text-[#0B3D2E] hover:bg-[#F2E9E4]/20 rounded transition-colors"
+                      className="p-1.5 text-gray-400 hover:text-emerald-900 hover:bg-stone-200/20 rounded transition-colors"
                       title="Edit name"
                     >
                       <Edit className="w-4 h-4" />
@@ -408,7 +408,7 @@ export function OpportunitiesView({
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                   <div className="flex items-center gap-1.5">
                     <span className="font-medium">Probability:</span>
-                    <span className="font-semibold text-[#0B3D2E]">{selectedOpp.probability}%</span>
+                    <span className="font-semibold text-emerald-900">{selectedOpp.probability}%</span>
                   </div>
                 </div>
               </div>

@@ -78,7 +78,7 @@ export function AddOpportunityModal({
               placeholder="e.g. KiwiSaver Review 2025"
               value={opportunityForm.name}
               onChange={(e) => setOpportunityForm({ ...opportunityForm, name: e.target.value })}
-              className="w-full px-4 h-10 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] focus:border-transparent"
+              className="w-full px-4 h-10 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 focus:border-transparent"
             />
           </div>
 
@@ -88,7 +88,7 @@ export function AddOpportunityModal({
             <select
               value={opportunityForm.type}
               onChange={(e) => setOpportunityForm({ ...opportunityForm, type: e.target.value })}
-              className="w-full px-4 h-10 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] focus:border-transparent bg-white"
+              className="w-full px-4 h-10 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 focus:border-transparent bg-white"
             >
               <option value="">Select type...</option>
               <option value="Mortgage">Mortgage</option>
@@ -109,7 +109,7 @@ export function AddOpportunityModal({
               max="100"
               value={opportunityForm.probability}
               onChange={(e) => setOpportunityForm({ ...opportunityForm, probability: e.target.value })}
-              className="w-full px-4 h-10 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] focus:border-transparent"
+              className="w-full px-4 h-10 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 focus:border-transparent"
             />
           </div>
 
@@ -121,7 +121,7 @@ export function AddOpportunityModal({
               rows={4}
               value={opportunityForm.notes}
               onChange={(e) => setOpportunityForm({ ...opportunityForm, notes: e.target.value })}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] focus:border-transparent resize-none"
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 focus:border-transparent resize-none"
             />
           </div>
         </div>
@@ -137,7 +137,7 @@ export function AddOpportunityModal({
           </button>
           <button
             onClick={handleCreate}
-            className="h-10 px-4 bg-[#0B3D2E] text-white rounded-sm hover:bg-[#081C15] transition-colors font-medium"
+            className="h-10 px-4 bg-emerald-900 text-white rounded-sm hover:bg-emerald-950 transition-colors font-medium"
           >
             Create
           </button>

@@ -136,7 +136,7 @@ export function ClientDetailView({
         <div className="text-center">
           <h2 className="text-2xl font-semibold mb-2">Client not found</h2>
           <p className="text-gray-500">The selected client could not be found.</p>
-          <button onClick={onBackToList} className="mt-4 px-4 py-2 bg-[#0B3D2E] text-white rounded-sm hover:bg-[#081C15]">
+          <button onClick={onBackToList} className="mt-4 px-4 py-2 bg-emerald-900 text-white rounded-sm hover:bg-emerald-950">
             Back to Clients
           </button>
         </div>
@@ -169,7 +169,7 @@ export function ClientDetailView({
       case 'insurance':
         return (<div className="flex-1 flex items-center justify-center p-6 pb-24"><div className="text-center"><Shield className="w-16 h-16 text-gray-300 mx-auto mb-4" /><h2 className="text-2xl font-semibold mb-2">Insurance</h2><p className="text-gray-500">Insurance information coming soon</p></div></div>);
       case 'kiwisaver':
-        return <KiwiSaverView clientId={selectedClientId as number} clientName={selectedClient?.name || 'Client'} contacts={[{ id: 0, name: 'A household Client', type: 'self', email: 'test@test.com' }, { id: 1, name: 'Another Client', type: 'primary_contact', email: 'another@test.com' }, { id: 2, name: 'Sarah Johnson', type: 'primary_contact', email: 'sarah@test.com' }, { id: 3, name: 'Mike Williams', type: 'primary_contact', email: 'mike@test.com' }, { id: 4, name: 'Emma Thompson', type: 'primary_contact', email: 'emma@test.com' }]} setMobileDrawerOpen={setMobileDrawerOpen} />;
+        return <KiwiSaverView clientId={selectedClientId as number} clientName={selectedClient?.name || 'Client'} contacts={[{ id: 0, name: 'Andrew Carter', type: 'self', email: 'andrew.carter@gmail.com' }, { id: 1, name: 'Sarah Carter', type: 'primary_contact', email: 'sarah.carter@gmail.com' }, { id: 2, name: 'Margaret Carter', type: 'primary_contact', email: 'margaret.carter@xtra.co.nz' }]} setMobileDrawerOpen={setMobileDrawerOpen} />;
       default:
         return <OverviewView visibleModules={visibleModules} changeTab={changeTab} selectedClient={selectedClient} />;
     }
@@ -241,7 +241,7 @@ export function ClientDetailView({
         {[...clientMenuItems, ...adviceMenuItems].map((item) => (
           <button key={item.id} onClick={() => changeTab(item.id)} className="p-1 transition-all" aria-label={`Go to ${item.label}`}>
             <div
-              className={`rounded-full transition-all duration-200 ${activeClientMenu === item.id ? 'w-6 h-1.5 bg-[#0B3D2E]' : 'w-1.5 h-1.5 bg-gray-300 hover:bg-gray-400'}`}
+              className={`rounded-full transition-all duration-200 ${activeClientMenu === item.id ? 'w-6 h-1.5 bg-emerald-900' : 'w-1.5 h-1.5 bg-gray-300 hover:bg-gray-400'}`}
               style={{ transformOrigin: 'center' }}
             />
           </button>
@@ -313,6 +313,7 @@ export function ClientDetailView({
           {...modalSetters}
         />
       )}
+
     </div>
   );
 }

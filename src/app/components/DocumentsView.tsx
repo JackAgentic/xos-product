@@ -42,7 +42,7 @@ export function DocumentsView({
         <div className="p-4 border-b border-gray-200 flex-shrink-0">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-lg font-semibold">Documents</h2>
-            <button className="p-2 bg-[#0B3D2E] text-white rounded-sm hover:bg-[#081C15] transition-colors">
+            <button className="p-2 bg-emerald-900 text-white rounded-sm hover:bg-emerald-950 transition-colors">
               <Plus className="w-4 h-4" />
             </button>
           </div>
@@ -53,7 +53,7 @@ export function DocumentsView({
             <input
               type="text"
               placeholder="Search documents..."
-              className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] text-sm"
+              className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 text-sm"
             />
           </div>
         </div>
@@ -67,7 +67,7 @@ export function DocumentsView({
                   <div className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-sm">
                     <div className="flex items-center gap-3 flex-1">
                       <ChevronDown className="w-4 h-4 text-gray-400" />
-                      <Folder className="w-5 h-5 text-[#0B3D2E]" />
+                      <Folder className="w-5 h-5 text-emerald-900" />
                       <div className="flex-1">
                         <div className="font-medium">{folder.name}</div>
                       </div>
@@ -98,10 +98,10 @@ export function DocumentsView({
         <div className="p-4 sm:p-6 pb-24">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-3">
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-[#0B3D2E] rounded-full" />
+              <div className="w-2 h-2 bg-emerald-900 rounded-full" />
               <h3 className="text-lg font-semibold">Terms and Conditions</h3>
             </div>
-            <button className="px-4 py-2 bg-[#0B3D2E] text-white rounded-sm hover:bg-[#0B3D2E] flex items-center gap-2">
+            <button className="px-4 py-2 bg-emerald-900 text-white rounded-sm hover:bg-emerald-900 flex items-center gap-2">
               <Plus className="w-4 h-4" />
               Add New
             </button>
@@ -111,8 +111,8 @@ export function DocumentsView({
           <div className="bg-white rounded-sm border border-gray-200 p-6 mb-6">
             <h4 className="text-sm font-medium text-gray-500 mb-4">CREATE DOCUMENT</h4>
             <div className="grid grid-cols-2 gap-3">
-              <button className="flex items-center gap-3 p-4 border-2 border-[#0B3D2E] rounded-sm hover:bg-[#F2E9E4]/20">
-                <div className="w-10 h-10 bg-[#0B3D2E] rounded-sm flex items-center justify-center">
+              <button className="flex items-center gap-3 p-4 border-2 border-emerald-900 rounded-sm hover:bg-stone-200/20">
+                <div className="w-10 h-10 bg-emerald-900 rounded-sm flex items-center justify-center">
                   <Eye className="w-5 h-5 text-white" />
                 </div>
                 <span className="font-medium">Preview</span>
@@ -121,7 +121,7 @@ export function DocumentsView({
                 Create
               </button>
               <button className="flex items-center gap-3 p-4 border border-gray-200 rounded-sm hover:bg-gray-50">
-                <div className="w-10 h-10 bg-[#0B3D2E] rounded-sm flex items-center justify-center">
+                <div className="w-10 h-10 bg-emerald-900 rounded-sm flex items-center justify-center">
                   <Info className="w-5 h-5 text-white" />
                 </div>
                 <span className="font-medium">Details</span>
@@ -130,7 +130,7 @@ export function DocumentsView({
                 Select Data
               </button>
               <button className="flex items-center gap-3 p-4 border border-gray-200 rounded-sm hover:bg-gray-50">
-                <div className="w-10 h-10 bg-[#0B3D2E] rounded-sm flex items-center justify-center">
+                <div className="w-10 h-10 bg-emerald-900 rounded-sm flex items-center justify-center">
                   <Database className="w-5 h-5 text-white" />
                 </div>
                 <span className="font-medium">Data Points</span>
@@ -139,7 +139,7 @@ export function DocumentsView({
                 Edit
               </button>
               <button className="flex items-center gap-3 p-4 border border-gray-200 rounded-sm hover:bg-gray-50">
-                <div className="w-10 h-10 bg-[#0B3D2E] rounded-sm flex items-center justify-center">
+                <div className="w-10 h-10 bg-emerald-900 rounded-sm flex items-center justify-center">
                   <Clock className="w-5 h-5 text-white" />
                 </div>
                 <span className="font-medium">History</span>
@@ -148,7 +148,7 @@ export function DocumentsView({
                 <span>Show Variables</span>
               </button>
               <button className="flex items-center gap-3 p-4 border border-gray-200 rounded-sm hover:bg-gray-50 col-span-1">
-                <div className="w-10 h-10 bg-[#0B3D2E] rounded-sm flex items-center justify-center">
+                <div className="w-10 h-10 bg-emerald-900 rounded-sm flex items-center justify-center">
                   <Lock className="w-5 h-5 text-white" />
                 </div>
                 <span className="font-medium">Permissions</span>

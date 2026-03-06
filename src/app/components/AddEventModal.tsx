@@ -21,8 +21,8 @@ export function AddEventModal({ isOpen, onClose }: AddEventModalProps) {
         {/* Modal Header */}
         <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between rounded-t-2xl sm:rounded-t-lg">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-[#F2E9E4] rounded-sm flex items-center justify-center">
-              <CalendarPlus className="w-5 h-5 text-[#0B3D2E]" />
+            <div className="w-10 h-10 bg-stone-200 rounded-sm flex items-center justify-center">
+              <CalendarPlus className="w-5 h-5 text-emerald-900" />
             </div>
             <h2 className="text-lg font-medium">Schedule Meeting</h2>
           </div>
@@ -43,7 +43,7 @@ export function AddEventModal({ isOpen, onClose }: AddEventModalProps) {
             <input
               type="text"
               placeholder="e.g. Annual Review Meeting"
-              className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0B3D2E]"
+              className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-900"
             />
           </div>
 
@@ -54,7 +54,7 @@ export function AddEventModal({ isOpen, onClose }: AddEventModalProps) {
               </label>
               <input
                 type="date"
-                className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#0B3D2E]"
+                className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-900"
               />
             </div>
             <div>
@@ -63,7 +63,7 @@ export function AddEventModal({ isOpen, onClose }: AddEventModalProps) {
               </label>
               <input
                 type="time"
-                className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#0B3D2E]"
+                className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-900"
               />
             </div>
           </div>
@@ -72,7 +72,7 @@ export function AddEventModal({ isOpen, onClose }: AddEventModalProps) {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Duration
             </label>
-            <select className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#0B3D2E]">
+            <select className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-900">
               <option>30 minutes</option>
               <option>1 hour</option>
               <option>1.5 hours</option>
@@ -88,7 +88,7 @@ export function AddEventModal({ isOpen, onClose }: AddEventModalProps) {
             <input
               type="text"
               placeholder="e.g. Office or Zoom link"
-              className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0B3D2E]"
+              className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-900"
             />
           </div>
 
@@ -99,7 +99,7 @@ export function AddEventModal({ isOpen, onClose }: AddEventModalProps) {
             <textarea
               rows={3}
               placeholder="Add meeting agenda or notes..."
-              className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] resize-none"
+              className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-900 resize-none"
             />
           </div>
         </div>
@@ -115,7 +115,7 @@ export function AddEventModal({ isOpen, onClose }: AddEventModalProps) {
           </button>
           <button
             onClick={onClose}
-            className="px-4 py-1.5 text-sm font-medium bg-[#0B3D2E] text-white rounded-sm hover:bg-[#4f7684] transition-colors"
+            className="px-4 py-1.5 text-sm font-medium bg-emerald-900 text-white rounded-sm hover:bg-slate-500 transition-colors"
           >
             Schedule Meeting
           </button>

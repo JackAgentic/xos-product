@@ -58,7 +58,7 @@ export function MeetingsView({
         <div className="p-4 border-b border-gray-200 flex-shrink-0">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-lg font-semibold">Meetings</h2>
-            <button className="p-2 bg-[#0B3D2E] text-white rounded-sm hover:bg-[#081C15] transition-colors">
+            <button className="p-2 bg-emerald-900 text-white rounded-sm hover:bg-emerald-950 transition-colors">
               <Plus className="w-4 h-4" />
             </button>
           </div>
@@ -69,7 +69,7 @@ export function MeetingsView({
             <input
               type="text"
               placeholder="Search meetings..."
-              className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] text-sm"
+              className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 text-sm"
             />
           </div>
         </div>
@@ -82,12 +82,12 @@ export function MeetingsView({
                 onClick={() => setSelectedMeeting(idx)}
                 className={`w-full p-3 mb-2 rounded-sm border text-left transition-colors ${
                   selectedMeeting === idx 
-                    ? 'border-[#0B3D2E] bg-[#F2E9E4]' 
+                    ? 'border-emerald-900 bg-stone-200' 
                     : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                 }`}
               >
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 bg-[#0B3D2E] rounded-full flex items-center justify-center text-white flex-shrink-0">
+                  <div className="w-10 h-10 bg-emerald-900 rounded-full flex items-center justify-center text-white flex-shrink-0">
                     <CalendarIcon className="w-4 h-4" />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -114,11 +114,11 @@ export function MeetingsView({
 
       {/* Meeting Details */}
       <div className="flex-1 overflow-auto">
-        <div className="bg-[#F2E9E4]/20 p-4 sm:p-6 pb-24">
+        <div className="bg-stone-200/20 p-4 sm:p-6 pb-24">
           <div className="bg-white rounded-sm border border-gray-200 p-4 sm:p-6">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-[#0B3D2E] rounded-full" />
+                <div className="w-2 h-2 bg-emerald-900 rounded-full" />
                 <h3 className="text-lg font-semibold">Meeting Notes</h3>
               </div>
               <button className="text-gray-400 hover:text-gray-600">
@@ -144,7 +144,7 @@ export function MeetingsView({
                     onClick={() => setActiveTab(tab.id)}
                     className={`flex items-center gap-2 px-4 py-2 rounded-sm whitespace-nowrap ${
                       activeTab === tab.id
-                        ? 'bg-[#0B3D2E] text-white'
+                        ? 'bg-emerald-900 text-white'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
@@ -160,7 +160,7 @@ export function MeetingsView({
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">MEETINGS</span>
                 <div className="flex gap-2">
-                  <button className="px-3 py-1.5 bg-[#0B3D2E] text-white rounded-sm hover:bg-[#0B3D2E] flex items-center gap-1 text-sm">
+                  <button className="px-3 py-1.5 bg-emerald-900 text-white rounded-sm hover:bg-emerald-900 flex items-center gap-1 text-sm">
                     <Send className="w-4 h-4" />
                     Send
                   </button>
@@ -235,7 +235,7 @@ export function MeetingsView({
               <div>
                 <label className="block text-sm font-medium mb-2">Type:</label>
                 <div className="flex gap-2">
-                  <button className="px-4 py-2 border-2 border-[#0B3D2E] text-[#0B3D2E] rounded-sm flex items-center gap-2">
+                  <button className="px-4 py-2 border-2 border-emerald-900 text-emerald-900 rounded-sm flex items-center gap-2">
                     <Users className="w-4 h-4" />
                     In Person
                   </button>
@@ -273,7 +273,7 @@ export function MeetingsView({
                     placeholder="Search contacts to add..."
                     className="flex-1 px-3 py-2 border border-gray-200 rounded-sm"
                   />
-                  <button className="px-3 py-2 bg-[#0B3D2E] text-white rounded-sm hover:bg-[#0B3D2E]">
+                  <button className="px-3 py-2 bg-emerald-900 text-white rounded-sm hover:bg-emerald-900">
                     <Plus className="w-5 h-5" />
                   </button>
                 </div>

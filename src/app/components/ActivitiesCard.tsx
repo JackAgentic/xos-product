@@ -24,7 +24,7 @@ export function ActivitiesCard({ visibleModules, activities, changeTab }: Activi
       <div className="bg-white rounded-sm border border-gray-200 p-4 h-full flex flex-col">
         <div className="flex items-center gap-2 mb-5 flex-shrink-0">
           <div className="w-8 h-8 bg-gray-100 rounded-sm flex items-center justify-center">
-            <Clock className="w-5 h-5 text-[#0284C7]" />
+            <Clock className="w-5 h-5 text-sky-600" />
           </div>
           <h3 className="font-semibold text-lg">ACTIVITIES</h3>
         </div>
@@ -41,12 +41,12 @@ export function ActivitiesCard({ visibleModules, activities, changeTab }: Activi
                 <div className="flex gap-3">
                   <div className={`w-8 h-8 rounded flex items-center justify-center flex-shrink-0 ${
                     activity.status === 'upcoming' 
-                      ? 'bg-[#F2E9E4]/50' 
+                      ? 'bg-stone-200/50' 
                       : 'bg-gray-100'
                   }`}>
-                    {activity.type === 'meeting' && <CalendarIcon className="w-4 h-4 text-[#2D6A4F]" />}
-                    {activity.type === 'document' && <FileText className="w-4 h-4 text-[#4F46E5]" />}
-                    {activity.type === 'email' && <Mail className="w-4 h-4 text-[#2563EB]" />}
+                    {activity.type === 'meeting' && <CalendarIcon className="w-4 h-4 text-emerald-700" />}
+                    {activity.type === 'document' && <FileText className="w-4 h-4 text-indigo-600" />}
+                    {activity.type === 'email' && <Mail className="w-4 h-4 text-blue-600" />}
                   </div>
                   <div className="flex-1 pb-4">
                     <div className="flex items-start justify-between mb-1">
@@ -55,7 +55,7 @@ export function ActivitiesCard({ visibleModules, activities, changeTab }: Activi
                         <div className="text-sm text-gray-600">{activity.subtitle}</div>
                       </div>
                       {activity.status === 'upcoming' && (
-                        <span className="text-xs font-medium text-[#0B3D2E] bg-[#F2E9E4]/20 px-2 py-1 rounded">
+                        <span className="text-xs font-medium text-emerald-900 bg-stone-200/20 px-2 py-1 rounded">
                           Upcoming
                         </span>
                       )}
@@ -72,7 +72,7 @@ export function ActivitiesCard({ visibleModules, activities, changeTab }: Activi
         
         <button 
           onClick={() => changeTab('communication')}
-          className="w-full mt-4 pt-4 border-t border-gray-200 text-sm text-[#0B3D2E] hover:text-[#0B3D2E] font-medium flex-shrink-0"
+          className="w-full mt-4 pt-4 border-t border-gray-200 text-sm text-emerald-900 hover:text-emerald-900 font-medium flex-shrink-0"
         >
           View All Activities
         </button>

@@ -97,17 +97,17 @@ export function OverviewView({ visibleModules, changeTab, selectedClient }: Over
             <div className="md:order-1 lg:order-1">
               <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 h-full">
                 <div className="bg-white rounded-sm border border-gray-200 p-4 h-full flex flex-col justify-between">
-                  <div className="flex items-center gap-2 mb-2"><DollarSign className="w-5 h-5 text-[#2D6A4F]" /><span className="text-xs font-medium text-gray-500">TOTAL VALUE</span></div>
+                  <div className="flex items-center gap-2 mb-2"><DollarSign className="w-5 h-5 text-emerald-700" /><span className="text-xs font-medium text-gray-500">TOTAL VALUE</span></div>
                   <div className="text-xl font-semibold text-gray-900">$925K</div>
                   <div className="text-xs text-gray-600 mt-1">+12% growth</div>
                 </div>
                 <div className="bg-white rounded-sm border border-gray-200 p-4 h-full flex flex-col justify-between">
-                  <div className="flex items-center gap-2 mb-2"><FileText className="w-5 h-5 text-[#4F46E5]" /><span className="text-xs font-medium text-gray-500">DOCUMENTS</span></div>
+                  <div className="flex items-center gap-2 mb-2"><FileText className="w-5 h-5 text-indigo-600" /><span className="text-xs font-medium text-gray-500">DOCUMENTS</span></div>
                   <div className="text-xl font-semibold text-gray-900">24</div>
                   <div className="text-xs text-gray-500 mt-1">3 pending</div>
                 </div>
                 <div className="bg-white rounded-sm border border-gray-200 p-4 h-full flex flex-col justify-between">
-                  <div className="flex items-center gap-2 mb-2"><CalendarDays className="w-5 h-5 text-[#2D6A4F]" /><span className="text-xs font-medium text-gray-500">MEETINGS</span></div>
+                  <div className="flex items-center gap-2 mb-2"><CalendarDays className="w-5 h-5 text-emerald-700" /><span className="text-xs font-medium text-gray-500">MEETINGS</span></div>
                   <div className="text-xl font-semibold text-gray-900">8</div>
                   <div className="text-xs text-gray-500 mt-1">1 upcoming</div>
                 </div>
@@ -119,7 +119,7 @@ export function OverviewView({ visibleModules, changeTab, selectedClient }: Over
             <div className="lg:hidden md:order-2">
               <div className="bg-white rounded-sm border border-gray-200 p-4">
                 <div className="flex items-center gap-2 mb-5">
-                  <div className="w-8 h-8 bg-[#0284C7]/10 rounded-sm flex items-center justify-center"><Clock className="w-5 h-5 text-[#0284C7]" /></div>
+                  <div className="w-8 h-8 bg-sky-600/10 rounded-sm flex items-center justify-center"><Clock className="w-5 h-5 text-sky-600" /></div>
                   <h3 className="font-semibold text-lg">ACTIVITIES</h3>
                 </div>
                 <div className="space-y-4">
@@ -128,10 +128,10 @@ export function OverviewView({ visibleModules, changeTab, selectedClient }: Over
                     <div key={activity.id} className="relative">
                       {idx !== activities.length - 1 && <div className="absolute left-4 top-10 bottom-0 w-px bg-gray-200"></div>}
                       <div className="flex gap-3">
-                        <div className={`w-8 h-8 rounded flex items-center justify-center flex-shrink-0 ${activity.status === 'upcoming' ? 'bg-[#F2E9E4]/50' : 'bg-gray-100'}`}>
-                          {activity.type === 'meeting' && <CalendarIcon className="w-4 h-4 text-[#2D6A4F]" />}
-                          {activity.type === 'document' && <FileText className="w-4 h-4 text-[#4F46E5]" />}
-                          {activity.type === 'email' && <Mail className="w-4 h-4 text-[#2563EB]" />}
+                        <div className={`w-8 h-8 rounded flex items-center justify-center flex-shrink-0 ${activity.status === 'upcoming' ? 'bg-stone-200/50' : 'bg-gray-100'}`}>
+                          {activity.type === 'meeting' && <CalendarIcon className="w-4 h-4 text-emerald-700" />}
+                          {activity.type === 'document' && <FileText className="w-4 h-4 text-indigo-600" />}
+                          {activity.type === 'email' && <Mail className="w-4 h-4 text-blue-600" />}
                         </div>
                         <div className="flex-1 pb-4">
                           <div className="flex items-start justify-between mb-1">
@@ -139,7 +139,7 @@ export function OverviewView({ visibleModules, changeTab, selectedClient }: Over
                               <div className="text-sm font-medium text-gray-900">{activity.title}</div>
                               <div className="text-sm text-gray-600">{activity.subtitle}</div>
                             </div>
-                            {activity.status === 'upcoming' && <span className="text-xs font-medium text-[#0B3D2E] bg-[#F2E9E4]/20 px-2 py-1 rounded">Upcoming</span>}
+                            {activity.status === 'upcoming' && <span className="text-xs font-medium text-emerald-900 bg-stone-200/20 px-2 py-1 rounded">Upcoming</span>}
                           </div>
                           <div className="text-xs text-gray-500">{activity.date} • {activity.time}</div>
                         </div>
@@ -147,7 +147,7 @@ export function OverviewView({ visibleModules, changeTab, selectedClient }: Over
                     </div>
                   ))}
                 </div>
-                <button onClick={() => changeTab('communication')} className="w-full mt-4 pt-4 border-t border-gray-200 text-sm text-[#0B3D2E] hover:text-[#0B3D2E] font-medium">
+                <button onClick={() => changeTab('communication')} className="w-full mt-4 pt-4 border-t border-gray-200 text-sm text-emerald-900 hover:text-emerald-900 font-medium">
                   View All Activities
                 </button>
               </div>
@@ -160,21 +160,21 @@ export function OverviewView({ visibleModules, changeTab, selectedClient }: Over
             <div className="bg-white rounded-sm border border-gray-200 p-4">
               <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-[#EA580C]/10 rounded-sm flex items-center justify-center"><Target className="w-5 h-5 text-[#EA580C]" /></div>
+                  <div className="w-8 h-8 bg-orange-600/10 rounded-sm flex items-center justify-center"><Target className="w-5 h-5 text-orange-600" /></div>
                   <h3 className="font-semibold text-lg">OPPORTUNITIES</h3>
                 </div>
-                <button onClick={() => changeTab('opportunities')} className="text-sm text-[#0B3D2E] hover:text-[#0B3D2E] font-medium flex items-center gap-1">
+                <button onClick={() => changeTab('opportunities')} className="text-sm text-emerald-900 hover:text-emerald-900 font-medium flex items-center gap-1">
                   See All <ChevronRight className="w-4 h-4" />
                 </button>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {opportunities.map((opp) => (
-                  <div key={opp.id} className="p-4 rounded-sm border border-gray-200 hover:border-teal-200 hover:bg-[#F2E9E4]/20/50 transition-all cursor-pointer">
+                  <div key={opp.id} className="p-4 rounded-sm border border-gray-200 hover:border-teal-200 hover:bg-stone-200/20/50 transition-all cursor-pointer">
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex-1">
                         <div className="font-medium text-gray-900 mb-1">{opp.name}</div>
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-lg font-semibold text-[#0B3D2E]">{opp.value}</span>
+                          <span className="text-lg font-semibold text-emerald-900">{opp.value}</span>
                           <span className="px-2 py-0.5 bg-gray-100 text-gray-700 rounded text-xs font-medium">{opp.stage}</span>
                         </div>
                       </div>
@@ -205,7 +205,7 @@ export function OverviewView({ visibleModules, changeTab, selectedClient }: Over
           >
             <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between rounded-t-2xl sm:rounded-t-lg">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-[#0B3D2E] rounded-full flex items-center justify-center"><ClipboardCheck className="w-6 h-6 text-white" /></div>
+                <div className="w-10 h-10 bg-emerald-900 rounded-full flex items-center justify-center"><ClipboardCheck className="w-6 h-6 text-white" /></div>
                 <div><h2 className="text-lg font-semibold text-gray-900">Fact-Find Complete</h2><p className="text-xs text-gray-500">All items completed</p></div>
               </div>
               <button onClick={() => setFactFindModalOpen(false)} className="p-2 hover:bg-gray-100 rounded-sm transition-colors"><X className="w-5 h-5 text-gray-500" /></button>
@@ -213,9 +213,9 @@ export function OverviewView({ visibleModules, changeTab, selectedClient }: Over
             <div className="flex-1 overflow-auto p-6">
               <div className="space-y-3">
                 {factFindItems.map((item) => (
-                  <div key={item.id} className="flex items-center justify-between p-3 rounded-sm bg-[#F2E9E4]/20 border border-gray-200">
+                  <div key={item.id} className="flex items-center justify-between p-3 rounded-sm bg-stone-200/20 border border-gray-200">
                     <div className="flex items-center gap-3">
-                      <div className="w-5 h-5 rounded-full bg-[#0B3D2E] flex items-center justify-center flex-shrink-0"><span className="text-white text-xs">✓</span></div>
+                      <div className="w-5 h-5 rounded-full bg-emerald-900 flex items-center justify-center flex-shrink-0"><span className="text-white text-xs">✓</span></div>
                       <span className="text-sm text-gray-900">{item.label}</span>
                     </div>
                     <span className="text-xs text-gray-600">{item.completedDate}</span>

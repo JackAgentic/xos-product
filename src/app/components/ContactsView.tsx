@@ -50,7 +50,7 @@ export function ContactsView({
         <div className="p-4 border-b border-gray-200 flex-shrink-0">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-lg font-semibold">Contacts</h2>
-            <button className="p-2 bg-[#0B3D2E] text-white rounded-sm hover:bg-[#081C15] transition-colors">
+            <button className="p-2 bg-emerald-900 text-white rounded-sm hover:bg-emerald-950 transition-colors">
               <Plus className="w-4 h-4" />
             </button>
           </div>
@@ -61,7 +61,7 @@ export function ContactsView({
             <input
               type="text"
               placeholder="Search contacts..."
-              className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] text-sm"
+              className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 text-sm"
             />
           </div>
         </div>
@@ -75,12 +75,12 @@ export function ContactsView({
                 onClick={() => setSelectedContact(contact.id)}
                 className={`p-3 mb-2 rounded-sm border cursor-pointer transition-colors ${
                   selectedContact === contact.id
-                    ? 'border-[#0B3D2E] bg-[#F2E9E4]'
+                    ? 'border-emerald-900 bg-stone-200'
                     : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                 }`}
               >
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 bg-[#0B3D2E] rounded-full flex items-center justify-center text-white font-medium flex-shrink-0">
+                  <div className="w-10 h-10 bg-emerald-900 rounded-full flex items-center justify-center text-white font-medium flex-shrink-0">
                     {contact.name.substring(0, 2).toUpperCase()}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -114,13 +114,13 @@ export function ContactsView({
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top Action Bar */}
         <div className="bg-white border-b border-gray-200 px-4 sm:px-6 py-3 flex items-center justify-end gap-3 text-sm flex-shrink-0">
-          <button className="text-[#0B3D2E] hover:underline flex items-center gap-1">
+          <button className="text-emerald-900 hover:underline flex items-center gap-1">
             Tools <ChevronDown className="w-3 h-3" />
           </button>
-          <button className="text-[#0B3D2E] hover:underline flex items-center gap-1">
+          <button className="text-emerald-900 hover:underline flex items-center gap-1">
             Resources <ChevronDown className="w-3 h-3" />
           </button>
-          <button className="text-[#0B3D2E] hover:underline flex items-center gap-1">
+          <button className="text-emerald-900 hover:underline flex items-center gap-1">
             Portal Logins <ChevronDown className="w-3 h-3" />
           </button>
         </div>
@@ -149,8 +149,8 @@ export function ContactsView({
           {/* Personal Information */}
           <div className="bg-white rounded-sm border border-gray-200 p-4 sm:p-6">
             <div className="flex items-center gap-2 mb-6">
-              <div className="w-8 h-8 bg-[#F2E9E4]/50 rounded-sm flex items-center justify-center">
-                <UserCircle className="w-5 h-5 text-[#0B3D2E]" />
+              <div className="w-8 h-8 bg-stone-200/50 rounded-sm flex items-center justify-center">
+                <UserCircle className="w-5 h-5 text-emerald-900" />
               </div>
               <h3 className="font-semibold">PERSONAL</h3>
             </div>

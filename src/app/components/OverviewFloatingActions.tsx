@@ -51,10 +51,10 @@ export function OverviewFloatingActions({
         <Popover.Root open={isViewsMenuOpen} onOpenChange={setIsViewsMenuOpen}>
           <Popover.Trigger asChild>
             <button
-              className="bg-white rounded-full shadow-lg border border-gray-200 p-4 transition-transform active:scale-95 md:hover:bg-[#F2E9E4]"
+              className="bg-white rounded-full shadow-lg border border-gray-200 p-4 transition-transform active:scale-95 md:hover:bg-stone-200"
               aria-label="Views Menu"
             >
-              <LayoutGrid className="w-5 h-5 text-[#0B3D2E]" />
+              <LayoutGrid className="w-5 h-5 text-emerald-900" />
             </button>
           </Popover.Trigger>
           <Popover.Portal>
@@ -71,12 +71,12 @@ export function OverviewFloatingActions({
 
               <div className="py-2 max-h-96 overflow-y-auto">
                 {[
-                  { key: 'details', label: 'Client Details', icon: User, iconColor: 'text-[#4F46E5]' },
-                  { key: 'aiSummary', label: 'AI Summary', icon: Sparkles, iconColor: 'text-[#9333EA]' },
-                  { key: 'factFind', label: 'Fact-Find', icon: ClipboardList, iconColor: 'text-[#0891B2]' },
-                  { key: 'opportunities', label: 'Opportunities', icon: Target, iconColor: 'text-[#EA580C]' },
-                  { key: 'quickStats', label: 'Quick Stats', icon: TrendingUp, iconColor: 'text-[#2D6A4F]' },
-                  { key: 'activities', label: 'Activities', icon: Clock, iconColor: 'text-[#0284C7]' },
+                  { key: 'details', label: 'Client Details', icon: User, iconColor: 'text-indigo-600' },
+                  { key: 'aiSummary', label: 'AI Summary', icon: Sparkles, iconColor: 'text-purple-600' },
+                  { key: 'factFind', label: 'Fact-Find', icon: ClipboardList, iconColor: 'text-cyan-600' },
+                  { key: 'opportunities', label: 'Opportunities', icon: Target, iconColor: 'text-orange-600' },
+                  { key: 'quickStats', label: 'Quick Stats', icon: TrendingUp, iconColor: 'text-emerald-700' },
+                  { key: 'activities', label: 'Activities', icon: Clock, iconColor: 'text-sky-600' },
                   { key: 'quickActions', label: 'Quick Actions', icon: Zap, iconColor: 'text-gray-500' },
                 ].map((module, index, array) => {
                   const Icon = module.icon;
@@ -87,7 +87,7 @@ export function OverviewFloatingActions({
                         className="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left"
                       >
                         <div className={`w-4 h-4 rounded border-2 flex items-center justify-center flex-shrink-0 ${visibleModules[module.key as keyof typeof visibleModules]
-                            ? 'bg-[#0B3D2E] border-[#0B3D2E]'
+                            ? 'bg-emerald-900 border-emerald-900'
                             : 'border-gray-300 bg-white'
                           }`}>
                           {visibleModules[module.key as keyof typeof visibleModules] && (
@@ -136,42 +136,42 @@ export function OverviewFloatingActions({
 
                     <div className="py-2">
                       <button onClick={() => { setShowAddEventModal(true); setIsQuickActionsMenuOpen(false); }} className="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left">
-                        <CalendarPlus className="w-4 h-4 text-[#2D6A4F]" />
+                        <CalendarPlus className="w-4 h-4 text-emerald-700" />
                         <span className="text-sm text-gray-700">Schedule Meeting</span>
                       </button>
                       <div className="h-px bg-gray-100 mx-2" />
                       <button onClick={() => { setShowSendEmailModal(true); setIsQuickActionsMenuOpen(false); }} className="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left">
-                        <MailPlus className="w-4 h-4 text-[#2563EB]" />
+                        <MailPlus className="w-4 h-4 text-blue-600" />
                         <span className="text-sm text-gray-700">Send Email</span>
                       </button>
                       <div className="h-px bg-gray-100 mx-2" />
                       <button onClick={() => { setShowAddDocumentModal(true); setIsQuickActionsMenuOpen(false); }} className="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left">
-                        <FilePlus className="w-4 h-4 text-[#4F46E5]" />
+                        <FilePlus className="w-4 h-4 text-indigo-600" />
                         <span className="text-sm text-gray-700">Add Document</span>
                       </button>
                       <div className="h-px bg-gray-100 mx-2" />
                       <button onClick={() => { setShowAddNoteModal(true); setIsQuickActionsMenuOpen(false); }} className="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left">
-                        <NotebookPen className="w-4 h-4 text-[#D97706]" />
+                        <NotebookPen className="w-4 h-4 text-amber-600" />
                         <span className="text-sm text-gray-700">Create Note</span>
                       </button>
                       <div className="h-px bg-gray-100 mx-2" />
                       <button onClick={() => { setShowAddTaskModal(true); setIsQuickActionsMenuOpen(false); }} className="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left">
-                        <ClipboardCheck className="w-4 h-4 text-[#0891B2]" />
+                        <ClipboardCheck className="w-4 h-4 text-cyan-600" />
                         <span className="text-sm text-gray-700">Create Task</span>
                       </button>
                       <div className="h-px bg-gray-100 mx-2" />
                       <button onClick={() => { setIsQuickActionsMenuOpen(false); }} className="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left">
-                        <Target className="w-4 h-4 text-[#EA580C]" />
+                        <Target className="w-4 h-4 text-orange-600" />
                         <span className="text-sm text-gray-700">Add Opportunity</span>
                       </button>
                       <div className="h-px bg-gray-100 mx-2" />
                       <button onClick={() => { setIsQuickActionsMenuOpen(false); }} className="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left">
-                        <Mic className="w-4 h-4 text-[#DC2626]" />
+                        <Mic className="w-4 h-4 text-red-600" />
                         <span className="text-sm text-gray-700">Voice Recording</span>
                       </button>
                       <div className="h-px bg-gray-100 mx-2" />
                       <button onClick={() => { setShowAIAssistantModal(true); setIsQuickActionsMenuOpen(false); }} className="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left">
-                        <Sparkles className="w-4 h-4 text-[#9333EA]" />
+                        <Sparkles className="w-4 h-4 text-purple-600" />
                         <span className="text-sm text-gray-700">AI Assistant</span>
                       </button>
                     </div>

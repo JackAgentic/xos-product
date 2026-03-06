@@ -2,7 +2,7 @@
 export const initialClientsData = [
   {
     id: 1,
-    name: 'A household Client',
+    name: 'Andrew Carter',
     type: 'person' as const,
     status: 'PROSPECT' as const,
     advice: ['M', 'K', 'I', 'V', 'R'],
@@ -19,12 +19,12 @@ export const initialClientsData = [
       { name: 'Michael Chen', initials: 'MC' },
       { name: 'Sarah Williams', initials: 'SW' }
     ],
-    email: 'test@test.com',
-    phone: '0987654321'
+    email: 'andrew.carter@gmail.com',
+    phone: '021 887 654'
   },
   {
     id: 2,
-    name: 'AA Trusts',
+    name: 'Aitken Family Trust',
     type: 'building' as const,
     status: 'ACTIVE' as const,
     advice: ['M', 'K', 'I', 'V'],
@@ -42,7 +42,7 @@ export const initialClientsData = [
       { name: 'James Thompson', initials: 'JT' },
       { name: 'Emma Davis', initials: 'ED' }
     ],
-    email: 'aaron.smith@aatrust.co.nz',
+    email: 'admin@aitkentrust.co.nz',
     phone: '021 555 1234'
   },
   {
@@ -64,7 +64,7 @@ export const initialClientsData = [
   },
   {
     id: 4,
-    name: 'Andrew Smith',
+    name: 'Andrew Beckett',
     type: 'person' as const,
     status: 'ACTIVE' as const,
     advice: ['M', 'K', 'I', 'V'],
@@ -76,12 +76,12 @@ export const initialClientsData = [
       R: { active: false, stage: null, progress: 0 }
     },
     managers: [],
-    email: 'andy@adiso.co.nz',
-    phone: '021887854'
+    email: 'andrew.beckett@xtra.co.nz',
+    phone: '021 887 854'
   },
   {
     id: 5,
-    name: 'Andrew Smithson',
+    name: 'Angela Whitfield',
     type: 'person' as const,
     status: 'ACTIVE' as const,
     advice: ['M', 'K', 'I'],
@@ -93,12 +93,12 @@ export const initialClientsData = [
       R: { active: false, stage: null, progress: 0 }
     },
     managers: [{ name: "Brett O'Donnell", initials: 'BO' }],
-    email: 'andrew@smithson.co.nz',
+    email: 'angela.whitfield@gmail.com',
     phone: '021 987 854'
   },
   {
     id: 6,
-    name: 'Andy H',
+    name: 'Anthony Henderson',
     type: 'person' as const,
     status: 'ACTIVE' as const,
     advice: ['M', 'K', 'I', 'V'],
@@ -110,7 +110,7 @@ export const initialClientsData = [
       R: { active: false, stage: null, progress: 0 }
     },
     managers: [],
-    email: 'andy.h@gmail.com',
+    email: 'a.henderson@outlook.co.nz',
     phone: '021 345 6789'
   },
   {
@@ -132,7 +132,7 @@ export const initialClientsData = [
   },
   {
     id: 8,
-    name: 'Charlotte Evens',
+    name: 'Charlotte Evans',
     type: 'person' as const,
     status: 'ACTIVE' as const,
     advice: ['M', 'K', 'I', 'V'],
@@ -144,7 +144,7 @@ export const initialClientsData = [
       R: { active: false, stage: null, progress: 0 }
     },
     managers: [],
-    email: 'charlotte.evens@xtra.co.nz',
+    email: 'charlotte.evans@xtra.co.nz',
     phone: '022 876 5432'
   },
   {
@@ -344,7 +344,7 @@ export const initialClientsData = [
   },
   {
     id: 20,
-    name: 'Michael Brown',
+    name: 'Mark Stevenson',
     type: 'person' as const,
     status: 'PROSPECT' as const,
     advice: ['K', 'I'],
@@ -356,7 +356,7 @@ export const initialClientsData = [
       R: { active: false, stage: null, progress: 0 }
     },
     managers: [],
-    email: 'm.brown@test.co.nz',
+    email: 'mark.stevenson@gmail.com',
     phone: '021 222 3333'
   },
   {
@@ -429,7 +429,7 @@ export const initialClientsData = [
   },
   {
     id: 25,
-    name: 'Rachel Green',
+    name: 'Rebecca Taylor',
     type: 'person' as const,
     status: 'ACTIVE' as const,
     advice: ['K', 'I', 'V', 'R'],
@@ -441,7 +441,7 @@ export const initialClientsData = [
       R: { active: true, stage: 'Planning', progress: 40 }
     },
     managers: [{ name: 'Steven Johnston', initials: 'SJ' }],
-    email: 'rachel.green@xtra.nz',
+    email: 'rebecca.taylor@xtra.co.nz',
     phone: '027 321 6549'
   }
 ];

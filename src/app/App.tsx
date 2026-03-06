@@ -18,6 +18,7 @@ import { SendEmailModal } from './components/SendEmailModal';
 import { AddDocumentModal } from './components/AddDocumentModal';
 import { AddNoteModal } from './components/AddNoteModal';
 import { AddTaskModal } from './components/AddTaskModal';
+import { Sparkles } from 'lucide-react';
 import { mainMenuItems } from './data/menuData';
 
 function App() {
@@ -263,6 +264,17 @@ function App() {
         setOpportunityForm={setOpportunityForm}
         onSubmit={addOpportunity}
       />
+
+      {/* Floating AI Button - always visible */}
+      {!showAIAssistantModal && (
+        <button
+          onClick={() => setShowAIAssistantModal(true)}
+          className="fixed bottom-4 right-4 lg:bottom-3 lg:right-3 z-50 bg-white rounded-full shadow-lg border border-gray-200 p-4 transition-transform active:scale-95 hover:bg-purple-50"
+          aria-label="AI Assistant"
+        >
+          <Sparkles className="w-5 h-5 text-purple-600" />
+        </button>
+      )}
 
       {/* AI Assistant Drawer */}
       <AIAssistantDrawer

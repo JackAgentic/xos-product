@@ -8,7 +8,6 @@ import {
   BookUser,
   Calendar as CalendarIcon,
   BarChart3,
-  Smartphone,
   UserCircle,
   LayoutGrid,
   ClipboardList,
@@ -62,7 +61,6 @@ export const mainMenuItems: MainMenuItem[] = [
   { id: 'contacts', label: 'Contacts', icon: BookUser },
   { id: 'calendar', label: 'Calendar', icon: CalendarIcon },
   { id: 'reporting', label: 'Reporting', icon: BarChart3 },
-  { id: 'mobile', label: 'Mobile', icon: Smartphone },
   { id: 'account', label: 'Account', icon: UserCircle },
 ];
 

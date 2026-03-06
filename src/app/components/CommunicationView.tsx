@@ -48,7 +48,7 @@ export function CommunicationView({
         <div className="p-4 border-b border-gray-200 flex-shrink-0">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-lg font-semibold">Communication</h2>
-            <button className="p-2 bg-[#0B3D2E] text-white rounded-sm hover:bg-[#081C15] transition-colors">
+            <button className="p-2 bg-emerald-900 text-white rounded-sm hover:bg-emerald-950 transition-colors">
               <Mail className="w-4 h-4" />
             </button>
           </div>
@@ -59,7 +59,7 @@ export function CommunicationView({
             <input
               type="text"
               placeholder="Search communications..."
-              className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] text-sm"
+              className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 text-sm"
             />
           </div>
         </div>
@@ -73,7 +73,7 @@ export function CommunicationView({
                 onClick={() => setSelectedCommunication(comm.id)}
                 className={`w-full p-4 rounded-sm border text-left ${
                   selectedCommunication === comm.id
-                    ? 'border-[#0B3D2E] bg-[#F2E9E4]/20'
+                    ? 'border-emerald-900 bg-stone-200/20'
                     : 'border-transparent hover:bg-gray-50'
                 }`}
               >
@@ -82,7 +82,7 @@ export function CommunicationView({
                     <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0" />
                   )}
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-medium flex-shrink-0 ${
-                    comm.type === 'email' ? 'bg-blue-500' : 'bg-[#0B3D2E]'
+                    comm.type === 'email' ? 'bg-blue-500' : 'bg-emerald-900'
                   }`}>
                     {comm.type === 'email' ? <Mail className="w-5 h-5" /> : <StickyNote className="w-5 h-5" />}
                   </div>

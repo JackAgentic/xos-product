@@ -44,8 +44,8 @@ export function FactFindCard({
           className="w-full flex items-center justify-between mb-4 lg:cursor-default flex-shrink-0"
         >
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-[#0891B2]/10 rounded-sm flex items-center justify-center">
-              <ClipboardList className="w-6 h-6 text-[#0891B2]" />
+            <div className="w-10 h-10 bg-cyan-600/10 rounded-sm flex items-center justify-center">
+              <ClipboardList className="w-6 h-6 text-cyan-600" />
             </div>
             <div className="text-left">
               <h3 className="text-base sm:text-lg font-semibold text-gray-900">Fact-Find Checklist</h3>
@@ -61,7 +61,7 @@ export function FactFindCard({
         <div className="flex items-center gap-3 mb-4 flex-shrink-0">
           <div className="flex-1 bg-gray-200 rounded-full h-2">
             <div 
-              className="bg-[#0B3D2E] h-2 rounded-full transition-all" 
+              className="bg-emerald-900 h-2 rounded-full transition-all" 
               style={{ width: `${(factFindItems.filter(i => i.completed).length / factFindItems.length) * 100}%` }}
             ></div>
           </div>
@@ -81,7 +81,7 @@ export function FactFindCard({
               <div className="flex items-center gap-3">
                 <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
                   item.completed 
-                    ? 'bg-[#0B3D2E] border-[#0B3D2E]' 
+                    ? 'bg-emerald-900 border-emerald-900' 
                     : 'border-gray-300 bg-white'
                 }`}>
                   {item.completed && <span className="text-white text-xs">✓</span>}

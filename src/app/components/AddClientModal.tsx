@@ -66,7 +66,7 @@ export function AddClientModal({
             <select
               value={newClientForm.entityType}
               onChange={(e) => setNewClientForm({ ...newClientForm, entityType: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#0B3D2E]"
+              className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-900"
             >
               <option>Individual</option>
               <option>Trust</option>
@@ -88,7 +88,7 @@ export function AddClientModal({
               placeholder={newClientForm.entityType === 'Individual' ? 'e.g. Aaron Smith' : `e.g. ${newClientForm.entityType} name`}
               value={newClientForm.clientName}
               onChange={(e) => setNewClientForm({ ...newClientForm, clientName: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0B3D2E]"
+              className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-900"
             />
           </div>
 
@@ -110,7 +110,7 @@ export function AddClientModal({
                     ...newClientForm,
                     primaryContact: { ...newClientForm.primaryContact, name: e.target.value }
                   })}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0B3D2E]"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-900"
                 />
               </div>
 
@@ -129,7 +129,7 @@ export function AddClientModal({
                       ...newClientForm,
                       primaryContact: { ...newClientForm.primaryContact, email: e.target.value }
                     })}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0B3D2E]"
+                    className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-900"
                   />
                 </div>
 
@@ -145,7 +145,7 @@ export function AddClientModal({
                         ...newClientForm,
                         primaryContact: { ...newClientForm.primaryContact, phoneCountry: e.target.value }
                       })}
-                      className="px-3 py-2 border border-gray-200 rounded-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#0B3D2E]"
+                      className="px-3 py-2 border border-gray-200 rounded-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-900"
                     >
                       <option>NZ +64</option>
                       <option>AU +61</option>
@@ -160,7 +160,7 @@ export function AddClientModal({
                         ...newClientForm,
                         primaryContact: { ...newClientForm.primaryContact, phone: e.target.value }
                       })}
-                      className="min-w-0 px-3 py-2 border border-gray-200 rounded-sm bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0B3D2E]"
+                      className="min-w-0 px-3 py-2 border border-gray-200 rounded-sm bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-900"
                     />
                   </div>
                 </div>
@@ -177,7 +177,7 @@ export function AddClientModal({
                     ...newClientForm,
                     primaryContact: { ...newClientForm.primaryContact, relationship: e.target.value }
                   })}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#0B3D2E]"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-900"
                 >
                   <option value="">Select relationship type</option>
                   <option>Trustee</option>
@@ -205,7 +205,7 @@ export function AddClientModal({
                   placeholder="email@example.com"
                   value={newClientForm.email}
                   onChange={(e) => setNewClientForm({ ...newClientForm, email: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0B3D2E]"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-900"
                 />
               </div>
 
@@ -218,7 +218,7 @@ export function AddClientModal({
                   <select
                     value={newClientForm.phoneCountry}
                     onChange={(e) => setNewClientForm({ ...newClientForm, phoneCountry: e.target.value })}
-                    className="px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#0B3D2E]"
+                    className="px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-900"
                   >
                     <option>NZ +64</option>
                     <option>AU +61</option>
@@ -230,7 +230,7 @@ export function AddClientModal({
                     placeholder="021 xxx xxxx"
                     value={newClientForm.phone}
                     onChange={(e) => setNewClientForm({ ...newClientForm, phone: e.target.value })}
-                    className="px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0B3D2E]"
+                    className="px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-900"
                   />
                 </div>
               </div>
@@ -248,7 +248,7 @@ export function AddClientModal({
                   key={product}
                   className={`px-4 py-3 border rounded-sm cursor-pointer transition-all ${
                     newClientForm.productTypes.includes(product)
-                      ? 'border-[#0B3D2E] bg-[#F2E9E4]/20'
+                      ? 'border-emerald-900 bg-stone-200/20'
                       : 'border-gray-200 bg-white hover:border-gray-300'
                   }`}
                 >
@@ -284,7 +284,7 @@ export function AddClientModal({
             <select
               value={newClientForm.clientAdvisor}
               onChange={(e) => setNewClientForm({ ...newClientForm, clientAdvisor: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#0B3D2E]"
+              className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-900"
             >
               <option value="">Select advisor</option>
               <option>Steven Johnston</option>
@@ -304,7 +304,7 @@ export function AddClientModal({
               value={newClientForm.notes}
               onChange={(e) => setNewClientForm({ ...newClientForm, notes: e.target.value })}
               rows={4}
-              className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] resize-none"
+              className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-900 resize-none"
             />
           </div>
         </div>
@@ -321,7 +321,7 @@ export function AddClientModal({
           <button
             onClick={onSubmit}
             disabled={!newClientForm.clientName.trim()}
-            className="px-4 py-1.5 text-sm font-medium bg-[#0B3D2E] text-white rounded-sm hover:bg-[#2D6A4F] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-1.5 text-sm font-medium bg-emerald-900 text-white rounded-sm hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Add Client
           </button>

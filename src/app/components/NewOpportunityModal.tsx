@@ -22,7 +22,7 @@ export function NewOpportunityModal({ isOpen, onClose, opportunityType }: NewOpp
       >
         <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between rounded-t-2xl sm:rounded-t-lg">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-[#0B3D2E]/10 rounded-sm flex items-center justify-center text-[#0B3D2E]">
+            <div className="w-10 h-10 bg-emerald-900/10 rounded-sm flex items-center justify-center text-emerald-900">
               {opportunityType && getAdviceIcon(opportunityType)}
             </div>
             <h2 className="text-lg font-medium">
@@ -42,7 +42,7 @@ export function NewOpportunityModal({ isOpen, onClose, opportunityType }: NewOpp
             <input
               type="text"
               placeholder="e.g. Home Loan Application"
-              className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0B3D2E]"
+              className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-900"
             />
           </div>
 
@@ -51,7 +51,7 @@ export function NewOpportunityModal({ isOpen, onClose, opportunityType }: NewOpp
             <textarea
               rows={4}
               placeholder="Add any relevant details about this opportunity..."
-              className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0B3D2E] resize-none"
+              className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-900 resize-none"
             />
           </div>
         </div>
@@ -61,7 +61,7 @@ export function NewOpportunityModal({ isOpen, onClose, opportunityType }: NewOpp
           <button onClick={onClose} className="px-4 py-1.5 text-sm font-medium border border-gray-200 rounded-sm hover:bg-gray-50 transition-colors">
             Cancel
           </button>
-          <button onClick={onClose} className="px-4 py-1.5 text-sm font-medium bg-[#0B3D2E] text-white rounded-sm hover:bg-[#507a8a] transition-colors">
+          <button onClick={onClose} className="px-4 py-1.5 text-sm font-medium bg-emerald-900 text-white rounded-sm hover:bg-slate-500 transition-colors">
             Create Opportunity
           </button>
         </div>

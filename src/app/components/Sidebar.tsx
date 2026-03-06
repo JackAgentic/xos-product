@@ -37,7 +37,7 @@ export function Sidebar({
         className="p-2 py-4 w-full flex justify-center"
       >
         {sidebarCollapsed ? (
-          <div className="inline-flex px-2.5 py-1.5 rounded-full hover:bg-[#0B3D2E]/30 mx-auto transition-colors">
+          <div className="inline-flex px-2.5 py-1.5 rounded-full hover:bg-emerald-900/30 mx-auto transition-colors">
             <svg width="25" height="9" viewBox="0 0 25 9" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-8 h-auto">
               <path d="M23.9311 8.65188C23.6031 8.65188 23.3591 8.57188 23.1991 8.41188C23.0471 8.24388 22.9711 8.03188 22.9711 7.77588V7.55988C22.9711 7.30388 23.0471 7.09188 23.1991 6.92388C23.3591 6.75588 23.6031 6.67188 23.9311 6.67188C24.2671 6.67188 24.5111 6.75588 24.6631 6.92388C24.8151 7.09188 24.8911 7.30388 24.8911 7.55988V7.77588C24.8911 8.03188 24.8151 8.24388 24.6631 8.41188C24.5111 8.57188 24.2671 8.65188 23.9311 8.65188Z" fill="#0B3D2E" />
               <path d="M18.3951 8.664C17.6751 8.664 17.0631 8.536 16.5591 8.28C16.0631 8.024 15.6351 7.688 15.2751 7.272L16.3431 6.24C16.6311 6.576 16.9511 6.832 17.3031 7.008C17.6631 7.184 18.0591 7.272 18.4911 7.272C18.9791 7.272 19.3471 7.168 19.5951 6.96C19.8431 6.744 19.9671 6.456 19.9671 6.096C19.9671 5.816 19.8871 5.588 19.7271 5.412C19.5671 5.236 19.2671 5.108 18.8271 5.028L18.0351 4.908C16.3631 4.644 15.5271 3.832 15.5271 2.472C15.5271 2.096 15.5951 1.756 15.7311 1.452C15.8751 1.148 16.0791 0.888 16.3431 0.672C16.6071 0.456 16.9231 0.292 17.2911 0.18C17.6671 0.0599999 18.0911 0 18.5631 0C19.1951 0 19.7471 0.104 20.2191 0.312C20.6911 0.52 21.0951 0.828 21.4311 1.236L20.3511 2.256C20.1431 2 19.8911 1.792 19.5951 1.632C19.2991 1.472 18.9271 1.392 18.4791 1.392C18.0231 1.392 17.6791 1.48 17.4471 1.656C17.2231 1.824 17.1111 2.064 17.1111 2.376C17.1111 2.696 17.2031 2.932 17.3871 3.084C17.5711 3.236 17.8671 3.348 18.2751 3.42L19.0551 3.564C19.9031 3.716 20.5271 3.988 20.9271 4.38C21.3351 4.764 21.5391 5.304 21.5391 6C21.5391 6.4 21.4671 6.764 21.3231 7.092C21.1871 7.412 20.9831 7.692 20.7111 7.932C20.4471 8.164 20.1191 8.344 19.7271 8.472C19.3431 8.6 18.8991 8.664 18.3951 8.664Z" fill="#F2E9E4" />
@@ -60,11 +60,11 @@ export function Sidebar({
       {/* Toggle Button */}
       <button
         onClick={onToggleCollapse}
-        className={`w-full p-3 border-y border-[#F2E9E4]/20 flex items-center ${sidebarCollapsed ? 'justify-center' : 'justify-between'} hover:bg-white/5 transition-colors group/collapse`}
+        className={`w-full p-3 border-y border-stone-200/20 flex items-center ${sidebarCollapsed ? 'justify-center' : 'justify-between'} hover:bg-white/5 transition-colors group/collapse`}
         title={sidebarCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
       >
-        {!sidebarCollapsed && <span className="text-[10px] font-bold text-[#F2E9E4]/70 uppercase tracking-widest group-hover/collapse:text-white transition-colors">Collapse</span>}
-        <div className="p-1.5 rounded-sm text-[#F2E9E4]/70 group-hover/collapse:text-white transition-colors">
+        {!sidebarCollapsed && <span className="text-[10px] font-bold text-stone-200/70 uppercase tracking-widest group-hover/collapse:text-white transition-colors">Collapse</span>}
+        <div className="p-1.5 rounded-sm text-stone-200/70 group-hover/collapse:text-white transition-colors">
           {sidebarCollapsed ? <PanelLeftOpen className="w-5 h-5" /> : <PanelLeftClose className="w-5 h-5" />}
         </div>
       </button>
@@ -82,8 +82,8 @@ export function Sidebar({
                   onCloseMobileDrawer();
                 }}
                 className={`w-full flex items-center ${sidebarCollapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-sm mb-1 transition-colors ${activeMainMenu === item.id
-                  ? 'bg-[#0B3D2E] text-white'
-                  : 'text-[#F2E9E4]/70 hover:text-white hover:bg-[#1B4332]'
+                  ? 'bg-emerald-900 text-white'
+                  : 'text-stone-200/70 hover:text-white hover:bg-emerald-800'
                   }`}
               >
                 <Icon className="w-5 h-5 flex-shrink-0" />

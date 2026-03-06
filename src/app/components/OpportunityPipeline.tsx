@@ -180,9 +180,9 @@ export function OpportunityPipeline({ stages, probability, currentStage }: Oppor
               initial={{ width: 0 }}
               animate={{ width: progressAnimated ? `${(probability / 100) * 90}%` : 0 }}
               transition={{ duration: 1, ease: "easeOut" }}
-              className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#0B3D2E] to-[#081C15]"
+              className="absolute top-0 left-0 h-full bg-gradient-to-r from-emerald-900 to-emerald-950"
             >
-              <div className="absolute right-0 top-1/2 -translate-y-1/2 w-6 h-6 bg-white rounded-full border-2 border-[#081C15] mr-1"></div>
+              <div className="absolute right-0 top-1/2 -translate-y-1/2 w-6 h-6 bg-white rounded-full border-2 border-emerald-950 mr-1"></div>
             </motion.div>
           </div>
 

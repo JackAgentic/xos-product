@@ -56,7 +56,7 @@ export function ClientFilterModal({
                 }}
                 className={`w-full px-4 py-3 rounded-sm text-left flex items-center justify-between ${
                   activeFilter === 'All'
-                    ? 'bg-[#0B3D2E] text-white'
+                    ? 'bg-emerald-900 text-white'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
@@ -72,12 +72,12 @@ export function ClientFilterModal({
                   }}
                   className={`w-full px-4 py-3 rounded-sm text-left flex items-center justify-between ${
                     activeFilter === letter
-                      ? 'bg-[#0B3D2E] text-white'
+                      ? 'bg-emerald-900 text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
                   <span className="flex items-center gap-3">
-                    <span className="w-8 h-8 bg-[#0B3D2E] text-white rounded flex items-center justify-center">
+                    <span className="w-8 h-8 bg-emerald-900 text-white rounded flex items-center justify-center">
                       {getAdviceIcon(letter)}
                     </span>
                     {adviceLabels[letter]}
@@ -98,7 +98,7 @@ export function ClientFilterModal({
                 }}
                 className={`w-full px-4 py-3 rounded-sm text-left flex items-center justify-between ${
                   selectedManager === 'All Managers'
-                    ? 'bg-[#0B3D2E] text-white'
+                    ? 'bg-emerald-900 text-white'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
@@ -114,7 +114,7 @@ export function ClientFilterModal({
                   }}
                   className={`w-full px-4 py-3 rounded-sm text-left flex items-center justify-between ${
                     selectedManager === manager
-                      ? 'bg-[#0B3D2E] text-white'
+                      ? 'bg-emerald-900 text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
@@ -140,7 +140,7 @@ export function ClientFilterModal({
           </button>
           <button
             onClick={onClose}
-            className="px-4 py-1.5 text-sm font-medium bg-[#0B3D2E] text-white rounded-sm hover:bg-[#0B3D2E]"
+            className="px-4 py-1.5 text-sm font-medium bg-emerald-900 text-white rounded-sm hover:bg-emerald-900"
           >
             Apply Filters
           </button>

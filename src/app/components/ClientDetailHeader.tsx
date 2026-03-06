@@ -139,13 +139,13 @@ export function ClientDetailHeader({
                       <button
                         onClick={() => changeTab(item.id)}
                         className={`relative p-2 rounded transition-colors flex-shrink-0 ${activeClientMenu === item.id
-                          ? 'bg-[#F2E9E4] text-[#0B3D2E]'
+                          ? 'bg-emerald-900/5 text-emerald-900'
                           : 'text-gray-600 hover:bg-gray-100'
                           }`}
                       >
                         <Icon className="w-5 h-5" />
                         {item.badge && (
-                          <span className="absolute top-0 right-0 bg-[#0B3D2E] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                          <span className="absolute top-0 right-0 bg-emerald-900 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                             {item.badge}
                           </span>
                         )}
@@ -176,7 +176,7 @@ export function ClientDetailHeader({
                           <button
                             onClick={() => setOpenAdviceDropdown(openAdviceDropdown === item.id ? null : item.id)}
                             className={`p-2 rounded transition-colors flex-shrink-0 flex items-center gap-1 ${openAdviceDropdown === item.id
-                              ? 'bg-[#F2E9E4] text-[#0B3D2E]'
+                              ? 'bg-emerald-900/5 text-emerald-900'
                               : 'text-gray-600 hover:bg-gray-100'
                               }`}
                           >
@@ -222,7 +222,7 @@ export function ClientDetailHeader({
                       <button
                         onClick={() => changeTab(item.id)}
                         className={`p-2 rounded transition-colors flex-shrink-0 ${activeClientMenu === item.id
-                          ? 'bg-[#F2E9E4] text-[#0B3D2E]'
+                          ? 'bg-emerald-900/5 text-emerald-900'
                           : 'text-gray-600 hover:bg-gray-100'
                           }`}
                       >
@@ -270,13 +270,13 @@ export function ClientDetailHeader({
                             changeTab(item.id);
                             setMobileIconMenuOpen(false);
                           }}
-                          className={`w-full px-4 py-2.5 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left ${activeClientMenu === item.id ? 'bg-[#F2E9E4] text-[#0B3D2E]' : 'text-gray-700'
+                          className={`w-full px-4 py-2.5 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left ${activeClientMenu === item.id ? 'bg-emerald-900/5 text-emerald-900' : 'text-gray-700'
                             }`}
                         >
                           <Icon className="w-5 h-5 flex-shrink-0" />
                           <span className="text-sm flex-1">{item.label}</span>
                           {item.badge && (
-                            <span className="bg-[#0B3D2E] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0">
+                            <span className="bg-emerald-900 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0">
                               {item.badge}
                             </span>
                           )}
@@ -295,7 +295,7 @@ export function ClientDetailHeader({
                           <div key={item.id}>
                             <button
                               onClick={() => setOpenAdviceDropdown(openAdviceDropdown === item.id ? null : item.id)}
-                              className={`w-full px-4 py-2.5 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left ${openAdviceDropdown === item.id ? 'bg-gray-50 text-[#0B3D2E]' : 'text-gray-700'
+                              className={`w-full px-4 py-2.5 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left ${openAdviceDropdown === item.id ? 'bg-gray-50 text-emerald-900' : 'text-gray-700'
                                 }`}
                             >
                               <Icon className="w-5 h-5 flex-shrink-0" />
@@ -338,7 +338,7 @@ export function ClientDetailHeader({
                             changeTab(item.id);
                             setMobileIconMenuOpen(false);
                           }}
-                          className={`w-full px-4 py-2.5 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left ${activeClientMenu === item.id ? 'bg-[#F2E9E4] text-[#0B3D2E]' : 'text-gray-700'
+                          className={`w-full px-4 py-2.5 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left ${activeClientMenu === item.id ? 'bg-emerald-900/5 text-emerald-900' : 'text-gray-700'
                             }`}
                         >
                           <Icon className="w-5 h-5 flex-shrink-0" />
@@ -356,7 +356,7 @@ export function ClientDetailHeader({
           <div className="hidden 2xl:flex items-center gap-0 py-2">
             <Tooltip>
               <TooltipTrigger asChild>
-                <button onClick={() => setShowAddEventModal(true)} className="p-2 rounded transition-colors flex-shrink-0 text-[#2D6A4F] hover:bg-[#2D6A4F]/10">
+                <button onClick={() => setShowAddEventModal(true)} className="p-2 rounded transition-colors flex-shrink-0 text-emerald-700 hover:bg-emerald-700/10">
                   <CalendarPlus className="w-5 h-5" />
                 </button>
               </TooltipTrigger>
@@ -365,7 +365,7 @@ export function ClientDetailHeader({
 
             <Tooltip>
               <TooltipTrigger asChild>
-                <button onClick={() => setShowSendEmailModal(true)} className="p-2 rounded transition-colors flex-shrink-0 text-[#2563EB] hover:bg-[#2563EB]/10">
+                <button onClick={() => setShowSendEmailModal(true)} className="p-2 rounded transition-colors flex-shrink-0 text-blue-600 hover:bg-blue-600/10">
                   <MailPlus className="w-5 h-5" />
                 </button>
               </TooltipTrigger>
@@ -374,7 +374,7 @@ export function ClientDetailHeader({
 
             <Tooltip>
               <TooltipTrigger asChild>
-                <button onClick={() => setShowAddDocumentModal(true)} className="p-2 rounded transition-colors flex-shrink-0 text-[#4F46E5] hover:bg-[#4F46E5]/10">
+                <button onClick={() => setShowAddDocumentModal(true)} className="p-2 rounded transition-colors flex-shrink-0 text-indigo-600 hover:bg-indigo-600/10">
                   <FilePlus className="w-5 h-5" />
                 </button>
               </TooltipTrigger>
@@ -383,7 +383,7 @@ export function ClientDetailHeader({
 
             <Tooltip>
               <TooltipTrigger asChild>
-                <button onClick={() => setShowAddNoteModal(true)} className="p-2 rounded transition-colors flex-shrink-0 text-[#D97706] hover:bg-[#D97706]/10">
+                <button onClick={() => setShowAddNoteModal(true)} className="p-2 rounded transition-colors flex-shrink-0 text-amber-600 hover:bg-amber-600/10">
                   <NotebookPen className="w-5 h-5" />
                 </button>
               </TooltipTrigger>
@@ -392,7 +392,7 @@ export function ClientDetailHeader({
 
             <Tooltip>
               <TooltipTrigger asChild>
-                <button onClick={() => setShowAddTaskModal(true)} className="p-2 rounded transition-colors flex-shrink-0 text-[#0891B2] hover:bg-[#0891B2]/10">
+                <button onClick={() => setShowAddTaskModal(true)} className="p-2 rounded transition-colors flex-shrink-0 text-cyan-600 hover:bg-cyan-600/10">
                   <ClipboardCheck className="w-5 h-5" />
                 </button>
               </TooltipTrigger>
@@ -401,7 +401,7 @@ export function ClientDetailHeader({
 
             <Tooltip>
               <TooltipTrigger asChild>
-                <button onClick={() => setShowAddOpportunityModal(true)} className="p-2 rounded transition-colors flex-shrink-0 text-[#EA580C] hover:bg-[#EA580C]/10">
+                <button onClick={() => setShowAddOpportunityModal(true)} className="p-2 rounded transition-colors flex-shrink-0 text-orange-600 hover:bg-orange-600/10">
                   <Target className="w-5 h-5" />
                 </button>
               </TooltipTrigger>
@@ -410,7 +410,7 @@ export function ClientDetailHeader({
 
             <Tooltip>
               <TooltipTrigger asChild>
-                <button onClick={() => { }} className="p-2 rounded transition-colors flex-shrink-0 text-[#DC2626] hover:bg-[#DC2626]/10">
+                <button onClick={() => { }} className="p-2 rounded transition-colors flex-shrink-0 text-red-600 hover:bg-red-600/10">
                   <Mic className="w-5 h-5" />
                 </button>
               </TooltipTrigger>
@@ -421,7 +421,7 @@ export function ClientDetailHeader({
 
             <Tooltip>
               <TooltipTrigger asChild>
-                <button onClick={() => setShowAIAssistantModal(true)} className="p-2 rounded transition-colors flex-shrink-0 text-[#9333EA] hover:bg-[#9333EA]/10">
+                <button onClick={() => setShowAIAssistantModal(true)} className="p-2 rounded transition-colors flex-shrink-0 text-purple-600 hover:bg-purple-600/10">
                   <Sparkles className="w-5 h-5" />
                 </button>
               </TooltipTrigger>

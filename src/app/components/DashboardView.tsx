@@ -69,7 +69,7 @@ export function DashboardView({
   }));
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden bg-[#fafbfc]">
+    <div className="flex-1 flex flex-col overflow-hidden bg-gray-50">
       {/* Header */}
       <div className="bg-white border-b border-gray-200 p-4 sm:p-6 flex-shrink-0">
         <div className="flex items-center justify-between gap-4 flex-wrap">
@@ -98,7 +98,7 @@ export function DashboardView({
                 onClick={() => setTimeRange(range as any)}
                 className={`px-3 py-1.5 text-sm font-medium rounded-sm transition-colors capitalize ${
                   timeRange === range
-                    ? 'bg-white text-[#081C15] shadow-sm'
+                    ? 'bg-white text-emerald-950 shadow-sm'
                     : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
@@ -126,8 +126,8 @@ export function DashboardView({
                     <span className="text-sm text-gray-500">vs last month</span>
                   </div>
                 </div>
-                <div className="bg-[#F2E9E4] rounded-sm p-3">
-                  <Users className="w-6 h-6 text-[#081C15]" />
+                <div className="bg-stone-200 rounded-sm p-3">
+                  <Users className="w-6 h-6 text-emerald-950" />
                 </div>
               </div>
             </div>
@@ -302,17 +302,17 @@ export function DashboardView({
             <div className="bg-white rounded-sm border border-gray-200 p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-gray-900">Upcoming</h3>
-                <button className="text-sm text-[#0B3D2E] hover:text-[#081C15] font-medium">View All</button>
+                <button className="text-sm text-emerald-900 hover:text-emerald-950 font-medium">View All</button>
               </div>
               <div className="space-y-3">
                 {upcomingMeetings.map((meeting) => (
-                  <div key={meeting.id} className="p-3 bg-[#fafbfc] rounded-sm hover:bg-gray-100 transition-colors cursor-pointer border border-gray-100">
+                  <div key={meeting.id} className="p-3 bg-gray-50 rounded-sm hover:bg-gray-100 transition-colors cursor-pointer border border-gray-100">
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-gray-900 truncate">{meeting.client}</p>
                         <p className="text-xs text-gray-600 mt-0.5">{meeting.type}</p>
                       </div>
-                      <Calendar className="w-4 h-4 text-[#0B3D2E] flex-shrink-0" />
+                      <Calendar className="w-4 h-4 text-emerald-900 flex-shrink-0" />
                     </div>
                     <div className="flex items-center gap-3 mt-2 text-xs text-gray-500">
                       <span className="flex items-center gap-1">
@@ -366,13 +366,13 @@ export function DashboardView({
             <div className="lg:col-span-2 bg-white rounded-sm border border-gray-200 p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-gray-900">Recent Activity</h3>
-                <button className="text-sm text-[#0B3D2E] hover:text-[#081C15] font-medium">View All</button>
+                <button className="text-sm text-emerald-900 hover:text-emerald-950 font-medium">View All</button>
               </div>
               <div className="space-y-3">
                 {recentActivities.map((activity) => {
                   const Icon = activity.icon;
                   return (
-                    <div key={activity.id} className="flex items-start gap-3 p-3 rounded-sm hover:bg-[#fafbfc] transition-colors cursor-pointer">
+                    <div key={activity.id} className="flex items-start gap-3 p-3 rounded-sm hover:bg-gray-50 transition-colors cursor-pointer">
                       <div className={`p-2 rounded-sm ${activity.color} flex-shrink-0`}>
                         <Icon className="w-4 h-4" />
                       </div>
@@ -397,7 +397,7 @@ export function DashboardView({
                 <h3 className="text-lg font-semibold text-gray-900">Top Performing Clients</h3>
                 <p className="text-sm text-gray-500 mt-1">Based on revenue and deal count</p>
               </div>
-              <button className="text-sm text-[#0B3D2E] hover:text-[#081C15] font-medium">View All Clients</button>
+              <button className="text-sm text-emerald-900 hover:text-emerald-950 font-medium">View All Clients</button>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -413,11 +413,11 @@ export function DashboardView({
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {topClients.map((client) => (
-                    <tr key={client.id} className="hover:bg-[#fafbfc] transition-colors overflow-visible">
+                    <tr key={client.id} className="hover:bg-gray-50 transition-colors overflow-visible">
                       <td className="py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-[#F2E9E4] flex items-center justify-center flex-shrink-0">
-                            <Users className="w-5 h-5 text-[#081C15]" />
+                          <div className="w-10 h-10 rounded-full bg-stone-200 flex items-center justify-center flex-shrink-0">
+                            <Users className="w-5 h-5 text-emerald-950" />
                           </div>
                           <div>
                             <p className="text-sm font-medium text-gray-900">{client.name}</p>
@@ -445,7 +445,7 @@ export function DashboardView({
                           {client.managers.map((manager: any, idx: number) => (
                             <div 
                               key={idx} 
-                              className="w-7 h-7 rounded-full bg-[#0B3D2E] text-white flex items-center justify-center text-xs font-medium hover:scale-110 transition-transform cursor-pointer group/avatar relative"
+                              className="w-7 h-7 rounded-full bg-emerald-900 text-white flex items-center justify-center text-xs font-medium hover:scale-110 transition-transform cursor-pointer group/avatar relative"
                             >
                               {manager.initials}
                               <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover/avatar:block z-[100] bg-gray-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap pointer-events-none">
@@ -458,7 +458,7 @@ export function DashboardView({
                       <td className="py-4 text-right">
                         <button
                           onClick={() => handleClientClick(client.id)}
-                          className="text-sm text-[#0B3D2E] hover:text-[#081C15] font-medium"
+                          className="text-sm text-emerald-900 hover:text-emerald-950 font-medium"
                         >
                           View Details
                         </button>
