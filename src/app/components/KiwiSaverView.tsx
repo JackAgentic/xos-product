@@ -955,20 +955,21 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
 
                   {/* Right Content Area - Main Content Background */}
                   <div ref={scrollContainerRef} className="flex-1 overflow-y-auto bg-slate-50 scroll-smooth pb-12">
+
+                    {/* Active contact header - full width */}
+                    {(() => {
+                      const active = contacts.find(c => c.id === activeContactId);
+                      if (!active) return null;
+                      return (
+                        <div className="px-4 sm:px-4 lg:px-6 py-4 bg-white border-b border-gray-200">
+                          <h2 className="text-lg font-bold text-gray-900 leading-tight">{active.name}</h2>
+                          <p className="text-[10px] font-medium text-gray-400 uppercase tracking-wider">{active.type === 'self' ? 'Self' : 'Contact'} · {overallProgress}% complete</p>
+                        </div>
+                      );
+                    })()}
+
                     <div className="p-4 sm:p-4 lg:p-6">
                       <div className="max-w-[1000px] mx-auto">
-
-                        {/* Active contact header */}
-                        {(() => {
-                          const active = contacts.find(c => c.id === activeContactId);
-                          if (!active) return null;
-                          return (
-                            <div className="mb-6 pb-6 border-b border-gray-200">
-                              <h2 className="text-lg font-bold text-gray-900 leading-tight">{active.name}</h2>
-                              <p className="text-[10px] font-medium text-gray-400 uppercase tracking-wider">{active.type === 'self' ? 'Self' : 'Contact'} · {overallProgress}% complete</p>
-                            </div>
-                          );
-                        })()}
 
                         {/* All sections rendered vertically */}
                         <div className="space-y-8">
@@ -1026,6 +1027,8 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                             </div>
                           </div>
 
+                          <hr className="border-gray-200" />
+
                           {/* ── Enrolment Status ── */}
                           <div id="section-enrolment" className="scroll-mt-4">
                             <h2 className="text-lg font-bold text-gray-900 tracking-tight mb-3">Enrolment Status</h2>
@@ -1052,6 +1055,8 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                               </div>
                             </div>
                           </div>
+
+                          <hr className="border-gray-200" />
 
                           {/* ── KiwiSaver Provider ── */}
                           <div id="section-provider" className="scroll-mt-4">
@@ -1196,6 +1201,8 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                               </div>
                             </div>
                           </div>
+
+                          <hr className="border-gray-200" />
 
                           {/* ── Employment & Tax ── */}
                           <div id="section-employment" className="scroll-mt-4">
@@ -1360,6 +1367,8 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                             </div>
                           </div>
 
+                          <hr className="border-gray-200" />
+
                           {/* ── Primary Goals ── */}
                           <div id="section-goals" className="scroll-mt-4">
                             <h2 className="text-lg font-bold text-gray-900 tracking-tight mb-3">Primary Goals</h2>
@@ -1387,6 +1396,8 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
                               </div>
                             </div>
                           </div>
+
+                          <hr className="border-gray-200" />
 
                           {/* ── Other Schemes ── */}
                           <div id="section-other" className="scroll-mt-4">
