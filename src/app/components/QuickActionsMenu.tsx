@@ -1,5 +1,4 @@
-import { CalendarPlus, MailPlus, FilePlus, NotebookPen, ClipboardCheck, Target, Mic, Sparkles } from 'lucide-react';
-import { useAIDrag } from './AIDragToInspect';
+import { CalendarPlus, MailPlus, FilePlus, NotebookPen, ClipboardCheck, Target, Mic } from 'lucide-react';
 
 interface QuickActionsMenuProps {
   setShowAddEventModal: (show: boolean) => void;
@@ -18,19 +17,8 @@ export function QuickActionsMenu({
   setShowAddTaskModal,
   setShowAddOpportunityModal,
 }: QuickActionsMenuProps) {
-  const { openAI } = useAIDrag();
-
   return (
-    <div className="max-[445px]:hidden 2xl:hidden bg-white rounded-full shadow-lg border border-gray-200 p-3 flex items-center gap-2">
-      <button
-        onClick={() => openAI()}
-        className="flex flex-col items-center gap-1 transition-all active:scale-95 p-1.5 rounded-sm hover:bg-purple-100"
-        aria-label="Ask AVA"
-      >
-        <Sparkles className="w-5 h-5 text-purple-600" />
-      </button>
-
-      <div className="w-px h-6 bg-gray-200 mx-1" />
+    <div className="max-[445px]:hidden bg-white rounded-full shadow-lg border border-gray-200 p-3 flex items-center gap-2">
       <button
         onClick={() => setShowAddEventModal(true)}
         className="flex flex-col items-center gap-1 transition-all active:scale-95 p-1.5 rounded-sm hover:bg-emerald-700/10"

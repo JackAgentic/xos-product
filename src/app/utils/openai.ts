@@ -195,6 +195,31 @@ Be helpful, professional, and concise. When asked about the client, reference th
   return prompt;
 }
 
+function generateFollowUpSuggestions(userMessage: string, options?: AIRequestOptions): string[] {
+  const msg = userMessage.toLowerCase();
+
+  if (options?.elementContext) {
+    const label = options.elementContext.label;
+    return [`Tell me more about ${label}`, 'What can I change here?', 'Show related data'];
+  }
+
+  if (options?.activeView === 'dashboard') {
+    return ['Add a new chart', 'Change chart colors', 'Reset dashboard'];
+  }
+
+  if (msg.includes('mortgage') || msg.includes('loan')) {
+    return ['Refinancing options', 'Compare interest rates', 'Payment breakdown'];
+  }
+  if (msg.includes('insurance')) {
+    return ['Review coverage', 'Compare policies', 'Check premiums'];
+  }
+  if (msg.includes('meeting') || msg.includes('appointment')) {
+    return ['Reschedule meeting', 'Add new meeting', 'View meeting notes'];
+  }
+
+  return ['View financials', 'Upcoming meetings', 'Recent activity'];
+}
+
 export async function getAIResponse(messages: Message[], options?: AIRequestOptions): Promise<AIResponse> {
   if (openai) {
     try {
@@ -227,9 +252,11 @@ export async function getAIResponse(messages: Message[], options?: AIRequestOpti
         }
       }
 
+      const lastUserMsg = messages.filter(m => m.role === 'user').pop()?.content || '';
       return {
         message: choice.message.content || (actions.length > 0 ? "Done! I've applied the changes to your dashboard." : 'Sorry, I could not generate a response.'),
         actions,
+        suggestions: generateFollowUpSuggestions(lastUserMsg, options),
       };
     } catch (error) {
       console.error('OpenAI API Error:', error);

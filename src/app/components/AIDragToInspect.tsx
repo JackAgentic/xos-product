@@ -15,6 +15,7 @@ interface AIDragContextType {
   selectedElement: AIElementContext | null;
   clearSelection: () => void;
   isDragging: boolean;
+  isDrawerOpen: boolean;
   setActions: (actions: React.ReactNode) => void;
   openAI: (context?: AIElementContext) => void;
 }
@@ -24,6 +25,7 @@ const AIDragContext = createContext<AIDragContextType>({
   selectedElement: null,
   clearSelection: () => { },
   isDragging: false,
+  isDrawerOpen: false,
   setActions: () => { },
   openAI: () => { },
 });
@@ -77,11 +79,18 @@ interface AIDragProviderProps {
   isDrawerOpen?: boolean;
 }
 
-export function AIDragProvider({ children, onOpenAI, showButton, isDrawerOpen }: AIDragProviderProps) {
+export function AIDragProvider({
+  children,
+  onOpenAI,
+  showButton,
+  isDrawerOpen,
+}: AIDragProviderProps) {
   const [selectedElement, setSelectedElement] = useState<AIElementContext | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [isDetached, setIsDetached] = useState(false);
   const [isRippling, setIsRippling] = useState(false);
   const [currentActions, setCurrentActions] = useState<React.ReactNode>(null);
+
 
   const triggerRipple = useCallback(() => {
     setIsRippling(true);
@@ -132,7 +141,22 @@ export function AIDragProvider({ children, onOpenAI, showButton, isDrawerOpen }:
         top: '32px',
         bottom: 'auto',
         transform: 'translate(-50%, -50%) scale(0.65)',
+        opacity: 1,
+        pointerEvents: 'auto' as const,
         zIndex: 100,
+      };
+    }
+
+    if (isDragging && isDetached) {
+      // Fade out home base while dragging once detached
+      return {
+        left: '50%',
+        bottom: '16px',
+        top: 'auto',
+        transform: 'translateX(-50%) scale(0.6) translateY(20px)',
+        opacity: 0,
+        pointerEvents: 'none' as const,
+        zIndex: 50,
       };
     }
 
@@ -143,10 +167,10 @@ export function AIDragProvider({ children, onOpenAI, showButton, isDrawerOpen }:
       top: 'auto',
       transform: 'translateX(-50%) scale(1)',
       opacity: 1,
-      pointerEvents: 'auto',
+      pointerEvents: 'auto' as const,
       zIndex: 50,
     };
-  }, [isDrawerOpen, windowWidth]);
+  }, [isDrawerOpen, isDragging, isDetached, windowWidth]);
 
   // Actions should take the "available" page center when drawer is open
   const actionsPosition = useMemo(() => {
@@ -225,9 +249,13 @@ export function AIDragProvider({ children, onOpenAI, showButton, isDrawerOpen }:
       );
       if (totalMove > 5) state.moved = true;
 
-      // === Detach threshold ===
       if (!state.hasDetached && dist > DETACH_DISTANCE) {
         state.hasDetached = true;
+        // Fade out home base right as it finishes its bounce
+        setTimeout(() => {
+          if (dragState.current.active) setIsDetached(true);
+        }, 250);
+
         // Button spring-back with overshoot
         if (buttonRef.current) {
           buttonRef.current.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
@@ -377,12 +405,14 @@ export function AIDragProvider({ children, onOpenAI, showButton, isDrawerOpen }:
         state.elementInfo = null;
         setSelectedElement(info);
         setIsDragging(false);
+        setIsDetached(false); // Reset detached state
         onOpenAI(info); // SUCCESS: Drag to Field -> OPEN
       } else {
         clearHighlight();
 
         // Case 2: Moved far but hit Nothing (or just a background section) -> ZIP BACK
         if (state.moved && ghostRef.current && buttonRef.current) {
+          setIsDetached(false); // Fade home base back in to "catch" the ghost
           const ghost = ghostRef.current;
           const button = buttonRef.current;
           const buttonRect = button.getBoundingClientRect();
@@ -419,10 +449,12 @@ export function AIDragProvider({ children, onOpenAI, showButton, isDrawerOpen }:
             if (liquidOverlayRef.current) liquidOverlayRef.current.style.opacity = '0';
             triggerRipple();
             setIsDragging(false);
+            setIsDetached(false);
           }, 400);
         } else {
           // Case 3: Simple Click (didn't move much) -> OPEN normally
           setIsDragging(false);
+          setIsDetached(false);
           triggerRipple();
           if (!state.moved) {
             onOpenAI();
@@ -439,10 +471,20 @@ export function AIDragProvider({ children, onOpenAI, showButton, isDrawerOpen }:
     };
   }, [isDragging, clearHighlight, onOpenAI]);
 
+
   const clearSelection = useCallback(() => setSelectedElement(null), []);
 
   return (
-    <AIDragContext.Provider value={{ selectedElement, clearSelection, isDragging, setActions: setCurrentActions, openAI: onOpenAI }}>
+    <AIDragContext.Provider
+      value={{
+        selectedElement,
+        clearSelection,
+        isDragging,
+        isDrawerOpen: isDrawerOpen || false, // Pass the prop value, default to false
+        setActions: setCurrentActions,
+        openAI: onOpenAI,
+      }}
+    >
       {children}
 
       {/* Supplementary actions (Quick Actions, Views, etc) - Stays centered in Page area */}
@@ -458,13 +500,10 @@ export function AIDragProvider({ children, onOpenAI, showButton, isDrawerOpen }:
         </div>
       </div>
 
-      {/* Floating AI Button Container - Docks to Drawer or Centers at Bottom */}
       <div
         className="fixed pointer-events-none"
         style={{
           ...positionStyles,
-          opacity: (isDrawerOpen || isDragging) ? 1 : positionStyles.opacity,
-          pointerEvents: (isDrawerOpen || isDragging) ? 'auto' : 'none',
           transition: 'all 0.5s cubic-bezier(0.2, 0, 0, 1.2), opacity 0.3s ease-in-out',
         }}
       >

@@ -40,6 +40,7 @@ function App() {
   const [showNewOpportunityModal, setShowNewOpportunityModal] = useState(false);
   const [showAddOpportunityModal, setShowAddOpportunityModal] = useState(false);
   const [aiElementContext, setAiElementContext] = useState<AIElementContext | undefined>(undefined);
+  const [aiChatKey, setAiChatKey] = useState(0);
 
   // Opportunity state
   const [selectedOpportunityClient, setSelectedOpportunityClient] = useState<number | null>(null);
@@ -145,6 +146,10 @@ function App() {
   };
 
   const handleOpenAI = useCallback((elementContext?: AIElementContext) => {
+    if (elementContext) {
+      // Drag-to-inspect: reset chat by changing the key
+      setAiChatKey(prev => prev + 1);
+    }
     setAiElementContext(elementContext);
     setShowAIAssistantModal(true);
   }, []);
@@ -290,6 +295,7 @@ function App() {
 
       {/* AI Assistant Drawer */}
       <AIAssistantDrawer
+        key={aiChatKey}
         isOpen={showAIAssistantModal}
         onClose={() => {
           setShowAIAssistantModal(false);
