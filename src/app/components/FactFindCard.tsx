@@ -37,9 +37,9 @@ export function FactFindCard({
         transition: 'all 700ms cubic-bezier(0.68, -0.55, 0.265, 1.55) 300ms'
       }}
     >
-      <div className="bg-white rounded-sm border border-gray-200 p-4 h-full flex flex-col">
+      <div className="bg-white rounded-sm border border-gray-200 p-4 h-full flex flex-col" data-ai-section="Fact-Find Checklist">
         {/* Header - Expandable on small screens only */}
-        <button 
+        <button
           onClick={() => setFactFindExpanded(!factFindExpanded)}
           className="w-full flex items-center justify-between mb-4 lg:cursor-default flex-shrink-0"
         >
@@ -49,7 +49,7 @@ export function FactFindCard({
             </div>
             <div className="text-left">
               <h3 className="text-base sm:text-lg font-semibold text-gray-900">Fact-Find Checklist</h3>
-              <p className="text-xs sm:text-sm text-gray-500">
+              <p className="text-xs sm:text-sm text-gray-500" data-ai-field="factFindProgress" data-ai-label="Fact-Find Progress">
                 {factFindItems.filter(i => i.completed).length} of {factFindItems.length} completed
               </p>
             </div>
@@ -65,7 +65,7 @@ export function FactFindCard({
               style={{ width: `${(factFindItems.filter(i => i.completed).length / factFindItems.length) * 100}%` }}
             ></div>
           </div>
-          <span className="text-sm font-medium text-gray-900">
+          <span className="text-sm font-medium text-gray-900" data-ai-field="factFindPercentage" data-ai-label="Completion Percentage">
             {Math.round((factFindItems.filter(i => i.completed).length / factFindItems.length) * 100)}%
           </span>
         </div>
@@ -73,15 +73,16 @@ export function FactFindCard({
         {/* Checklist items - Always visible on large screens, expandable on small */}
         <div className={`space-y-2 ${factFindExpanded ? 'block' : 'hidden'} lg:block flex-1 overflow-y-auto min-h-0`}>
           {factFindItems.map((item) => (
-            <div 
+            <div
               key={item.id}
               onClick={() => toggleFactFindItem(item.id)}
               className="flex items-center justify-between p-3 rounded-sm hover:bg-gray-50 transition-colors cursor-pointer border border-gray-200"
+              data-ai-field="factFindItem" data-ai-label={item.label}
             >
               <div className="flex items-center gap-3">
                 <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
-                  item.completed 
-                    ? 'bg-emerald-900 border-emerald-900' 
+                  item.completed
+                    ? 'bg-emerald-900 border-emerald-900'
                     : 'border-gray-300 bg-white'
                 }`}>
                   {item.completed && <span className="text-white text-xs">✓</span>}
@@ -91,7 +92,7 @@ export function FactFindCard({
                 </span>
               </div>
               {item.completed && item.completedDate && (
-                <span className="text-xs text-gray-500">{item.completedDate}</span>
+                <span className="text-xs text-gray-500" data-ai-field="factFindItemDate" data-ai-label="Completed Date">{item.completedDate}</span>
               )}
             </div>
           ))}

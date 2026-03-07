@@ -4,7 +4,7 @@ import { useSwipeable } from 'react-swipeable';
 import { clientMenuItems, adviceMenuItems, allTabs } from '../data/menuData';
 import { initialClientsData } from '../data/clientsInitialState';
 import { ClientDetailHeader } from './ClientDetailHeader';
-import { OverviewFloatingActions } from './OverviewFloatingActions';
+import { ClientFloatingActions } from './ClientFloatingActions';
 import { OverviewView } from './OverviewView';
 import { FactFindView } from './FactFindView';
 import { FinancialsView } from './FinancialsView';
@@ -34,7 +34,6 @@ interface ClientDetailViewProps {
   setShowAddNoteModal: (show: boolean) => void;
   setShowAddTaskModal: (show: boolean) => void;
   setShowAddOpportunityModal: (show: boolean) => void;
-  setShowAIAssistantModal: (show: boolean) => void;
   showAddOpportunityModal: boolean;
   opportunityForm: { name: string; type: string; probability: string; notes: string };
   setOpportunityForm: React.Dispatch<React.SetStateAction<{ name: string; type: string; probability: string; notes: string }>>;
@@ -58,7 +57,6 @@ export function ClientDetailView({
   setShowAddNoteModal,
   setShowAddTaskModal,
   setShowAddOpportunityModal,
-  setShowAIAssistantModal,
   showAddOpportunityModal,
   opportunityForm,
   setOpportunityForm,
@@ -87,7 +85,6 @@ export function ClientDetailView({
   const modalSetters = {
     setShowAddEventModal, setShowSendEmailModal, setShowAddDocumentModal,
     setShowAddNoteModal, setShowAddTaskModal, setShowAddOpportunityModal,
-    setShowAIAssistantModal,
   };
 
   const toggleModule = (moduleKey: string) => {
@@ -305,15 +302,13 @@ export function ClientDetailView({
         </div>
       </div>
 
-      {/* Overview Floating Action Buttons */}
-      {activeClientMenu === 'overview' && (
-        <OverviewFloatingActions
-          visibleModules={visibleModules}
-          toggleModule={toggleModule}
-          {...modalSetters}
-        />
-      )}
-
+      {/* Unified Client Floating Actions (Handles sub-tab logic internally) */}
+      <ClientFloatingActions
+        activeTab={activeClientMenu}
+        visibleModules={visibleModules}
+        toggleModule={toggleModule}
+        {...modalSetters}
+      />
     </div>
   );
 }

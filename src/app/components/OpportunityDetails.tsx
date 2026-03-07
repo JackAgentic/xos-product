@@ -75,7 +75,7 @@ export function OpportunityDetails({
       {/* AI Insights and Activities - Side by Side */}
       <div className="grid grid-cols-1 min-[600px]:grid-cols-2 gap-6 mb-6">
         {/* AI Insights Section */}
-        <div className="bg-gradient-to-br from-purple-50 via-blue-50 to-purple-50 rounded-sm border border-purple-100 p-4 sm:p-6">
+        <div className="bg-gradient-to-br from-purple-50 via-blue-50 to-purple-50 rounded-sm border border-purple-100 p-4 sm:p-6" data-ai-section="AI Insights">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <div className="w-10 h-10 bg-white rounded-sm flex items-center justify-center">
@@ -92,7 +92,7 @@ export function OpportunityDetails({
           <div className="relative">
             <div className={`overflow-hidden transition-all duration-300 ${aiSummaryExpanded ? 'max-h-[2000px]' : 'max-h-[280px]'}`}>
               {/* Summary */}
-              <p className="text-sm text-gray-700 leading-relaxed mb-4">
+              <p className="text-sm text-gray-700 leading-relaxed mb-4" data-ai-field="aiSummary" data-ai-label="AI Summary">
                 {insights.summary}
               </p>
 
@@ -102,7 +102,7 @@ export function OpportunityDetails({
                   <h4 className="text-sm font-semibold text-gray-900 mb-3">Key Insights</h4>
                   <div className="space-y-3">
                     {insights.keyPoints.map((point: any, idx: number) => (
-                      <div key={idx} className="bg-white/50 rounded-sm p-3">
+                      <div key={idx} className="bg-white/50 rounded-sm p-3" data-ai-field="aiKeyPoint" data-ai-label={point.label}>
                         <div className="text-xs font-semibold text-purple-700 mb-1">{point.label}</div>
                         <div className="text-sm text-gray-700">{point.text}</div>
                       </div>
@@ -118,7 +118,7 @@ export function OpportunityDetails({
                     <Info className="w-4 h-4 text-purple-600" />
                     Important Considerations
                   </h4>
-                  <p className="text-sm text-gray-700 bg-white/50 rounded-sm p-3">{insights.considerations}</p>
+                  <p className="text-sm text-gray-700 bg-white/50 rounded-sm p-3" data-ai-field="aiConsiderations" data-ai-label="Important Considerations">{insights.considerations}</p>
                 </div>
               )}
 
@@ -129,7 +129,7 @@ export function OpportunityDetails({
                     <Clock className="w-4 h-4 text-purple-600" />
                     Expected Timeline
                   </h4>
-                  <p className="text-sm text-gray-700 bg-white/50 rounded-sm p-3">{insights.timeline}</p>
+                  <p className="text-sm text-gray-700 bg-white/50 rounded-sm p-3" data-ai-field="aiTimeline" data-ai-label="Expected Timeline">{insights.timeline}</p>
                 </div>
               )}
             </div>
@@ -207,7 +207,7 @@ export function OpportunityDetails({
         </div>
 
         {/* Activities Card */}
-        <div className="bg-white rounded-sm border border-gray-200 p-4 sm:p-6">
+        <div className="bg-white rounded-sm border border-gray-200 p-4 sm:p-6" data-ai-section="Activity Timeline">
           {/* Tabs */}
           <div className="flex gap-4 border-b border-gray-200 mb-4">
             <button
@@ -247,7 +247,7 @@ export function OpportunityDetails({
               {activities
                 .filter(a => a.assigned === (activityTab === 'assigned'))
                 .map((activity, idx, arr) => (
-                <div key={activity.id} className="relative">
+                <div key={activity.id} className="relative" data-ai-section="Activity Item" data-ai-entity-id={activity.id}>
                   {idx !== arr.length - 1 && (
                     <div className="absolute left-4 top-10 bottom-0 w-px bg-gray-200"></div>
                   )}
@@ -264,8 +264,8 @@ export function OpportunityDetails({
                     <div className="flex-1 pb-4">
                       <div className="flex items-start justify-between mb-1">
                         <div>
-                          <div className="text-sm font-medium text-gray-900">{activity.title}</div>
-                          <div className="text-sm text-gray-600">{activity.description}</div>
+                          <div className="text-sm font-medium text-gray-900" data-ai-field="activityTitle" data-ai-label="Activity Title">{activity.title}</div>
+                          <div className="text-sm text-gray-600" data-ai-field="activityDescription" data-ai-label="Activity Description">{activity.description}</div>
                         </div>
                         {activity.type === 'meeting' && (
                           <span className="text-xs font-medium text-emerald-900 bg-stone-200/20 px-2 py-1 rounded">
@@ -273,7 +273,7 @@ export function OpportunityDetails({
                           </span>
                         )}
                       </div>
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-gray-500" data-ai-field="activityDate" data-ai-label="Activity Date">
                         {activity.date} {'\u2022'} {activity.time || 'No time set'}
                       </div>
                       {activity.location && (
@@ -297,7 +297,7 @@ export function OpportunityDetails({
       </div>
 
       {/* Notes Card */}
-      <div className="bg-white rounded-sm border border-gray-200 p-4 sm:p-6 mb-6">
+      <div className="bg-white rounded-sm border border-gray-200 p-4 sm:p-6 mb-6" data-ai-section="Opportunity Notes">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <div className="w-10 h-10 bg-blue-100 rounded-sm flex items-center justify-center">
@@ -403,6 +403,7 @@ export function OpportunityDetails({
                 <div
                   key={idx}
                   className="p-3 bg-gray-50 rounded-sm"
+                  data-ai-field="note" data-ai-label={`Note by ${note.user}`} data-ai-editable="true"
                 >
                   <div className="flex items-start gap-3">
                     <div className="w-1.5 h-1.5 bg-emerald-900 rounded-full mt-2 flex-shrink-0"></div>

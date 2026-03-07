@@ -1,6 +1,6 @@
 import image_23c8042e2a3d5a6b784a2b190a05b08f0fe4ae3d from 'figma:asset/23c8042e2a3d5a6b784a2b190a05b08f0fe4ae3d.png'
 // CRM Application v1.0.1 - Refactored into components
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { CLIENTS_LOOKUP } from './data/clients';
 import { generateOpportunities } from './data/opportunities';
 import { initialClientsData } from './data/clientsInitialState';
@@ -18,8 +18,9 @@ import { SendEmailModal } from './components/SendEmailModal';
 import { AddDocumentModal } from './components/AddDocumentModal';
 import { AddNoteModal } from './components/AddNoteModal';
 import { AddTaskModal } from './components/AddTaskModal';
-import { Sparkles } from 'lucide-react';
+import { AIDragProvider, type AIElementContext } from './components/AIDragToInspect';
 import { mainMenuItems } from './data/menuData';
+import { DEFAULT_DASHBOARD_CONFIG, type DashboardConfig } from './data/dashboardConfig';
 
 function App() {
   // Navigation state
@@ -38,6 +39,7 @@ function App() {
   const [showAIAssistantModal, setShowAIAssistantModal] = useState(false);
   const [showNewOpportunityModal, setShowNewOpportunityModal] = useState(false);
   const [showAddOpportunityModal, setShowAddOpportunityModal] = useState(false);
+  const [aiElementContext, setAiElementContext] = useState<AIElementContext | undefined>(undefined);
 
   // Opportunity state
   const [selectedOpportunityClient, setSelectedOpportunityClient] = useState<number | null>(null);
@@ -53,6 +55,20 @@ function App() {
 
   // Clients state
   const [clients, setClients] = useState(initialClientsData);
+
+  // Dashboard config state (persisted to localStorage)
+  const [dashboardConfig, setDashboardConfig] = useState<DashboardConfig>(() => {
+    try {
+      const saved = localStorage.getItem('xos-dashboard-config');
+      return saved ? JSON.parse(saved) : DEFAULT_DASHBOARD_CONFIG;
+    } catch {
+      return DEFAULT_DASHBOARD_CONFIG;
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem('xos-dashboard-config', JSON.stringify(dashboardConfig));
+  }, [dashboardConfig]);
 
   // Desktop breakpoint detection
   const [isDesktop, setIsDesktop] = useState(false);
@@ -128,6 +144,11 @@ function App() {
     setViewingClient(true);
   };
 
+  const handleOpenAI = useCallback((elementContext?: AIElementContext) => {
+    setAiElementContext(elementContext);
+    setShowAIAssistantModal(true);
+  }, []);
+
   const modalSetters = {
     setShowAddEventModal,
     setShowSendEmailModal,
@@ -135,7 +156,6 @@ function App() {
     setShowAddNoteModal,
     setShowAddTaskModal,
     setShowAddOpportunityModal,
-    setShowAIAssistantModal,
   };
 
   const renderMainContent = () => {
@@ -203,6 +223,8 @@ function App() {
           clients={clients}
           allOpportunities={allOpportunities}
           handleClientClick={handleClientClick}
+          dashboardConfig={dashboardConfig}
+          onConfigChange={setDashboardConfig}
         />
       );
     }
@@ -218,6 +240,7 @@ function App() {
   };
 
   return (
+    <AIDragProvider onOpenAI={handleOpenAI} showButton={true} isDrawerOpen={showAIAssistantModal}>
     <div className="flex h-screen bg-gray-50">
       {/* Mobile Overlay */}
       {mobileDrawerOpen && (
@@ -265,21 +288,18 @@ function App() {
         onSubmit={addOpportunity}
       />
 
-      {/* Floating AI Button - always visible */}
-      {!showAIAssistantModal && (
-        <button
-          onClick={() => setShowAIAssistantModal(true)}
-          className="fixed bottom-4 right-4 lg:bottom-3 lg:right-3 z-50 bg-white rounded-full shadow-lg border border-gray-200 p-4 transition-transform active:scale-95 hover:bg-purple-50"
-          aria-label="AI Assistant"
-        >
-          <Sparkles className="w-5 h-5 text-purple-600" />
-        </button>
-      )}
-
       {/* AI Assistant Drawer */}
       <AIAssistantDrawer
         isOpen={showAIAssistantModal}
-        onClose={() => setShowAIAssistantModal(false)}
+        onClose={() => {
+          setShowAIAssistantModal(false);
+          setAiElementContext(undefined);
+        }}
+        elementContext={aiElementContext}
+        dashboardConfig={dashboardConfig}
+        onDashboardConfigChange={setDashboardConfig}
+        activeView={activeMainMenu}
+        clientName={selectedClientId ? clients.find(c => c.id === selectedClientId)?.name : undefined}
       />
 
       {/* Toast Notifications */}
@@ -291,6 +311,7 @@ function App() {
         }}
       />
     </div>
+    </AIDragProvider>
   );
 }
 

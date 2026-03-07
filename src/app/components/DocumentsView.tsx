@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Search, Folder, ChevronDown, ChevronRight, MoreVertical, File as FileIcon, Plus, Eye, Info, Database, Clock, Lock, Download, FileText } from 'lucide-react';
-import { QuickActionsMenu } from './QuickActionsMenu';
 import { documentFolders } from '../data/seedData';
 
 interface DocumentsViewProps {
@@ -10,32 +9,18 @@ interface DocumentsViewProps {
   setShowAddNoteModal: (show: boolean) => void;
   setShowAddTaskModal: (show: boolean) => void;
   setShowAddOpportunityModal: (show: boolean) => void;
-  setShowAIAssistantModal: (show: boolean) => void;
 }
 
-export function DocumentsView({ 
+export function DocumentsView({
   setShowAddEventModal,
   setShowSendEmailModal,
   setShowAddDocumentModal,
   setShowAddNoteModal,
   setShowAddTaskModal,
-  setShowAddOpportunityModal,
-  setShowAIAssistantModal
+  setShowAddOpportunityModal
 }: DocumentsViewProps) {
   return (
-    <div className="flex h-full overflow-hidden bg-gray-50 relative">
-      {/* Quick Actions Menu - fixed to bottom right of viewport */}
-      <div className="fixed bottom-6 right-6 z-40">
-        <QuickActionsMenu 
-          setShowAddEventModal={setShowAddEventModal}
-          setShowSendEmailModal={setShowSendEmailModal}
-          setShowAddDocumentModal={setShowAddDocumentModal}
-          setShowAddNoteModal={setShowAddNoteModal}
-          setShowAddTaskModal={setShowAddTaskModal}
-          setShowAddOpportunityModal={setShowAddOpportunityModal}
-          setShowAIAssistantModal={setShowAIAssistantModal}
-        />
-      </div>
+    <div className="flex h-full overflow-hidden bg-gray-50 relative" data-ai-section="Documents">
 
       {/* Documents List */}
       <div className="w-full lg:w-[400px] bg-white border-b lg:border-b-0 lg:border-r border-gray-200 flex flex-col h-full">
@@ -59,11 +44,11 @@ export function DocumentsView({
         </div>
 
         {/* Scrollable folder list area */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto" data-ai-section="Document List">
           <div className="p-2">{/* Folder List */}
             <div className="space-y-1">
               {documentFolders.map((folder) => (
-                <div key={folder.name}>
+                <div key={folder.name} data-ai-field={`folder-${folder.name}`} data-ai-label={folder.name}>
                   <div className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-sm">
                     <div className="flex items-center gap-3 flex-1">
                       <ChevronDown className="w-4 h-4 text-gray-400" />
@@ -80,7 +65,7 @@ export function DocumentsView({
                     </div>
                   </div>
                   {folder.documents.map((doc) => (
-                    <div key={doc.name} className="ml-10 flex items-center gap-2 p-2 hover:bg-gray-50 rounded-sm">
+                    <div key={doc.name} className="ml-10 flex items-center gap-2 p-2 hover:bg-gray-50 rounded-sm" data-ai-field={`document-${doc.name}`} data-ai-label={doc.name}>
                       <FileIcon className="w-4 h-4 text-gray-400" />
                       <span className="text-sm flex-1">{doc.name}</span>
                       <span className="text-xs text-gray-400">{doc.size}</span>
@@ -94,7 +79,7 @@ export function DocumentsView({
       </div>
 
       {/* Right Panel - Document Details */}
-      <div className="flex-1 bg-gray-50 overflow-auto">
+      <div className="flex-1 bg-gray-50 overflow-auto" data-ai-section="Document Details">
         <div className="p-4 sm:p-6 pb-24">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-3">
             <div className="flex items-center gap-2">

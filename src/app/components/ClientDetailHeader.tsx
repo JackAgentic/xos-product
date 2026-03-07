@@ -14,7 +14,6 @@ import {
   ClipboardCheck,
   Target,
   Mic,
-  Sparkles,
   LayoutGrid,
 } from 'lucide-react';
 import {
@@ -36,7 +35,6 @@ interface ClientDetailHeaderProps {
   setShowAddNoteModal: (show: boolean) => void;
   setShowAddTaskModal: (show: boolean) => void;
   setShowAddOpportunityModal: (show: boolean) => void;
-  setShowAIAssistantModal: (show: boolean) => void;
 }
 
 export function ClientDetailHeader({
@@ -51,7 +49,6 @@ export function ClientDetailHeader({
   setShowAddNoteModal,
   setShowAddTaskModal,
   setShowAddOpportunityModal,
-  setShowAIAssistantModal,
 }: ClientDetailHeaderProps) {
   const [mobileIconMenuOpen, setMobileIconMenuOpen] = useState(false);
   const [openAdviceDropdown, setOpenAdviceDropdown] = useState<string | null>(null);
@@ -417,16 +414,6 @@ export function ClientDetailHeader({
               <TooltipContent side="bottom" sideOffset={10}>Voice Recording</TooltipContent>
             </Tooltip>
 
-            <div className="w-px h-6 bg-gray-300 mx-2 flex-shrink-0" />
-
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button onClick={() => setShowAIAssistantModal(true)} className="p-2 rounded transition-colors flex-shrink-0 text-purple-600 hover:bg-purple-600/10">
-                  <Sparkles className="w-5 h-5" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" sideOffset={10}>AI Assistant</TooltipContent>
-            </Tooltip>
           </div>
         </div>
       </div>

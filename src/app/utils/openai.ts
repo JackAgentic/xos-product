@@ -1,150 +1,294 @@
 import OpenAI from 'openai';
+import type { DashboardConfig } from '../data/dashboardConfig';
+import type { AIElementContext } from '../components/AIDragToInspect';
 
-// IMPORTANT: To use real AI functionality, replace 'YOUR_OPENAI_API_KEY_HERE' with your actual OpenAI API key
-// You can get an API key from: https://platform.openai.com/api-keys
-// 
-// SECURITY WARNING: Never commit your API key to version control!
-// In production, use environment variables or a backend service to handle API calls securely.
-const OPENAI_API_KEY = 'YOUR_OPENAI_API_KEY_HERE';
+const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY || '';
 
-// Initialize OpenAI client (will be null if no API key is provided)
 let openai: OpenAI | null = null;
 
 if (OPENAI_API_KEY && OPENAI_API_KEY !== 'YOUR_OPENAI_API_KEY_HERE') {
   openai = new OpenAI({
     apiKey: OPENAI_API_KEY,
-    dangerouslyAllowBrowser: true, // Note: In production, API calls should be made from a backend
+    dangerouslyAllowBrowser: true,
   });
 }
 
 export interface Message {
   role: 'user' | 'assistant' | 'system';
   content: string;
+  suggestions?: string[];
 }
 
-// Mock client data to provide context to the AI
+export interface AIAction {
+  functionName: string;
+  args: Record<string, any>;
+}
+
+export interface AIResponse {
+  message: string;
+  actions: AIAction[];
+  suggestions?: string[];
+}
+
+export interface AIRequestOptions {
+  elementContext?: AIElementContext;
+  dashboardConfig?: DashboardConfig;
+  activeView?: string;
+  clientName?: string;
+}
+
 const mockClientContext = {
   name: 'Another Client',
   email: 'another.client@example.com',
   phone: '(123) 456-7890',
   status: 'Active',
-  mortgages: [
-    {
-      type: 'Home Loan',
-      balance: '$450,000',
-      interestRate: '3.5%',
-      monthlyPayment: '$2,025',
-    }
-  ],
-  insurance: [
-    {
-      type: 'Life Insurance',
-      provider: 'Insurance Co',
-      coverage: '$500,000',
-    }
-  ],
-  upcomingMeetings: [
-    {
-      date: 'March 15, 2026',
-      type: 'Policy Review',
-    }
-  ],
-  recentNotes: [
-    'Client interested in refinancing options',
-    'Discussed investment strategy for retirement',
-  ],
+  mortgages: [{ type: 'Home Loan', balance: '$450,000', interestRate: '3.5%', monthlyPayment: '$2,025' }],
+  insurance: [{ type: 'Life Insurance', provider: 'Insurance Co', coverage: '$500,000' }],
+  upcomingMeetings: [{ date: 'March 15, 2026', type: 'Policy Review' }],
+  recentNotes: ['Client interested in refinancing options', 'Discussed investment strategy for retirement'],
 };
 
-/**
- * Get AI response using OpenAI API or fallback to mock responses
- */
-export async function getAIResponse(messages: Message[]): Promise<string> {
-  // If OpenAI is configured, use it
-  if (openai) {
-    try {
-      const systemMessage: Message = {
-        role: 'system',
-        content: `You are AVA, a helpful AI assistant for a CRM system. You help financial advisors manage their clients' information. 
-        
-You currently have access to information about a client named "${mockClientContext.name}":
+// OpenAI function calling tools for dashboard commands
+const dashboardTools: OpenAI.ChatCompletionTool[] = [
+  {
+    type: 'function',
+    function: {
+      name: 'update_widget',
+      description: 'Update settings of an existing dashboard widget. Can change colors, visibility, chart type, series visibility, title, subtitle, and column span.',
+      parameters: {
+        type: 'object',
+        properties: {
+          widgetId: { type: 'string', description: 'The widget ID to update (e.g. "chart-revenue", "metric-totalClients", "list-meetings")' },
+          changes: {
+            type: 'object',
+            properties: {
+              visible: { type: 'boolean', description: 'Show or hide the widget' },
+              chartType: { type: 'string', enum: ['area', 'bar', 'pie', 'line', 'donut'], description: 'Change chart type (only for chart widgets)' },
+              title: { type: 'string' },
+              subtitle: { type: 'string' },
+              colSpan: { type: 'number', enum: [1, 2], description: 'Grid column span' },
+              iconBgColor: { type: 'string', description: 'Tailwind background class for metric card icon (e.g. "bg-blue-50")' },
+              iconColor: { type: 'string', description: 'Tailwind text color class for metric card icon (e.g. "text-blue-600")' },
+              series: {
+                type: 'array',
+                description: 'Update chart series config. Each item replaces the series at that index.',
+                items: {
+                  type: 'object',
+                  properties: {
+                    dataKey: { type: 'string' },
+                    color: { type: 'string', description: 'Hex color (e.g. "#3b82f6")' },
+                    label: { type: 'string' },
+                    visible: { type: 'boolean' },
+                  },
+                },
+              },
+              colors: {
+                type: 'object',
+                description: 'Color overrides as key-value pairs (hex colors)',
+                additionalProperties: { type: 'string' },
+              },
+            },
+          },
+        },
+        required: ['widgetId', 'changes'],
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'add_widget',
+      description: 'Add a new chart widget to the dashboard. Available data sources: revenueData (fields: month, revenue, target), pipelineData (fields: name, value, amount, color), activityTrendData (fields: day, meetings, calls, emails).',
+      parameters: {
+        type: 'object',
+        properties: {
+          chartType: { type: 'string', enum: ['area', 'bar', 'pie', 'line', 'donut'] },
+          title: { type: 'string' },
+          subtitle: { type: 'string' },
+          dataSource: { type: 'string', enum: ['revenueData', 'pipelineData', 'activityTrendData'] },
+          series: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                dataKey: { type: 'string' },
+                color: { type: 'string', description: 'Hex color' },
+                label: { type: 'string' },
+              },
+              required: ['dataKey', 'color', 'label'],
+            },
+          },
+          colSpan: { type: 'number', enum: [1, 2] },
+        },
+        required: ['chartType', 'title', 'dataSource'],
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'remove_widget',
+      description: 'Remove a widget from the dashboard entirely',
+      parameters: {
+        type: 'object',
+        properties: {
+          widgetId: { type: 'string', description: 'The widget ID to remove' },
+        },
+        required: ['widgetId'],
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'reset_dashboard',
+      description: 'Reset the dashboard to its default configuration, undoing all changes',
+      parameters: { type: 'object', properties: {} },
+    },
+  },
+];
+
+function buildSystemPrompt(options?: AIRequestOptions): string {
+  const clientName = options?.clientName || mockClientContext.name;
+  let prompt = `You are AVA, a helpful AI assistant for a CRM system. You help financial advisors manage their clients and dashboard.
+
+You currently have access to information about a client named "${clientName}":
 - Contact: ${mockClientContext.email}, ${mockClientContext.phone}
 - Status: ${mockClientContext.status}
 - Mortgages: ${JSON.stringify(mockClientContext.mortgages)}
 - Insurance: ${JSON.stringify(mockClientContext.insurance)}
 - Upcoming Meetings: ${JSON.stringify(mockClientContext.upcomingMeetings)}
-- Recent Notes: ${mockClientContext.recentNotes.join(', ')}
+- Recent Notes: ${mockClientContext.recentNotes.join(', ')}`;
 
-Be helpful, professional, and concise. When asked about the client, reference the specific data above. 
-If asked about data you don't have, politely explain what information is available in the system.`,
-      };
+  if (options?.activeView === 'dashboard' && options.dashboardConfig) {
+    const widgetSummary = options.dashboardConfig.widgets.map(w => {
+      const vis = w.visible ? 'visible' : 'hidden';
+      if (w.type === 'metric') return `  - ${w.id}: "${w.label}" (metric, ${vis}, icon: ${w.iconBgColor} ${w.iconColor})`;
+      if (w.type === 'chart') return `  - ${w.id}: "${w.title}" (${w.chartType} chart, ${vis}, data: ${w.dataSource}, series: ${JSON.stringify(w.series)})`;
+      if (w.type === 'list') return `  - ${w.id}: "${w.title}" (${w.listType} list, ${vis}, maxItems: ${w.maxItems})`;
+      return `  - unknown widget`;
+    }).join('\n');
+
+    prompt += `
+
+The user is viewing the Dashboard. Current widgets:
+${widgetSummary}
+
+Available data sources for new charts:
+- revenueData: fields "month" (string), "revenue" (number), "target" (number)
+- pipelineData: fields "name" (string), "value" (number), "amount" (number), "color" (string)
+- activityTrendData: fields "day" (string), "meetings" (number), "calls" (number), "emails" (number)
+
+When the user wants to modify the dashboard, use the provided tools. Always use hex colors for chart series (e.g. "#3b82f6") and Tailwind classes for metric card styling (e.g. "bg-blue-50", "text-blue-600"). Briefly explain what you changed in your text response.`;
+  }
+
+  if (options?.elementContext) {
+    prompt += `
+
+The user is inspecting element: "${options.elementContext.label}" (field: ${options.elementContext.fieldName}, section: ${options.elementContext.section}).${options.elementContext.editable ? ' This element can be modified.' : ''}`;
+  }
+
+  prompt += `
+
+Be helpful, professional, and concise. When asked about the client, reference the specific data above.`;
+
+  return prompt;
+}
+
+export async function getAIResponse(messages: Message[], options?: AIRequestOptions): Promise<AIResponse> {
+  if (openai) {
+    try {
+      const systemMessage = { role: 'system' as const, content: buildSystemPrompt(options) };
+      const useDashboardTools = options?.activeView === 'dashboard';
 
       const completion = await openai.chat.completions.create({
-        model: 'gpt-4o-mini', // Using the faster, more cost-effective model
+        model: 'gpt-4o-mini',
         messages: [systemMessage, ...messages],
+        tools: useDashboardTools ? dashboardTools : undefined,
         temperature: 0.7,
-        max_tokens: 500,
+        max_tokens: 800,
       });
 
-      return completion.choices[0]?.message?.content || 'Sorry, I could not generate a response.';
+      const choice = completion.choices[0];
+      const actions: AIAction[] = [];
+
+      if (choice.message.tool_calls) {
+        for (const toolCall of choice.message.tool_calls) {
+          if (toolCall.type === 'function') {
+            try {
+              actions.push({
+                functionName: toolCall.function.name,
+                args: JSON.parse(toolCall.function.arguments),
+              });
+            } catch {
+              console.warn('Failed to parse tool call arguments');
+            }
+          }
+        }
+      }
+
+      return {
+        message: choice.message.content || (actions.length > 0 ? "Done! I've applied the changes to your dashboard." : 'Sorry, I could not generate a response.'),
+        actions,
+      };
     } catch (error) {
       console.error('OpenAI API Error:', error);
-      return getFallbackResponse(messages);
+      return getFallbackResponse(messages, options?.clientName);
     }
   }
 
-  // Fallback to mock responses
-  return getFallbackResponse(messages);
+  return getFallbackResponse(messages, options?.clientName);
 }
 
-/**
- * Fallback responses when OpenAI is not configured
- */
-function getFallbackResponse(messages: Message[]): string {
+function getFallbackResponse(messages: Message[], clientName?: string): AIResponse {
+  const name = clientName || mockClientContext.name;
   const lastUserMessage = messages
     .filter(m => m.role === 'user')
     .pop()?.content.toLowerCase() || '';
 
-  // Check for specific keywords and provide contextual responses
   if (lastUserMessage.includes('mortgage') || lastUserMessage.includes('loan')) {
-    return `Based on ${mockClientContext.name}'s profile, they have a Home Loan with a balance of $450,000 at 3.5% interest rate. Their monthly payment is $2,025. Would you like more details about refinancing options?`;
+    return {
+      message: `Based on ${name}'s profile, they have a Home Loan with a balance of $450,000 at 3.5% interest rate. Their monthly payment is $2,025.`,
+      actions: [],
+      suggestions: ['Tell me about refinancing options', 'Show interest rate trends', 'Calculate early repayment']
+    };
   }
-
   if (lastUserMessage.includes('insurance')) {
-    return `${mockClientContext.name} currently has Life Insurance with Insurance Co, providing $500,000 in coverage. Would you like to review their policy details or discuss additional coverage options?`;
+    return {
+      message: `${name} currently has Life Insurance with Insurance Co, providing $500,000 in coverage.`,
+      actions: [],
+      suggestions: ['Review policy details', 'Discuss additional coverage', 'Check premium history']
+    };
   }
-
   if (lastUserMessage.includes('meeting') || lastUserMessage.includes('appointment')) {
-    return `${mockClientContext.name} has an upcoming Policy Review meeting scheduled for March 15, 2026. Would you like to reschedule or add a new meeting?`;
+    return {
+      message: `${name} has an upcoming Policy Review meeting scheduled for March 15, 2026.`,
+      actions: [],
+      suggestions: ['Reschedule meeting', 'Add new meeting', 'View meeting notes']
+    };
   }
-
   if (lastUserMessage.includes('contact') || lastUserMessage.includes('email') || lastUserMessage.includes('phone')) {
-    return `You can reach ${mockClientContext.name} at:\n• Email: ${mockClientContext.email}\n• Phone: ${mockClientContext.phone}\n\nWould you like to send them a message?`;
+    return {
+      message: `You can reach ${name} at:\n• Email: ${mockClientContext.email}\n• Phone: ${mockClientContext.phone}`,
+      actions: [],
+      suggestions: ['Send an email', 'Call this client', 'Update contact info']
+    };
   }
-
-  if (lastUserMessage.includes('note') || lastUserMessage.includes('recent')) {
-    return `Recent notes for ${mockClientContext.name}:\n• ${mockClientContext.recentNotes[0]}\n• ${mockClientContext.recentNotes[1]}\n\nWould you like to add a new note?`;
-  }
-
   if (lastUserMessage.includes('summary') || lastUserMessage.includes('overview')) {
-    return `Here's a quick summary of ${mockClientContext.name}:\n\n📧 ${mockClientContext.email}\n📞 ${mockClientContext.phone}\n🏠 Home Loan: $450,000 balance\n🛡️ Life Insurance: $500,000 coverage\n📅 Next Meeting: March 15, 2026\n\nWhat would you like to know more about?`;
+    return {
+      message: `Here's a quick summary of ${name}:\n\nEmail: ${mockClientContext.email}\nPhone: ${mockClientContext.phone}\nHome Loan: $450,000 balance\nLife Insurance: $500,000 coverage\nNext Meeting: March 15, 2026`,
+      actions: [],
+      suggestions: ['View full financials', 'See recent notes', 'Check upcoming tasks']
+    };
   }
 
-  // Default response
-  return `I'd be happy to help you with information about ${mockClientContext.name}. I can help you with:
-
-• Client contact details and status
-• Mortgage and loan information
-• Insurance policies and coverage
-• Meeting schedules and appointments
-• Notes and recent activity
-• Document management
-
-What would you like to know?`;
+  return {
+    message: `I'd be happy to help you with information about ${name}. I can help you with:`,
+    actions: [],
+    suggestions: ['Client contact details', 'Mortgage and loan info', 'Insurance policies', 'Upcoming meetings', 'Recent activity']
+  };
 }
 
-/**
- * Check if OpenAI is properly configured
- */
 export function isOpenAIConfigured(): boolean {
   return openai !== null;
 }

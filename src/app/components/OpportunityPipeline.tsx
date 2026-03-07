@@ -154,7 +154,7 @@ export function OpportunityPipeline({ stages, probability, currentStage }: Oppor
   }, []);
 
   return (
-    <div ref={pipelineCardRef} className="bg-white rounded-sm border border-gray-200 p-4 sm:pt-6 sm:pb-2 mb-6">
+    <div ref={pipelineCardRef} className="bg-white rounded-sm border border-gray-200 p-4 sm:pt-6 sm:pb-2 mb-6" data-ai-section="Pipeline Stages">
       <h3 className="font-semibold mb-4 sm:mb-6">Pipeline Progress</h3>
 
       {/* Scrollable container */}
@@ -168,7 +168,7 @@ export function OpportunityPipeline({ stages, probability, currentStage }: Oppor
           {/* Stage Labels */}
           <div className="flex justify-between items-center mb-2">
             {stages.map((stage, idx) => (
-              <div key={idx} className="flex flex-col items-center" style={{ width: `${100 / stages.length}%` }}>
+              <div key={idx} className="flex flex-col items-center" style={{ width: `${100 / stages.length}%` }} data-ai-field="pipelineStage" data-ai-label={`Stage: ${stage.name}`}>
                 <span className="text-xs font-medium text-gray-600 mb-1 text-center sm:whitespace-nowrap">{stage.name}</span>
               </div>
             ))}

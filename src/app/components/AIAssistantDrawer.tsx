@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { getAIResponse, type Message } from '../utils/openai';
+import { getAIResponse, type Message, type AIAction } from '../utils/openai';
+import { DEFAULT_DASHBOARD_CONFIG, type DashboardConfig, type ChartWidgetConfig } from '../data/dashboardConfig';
 import ReactMarkdown from 'react-markdown';
 import {
   Sparkles,
@@ -12,14 +13,76 @@ import {
   PenSquare,
   History,
   UserCircle,
+  Crosshair,
 } from 'lucide-react';
+import { useAIDrag, type AIElementContext } from './AIDragToInspect';
 
 interface AIAssistantDrawerProps {
   isOpen: boolean;
   onClose: () => void;
+  elementContext?: AIElementContext;
+  dashboardConfig?: DashboardConfig;
+  onDashboardConfigChange?: (config: DashboardConfig) => void;
+  activeView?: string;
+  clientName?: string;
 }
 
-export function AIAssistantDrawer({ isOpen, onClose }: AIAssistantDrawerProps) {
+function applyAIActions(actions: AIAction[], config: DashboardConfig): DashboardConfig {
+  let newConfig = { ...config, widgets: [...config.widgets] };
+
+  for (const action of actions) {
+    switch (action.functionName) {
+      case 'update_widget': {
+        const { widgetId, changes } = action.args;
+        newConfig.widgets = newConfig.widgets.map(w => {
+          if (w.id !== widgetId) return w;
+          // Deep merge series if provided
+          if (changes.series && w.type === 'chart') {
+            const existingSeries = (w as ChartWidgetConfig).series;
+            const mergedSeries = changes.series.map((s: any, i: number) => ({
+              ...(existingSeries[i] || { dataKey: s.dataKey, color: '#000', label: s.dataKey, visible: true }),
+              ...s,
+            }));
+            return { ...w, ...changes, series: mergedSeries };
+          }
+          return { ...w, ...changes };
+        });
+        break;
+      }
+      case 'add_widget': {
+        const maxOrder = Math.max(...newConfig.widgets.map(w => w.order), 0);
+        const newWidget: ChartWidgetConfig = {
+          id: `custom-${Date.now()}`,
+          type: 'chart',
+          chartType: action.args.chartType || 'bar',
+          title: action.args.title || 'New Chart',
+          subtitle: action.args.subtitle || '',
+          visible: true,
+          dataSource: action.args.dataSource || 'revenueData',
+          series: (action.args.series || []).map((s: any) => ({ ...s, visible: true })),
+          colors: {},
+          colSpan: action.args.colSpan || 1,
+          order: maxOrder + 1,
+        };
+        newConfig.widgets = [...newConfig.widgets, newWidget];
+        break;
+      }
+      case 'remove_widget': {
+        newConfig.widgets = newConfig.widgets.filter(w => w.id !== action.args.widgetId);
+        break;
+      }
+      case 'reset_dashboard': {
+        newConfig = { ...DEFAULT_DASHBOARD_CONFIG, widgets: [...DEFAULT_DASHBOARD_CONFIG.widgets] };
+        break;
+      }
+    }
+  }
+
+  return newConfig;
+}
+
+export function AIAssistantDrawer({ isOpen, onClose, elementContext, dashboardConfig, onDashboardConfigChange, activeView, clientName }: AIAssistantDrawerProps) {
+  const { isDragging } = useAIDrag();
   const [aiMessages, setAiMessages] = useState<Message[]>([]);
   const [aiInput, setAiInput] = useState('');
   const [isAILoading, setIsAILoading] = useState(false);
@@ -203,9 +266,20 @@ export function AIAssistantDrawer({ isOpen, onClose }: AIAssistantDrawerProps) {
     }
   };
 
-  const handleSendMessage = async () => {
-    if (aiInput.trim()) {
-      const userMessage = aiInput.trim();
+  const handleSuggestionClick = (suggestion: string) => {
+    setAiInput(suggestion);
+    // Use a timeout to allow the input state to update before sending
+    setTimeout(() => {
+      handleSendMessage(suggestion);
+    }, 10);
+  };
+
+  const handleSendMessage = async (overrideInput?: string) => {
+    const inputToSend = overrideInput || aiInput;
+    if (inputToSend.trim()) {
+      const userMessage = inputToSend.trim();
+      // Clear previous suggestions from all previous messages to keep UI clean
+      setAiMessages(prev => prev.map(m => ({ ...m, suggestions: undefined })));
       setAiMessages(prev => [...prev, { role: 'user', content: userMessage }]);
       setAiInput('');
 
@@ -227,11 +301,23 @@ export function AIAssistantDrawer({ isOpen, onClose }: AIAssistantDrawerProps) {
       try {
         setIsAILoading(true);
         const currentMessages = [...aiMessages, { role: 'user' as const, content: userMessage }];
-        const aiResponse = await getAIResponse(currentMessages);
+        const aiResponse = await getAIResponse(currentMessages, {
+          elementContext,
+          dashboardConfig,
+          activeView,
+          clientName,
+        });
+
+        // Apply dashboard actions if any
+        if (aiResponse.actions.length > 0 && dashboardConfig && onDashboardConfigChange) {
+          const newConfig = applyAIActions(aiResponse.actions, dashboardConfig);
+          onDashboardConfigChange(newConfig);
+        }
 
         setAiMessages(prev => [...prev, {
           role: 'assistant',
-          content: aiResponse
+          content: aiResponse.message,
+          suggestions: aiResponse.suggestions,
         }]);
       } catch (error) {
         console.error('Error getting AI response:', error);
@@ -249,20 +335,21 @@ export function AIAssistantDrawer({ isOpen, onClose }: AIAssistantDrawerProps) {
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
+          {/* Backdrop — hides during drag */}
           <motion.div
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            animate={{ opacity: isDragging ? 0 : 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             className="fixed inset-0 bg-black/50 z-[70]"
             onClick={onClose}
+            style={{ pointerEvents: isDragging ? 'none' : 'auto' }}
           />
 
-          {/* Drawer */}
+          {/* Drawer — slides out during drag to reveal elements */}
           <motion.div
             initial={{ x: '100%' }}
-            animate={{ x: 0 }}
+            animate={{ x: isDragging ? '100%' : 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'tween', ease: 'easeInOut', duration: 0.3 }}
             className="fixed right-0 top-0 bottom-0 w-full sm:w-[500px] md:w-[600px] bg-white z-[71] flex flex-col shadow-lg"
@@ -270,7 +357,7 @@ export function AIAssistantDrawer({ isOpen, onClose }: AIAssistantDrawerProps) {
             {/* Header */}
             <div className="bg-white border-b border-gray-200 px-4 py-4 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Sparkles className="w-6 h-6 text-purple-600" />
+                <div className="w-10 h-6" aria-hidden="true" /> {/* Space for docking AI orb */}
                 <h2 className="text-lg font-semibold">Chat with AVA</h2>
               </div>
               <div className="flex items-center gap-2">
@@ -300,6 +387,26 @@ export function AIAssistantDrawer({ isOpen, onClose }: AIAssistantDrawerProps) {
               </div>
             </div>
 
+            {/* Element Context Banner (from drag-to-inspect) */}
+            {elementContext && (
+              <div className="bg-purple-100 border-b border-purple-300 px-4 py-3">
+                <div className="flex items-center gap-2 mb-1">
+                  <Crosshair className="w-3.5 h-3.5 text-purple-700" />
+                  <span className="text-xs font-bold text-purple-800 uppercase tracking-wider">Inspecting Element</span>
+                </div>
+                <p className="text-sm font-semibold text-purple-900">{elementContext.label}</p>
+                {elementContext.section && (
+                  <p className="text-xs text-purple-700 mt-0.5">Section: {elementContext.section}</p>
+                )}
+                {elementContext.value && (
+                  <p className="text-xs text-purple-700 mt-0.5">Current value: <span className="font-medium">{elementContext.value}</span></p>
+                )}
+                {elementContext.editable && (
+                  <p className="text-[10px] text-purple-600 mt-1 font-medium">This field can be updated via AI</p>
+                )}
+              </div>
+            )}
+
             {/* Messages Area */}
             <div className="flex-1 overflow-y-auto px-4 py-6">
               {aiMessages.length === 0 ? (
@@ -309,11 +416,23 @@ export function AIAssistantDrawer({ isOpen, onClose }: AIAssistantDrawerProps) {
                     <Sparkles className="w-12 h-12 text-purple-600" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-2 text-center">
-                    Hi! I'm AVA, your AI assistant. Ask me anything about Another Client.
+                    Hi! I'm AVA, your AI assistant.{clientName ? ` Ask me anything about ${clientName}.` : ' Ask me anything about your clients.'}
                   </h3>
-                  <p className="text-sm text-gray-600 text-center max-w-md">
+                  <p className="text-sm text-gray-600 text-center max-w-md mb-8">
                     I have access to all client data including mortgages, meetings, notes, and more.
                   </p>
+
+                  <div className="flex flex-wrap justify-center gap-2 max-w-md">
+                    {['Summarize this client', 'Show upcoming meetings', 'Check mortgage status', 'Recent notes history'].map((starter, i) => (
+                      <button
+                        key={i}
+                        onClick={() => handleSuggestionClick(starter)}
+                        className="px-4 py-2 bg-purple-50 border border-purple-100 text-purple-700 text-sm font-medium rounded-full hover:bg-purple-100 hover:border-purple-200 transition-colors shadow-sm"
+                      >
+                        {starter}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               ) : (
                 /* Messages List */
@@ -329,11 +448,10 @@ export function AIAssistantDrawer({ isOpen, onClose }: AIAssistantDrawerProps) {
                         </div>
                       )}
                       <div
-                        className={`px-4 py-3 rounded max-w-[80%] ${
-                          message.role === 'user'
-                            ? 'bg-gray-100 text-gray-900'
-                            : 'bg-purple-600 text-white'
-                        }`}
+                        className={`px-4 py-3 rounded max-w-[80%] ${message.role === 'user'
+                          ? 'bg-gray-100 text-gray-900'
+                          : 'bg-purple-600 text-white'
+                          }`}
                       >
                         {message.role === 'assistant' ? (
                           <div className="text-sm prose prose-sm prose-invert max-w-none prose-p:my-1 prose-ul:my-1 prose-ol:my-1 prose-li:my-0">
@@ -350,15 +468,27 @@ export function AIAssistantDrawer({ isOpen, onClose }: AIAssistantDrawerProps) {
                       )}
                     </div>
                   ))}
+
+                  {/* Suggestions for the most recent message */}
+                  {aiMessages.length > 0 && aiMessages[aiMessages.length - 1].role === 'assistant' && aiMessages[aiMessages.length - 1].suggestions && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="flex flex-wrap gap-2 ml-11 mt-2"
+                    >
+                      {aiMessages[aiMessages.length - 1].suggestions?.map((suggestion, i) => (
+                        <button
+                          key={i}
+                          onClick={() => handleSuggestionClick(suggestion)}
+                          className="px-4 py-2 bg-white border border-purple-200 text-purple-700 text-sm font-medium rounded-full hover:bg-purple-50 hover:border-purple-300 transition-colors shadow-sm"
+                        >
+                          {suggestion}
+                        </button>
+                      ))}
+                    </motion.div>
+                  )}
                 </div>
               )}
-            </div>
-
-            {/* Context Banner */}
-            <div className="bg-purple-50 border-t border-purple-200 px-4 py-3">
-              <p className="text-xs text-purple-900">
-                <span className="font-medium">This chat relates to Another Client.</span> AVA has access to all client data including mortgages, insurance, meetings, notes, KiwiSaver plans, and more.
-              </p>
             </div>
 
             {/* Input Area */}
@@ -413,7 +543,7 @@ export function AIAssistantDrawer({ isOpen, onClose }: AIAssistantDrawerProps) {
                       </div>
 
                       <button
-                        onClick={handleSendMessage}
+                        onClick={() => handleSendMessage()}
                         className="w-12 h-12 bg-white hover:bg-gray-100 rounded-full flex items-center justify-center transition-colors"
                         aria-label="Send"
                       >
@@ -450,7 +580,7 @@ export function AIAssistantDrawer({ isOpen, onClose }: AIAssistantDrawerProps) {
                       animate={{ scale: 1, opacity: 1 }}
                       exit={{ scale: 0, opacity: 0 }}
                       transition={{ duration: 0.15, ease: 'easeInOut' }}
-                      onClick={handleSendMessage}
+                      onClick={() => handleSendMessage()}
                       className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center hover:bg-purple-700 transition-colors flex-shrink-0"
                       aria-label="Send Message"
                     >
@@ -467,22 +597,20 @@ export function AIAssistantDrawer({ isOpen, onClose }: AIAssistantDrawerProps) {
                     >
                       <button
                         onClick={handleMicrophoneClick}
-                        className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors flex-shrink-0 ${
-                          isRecording && !isVoiceChatActive
-                            ? 'bg-red-600 hover:bg-red-700'
-                            : 'bg-purple-600 hover:bg-purple-700'
-                        }`}
+                        className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors flex-shrink-0 ${isRecording && !isVoiceChatActive
+                          ? 'bg-red-600 hover:bg-red-700'
+                          : 'bg-purple-600 hover:bg-purple-700'
+                          }`}
                         aria-label="Voice Input"
                       >
                         <Mic className="w-5 h-5 text-white" />
                       </button>
                       <button
                         onClick={handleVoiceChatClick}
-                        className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors flex-shrink-0 ${
-                          isVoiceChatActive
-                            ? 'bg-red-600 hover:bg-red-700'
-                            : 'bg-orange-500 hover:bg-orange-600'
-                        }`}
+                        className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors flex-shrink-0 ${isVoiceChatActive
+                          ? 'bg-red-600 hover:bg-red-700'
+                          : 'bg-orange-500 hover:bg-orange-600'
+                          }`}
                         aria-label="Audio Input"
                       >
                         <AudioLines className="w-5 h-5 text-white" />

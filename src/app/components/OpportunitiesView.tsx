@@ -13,7 +13,6 @@ import { CLIENTS_LOOKUP } from '../data/clients';
 import { getAdviceIcon } from '../utils/adviceUtils';
 import { generateAIInsights } from '../utils/opportunityInsights';
 import { opportunityActivities } from '../data/seedData';
-import { QuickActionsMenu } from './QuickActionsMenu';
 import { OpportunitySidebar } from './OpportunitySidebar';
 import { OpportunityDetails } from './OpportunityDetails';
 import { OpportunityPipeline } from './OpportunityPipeline';
@@ -40,7 +39,6 @@ export interface OpportunitiesViewProps {
   setShowAddDocumentModal: (show: boolean) => void;
   setShowAddNoteModal: (show: boolean) => void;
   setShowAddTaskModal: (show: boolean) => void;
-  setShowAIAssistantModal: (show: boolean) => void;
   onClientClick: (clientId: number) => void;
 }
 
@@ -86,7 +84,6 @@ export function OpportunitiesView({
   setShowAddDocumentModal,
   setShowAddNoteModal,
   setShowAddTaskModal,
-  setShowAIAssistantModal,
   onClientClick,
 }: OpportunitiesViewProps) {
   const [selectedOpportunity, setSelectedOpportunity] = useState<number | null>(null);
@@ -96,7 +93,7 @@ export function OpportunitiesView({
   const [mobileView, setMobileView] = useState<'list' | 'detail'>('list');
   const [aiSummaryExpanded, setAiSummaryExpanded] = useState(false);
   const [editingNotes, setEditingNotes] = useState(false);
-  const [opportunityNotes, setOpportunityNotes] = useState<Array<{text: string; timestamp: string; user: string}>>([]);
+  const [opportunityNotes, setOpportunityNotes] = useState<Array<{ text: string; timestamp: string; user: string }>>([]);
   const [editingName, setEditingName] = useState(false);
   const [editedName, setEditedName] = useState('');
 
@@ -218,7 +215,7 @@ export function OpportunitiesView({
     if (selectedOpp) {
       const migratedNotes = (selectedOpp.notes || []).map((note: any) => {
         if (typeof note === 'object' && note !== null && 'text' in note) {
-          return note as {text: string; timestamp: string; user: string};
+          return note as { text: string; timestamp: string; user: string };
         }
         return {
           text: note as string,
@@ -232,21 +229,7 @@ export function OpportunitiesView({
   }, [selectedOpportunity, selectedOpp]);
 
   return (
-    <div className="flex-1 flex flex-col lg:flex-row lg:h-full relative">
-      {/* Quick Actions Menu - Only show on client sub-pages */}
-      {clientId && (
-        <div className="fixed bottom-6 right-6 z-40">
-          <QuickActionsMenu
-            setShowAddEventModal={setShowAddEventModal}
-            setShowSendEmailModal={setShowSendEmailModal}
-            setShowAddDocumentModal={setShowAddDocumentModal}
-            setShowAddNoteModal={setShowAddNoteModal}
-            setShowAddTaskModal={setShowAddTaskModal}
-            setShowAddOpportunityModal={setShowAddOpportunityModal}
-            setShowAIAssistantModal={setShowAIAssistantModal}
-          />
-        </div>
-      )}
+    <div className="flex-1 flex flex-col lg:flex-row lg:h-full relative" data-ai-section="Opportunities">
 
       {/* Left Sidebar - Opportunities List */}
       <OpportunitySidebar
@@ -316,7 +299,7 @@ export function OpportunitiesView({
                     <div className="w-8 h-8 bg-orange-100 rounded-sm flex items-center justify-center flex-shrink-0">
                       <Target className="w-5 h-5 text-orange-600" />
                     </div>
-                    <span>{selectedOpp.name}</span>
+                    <span data-ai-field="opportunityName" data-ai-label="Opportunity Name" data-ai-editable="true">{selectedOpp.name}</span>
                     <button
                       onClick={startEditingName}
                       className="p-1.5 text-gray-400 hover:text-emerald-900 hover:bg-stone-200/20 rounded transition-colors"
@@ -330,7 +313,7 @@ export function OpportunitiesView({
             </div>
 
             {/* Client Details - Sticky Header */}
-            <div className="hidden lg:block sticky lg:top-0 z-10 bg-white border-b border-gray-200 p-4 lg:p-6">
+            <div className="hidden lg:block sticky lg:top-0 z-10 bg-white border-b border-gray-200 p-4 lg:p-6" data-ai-section="Client Details">
               <div className="w-full flex items-center justify-between gap-3">
                 <button
                   onClick={() => onClientClick(selectedOpp.clientId)}
@@ -338,10 +321,10 @@ export function OpportunitiesView({
                   title="Go to client"
                 >
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-semibold">
-                    {clientName.split(' ').map(n => n[0]).join('')}
+                    {clientName.split(' ').map((n: string) => n[0]).join('')}
                   </div>
                   <div className="text-left">
-                    <h2 className="font-semibold">{clientName}</h2>
+                    <h2 className="font-semibold" data-ai-field="clientName" data-ai-label="Client Name">{clientName}</h2>
                     <p className="text-xs text-gray-500">Client Details</p>
                   </div>
                 </button>
@@ -355,27 +338,27 @@ export function OpportunitiesView({
               </div>
               {isClientDetailsExpanded && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-sm mt-4">
-                  <div className="flex justify-between">
+                  <div className="flex justify-between" data-ai-field="clientEmail" data-ai-label="Client Email">
                     <span className="text-gray-600">Email:</span>
                     <span className="font-medium">{selectedOpp.clientDetails.email}</span>
                   </div>
-                  <div className="flex justify-between">
+                  <div className="flex justify-between" data-ai-field="kiwisaverCalc" data-ai-label="KiwiSaver Calculation">
                     <span className="text-gray-600">Kiwisaver calc:</span>
                     <span className="font-medium">{selectedOpp.clientDetails.kiwisaverCalc}</span>
                   </div>
-                  <div className="flex justify-between">
+                  <div className="flex justify-between" data-ai-field="firstName" data-ai-label="First Name">
                     <span className="text-gray-600">First Name:</span>
                     <span className="font-medium">{selectedOpp.clientDetails.firstName}</span>
                   </div>
-                  <div className="flex justify-between">
+                  <div className="flex justify-between" data-ai-field="crm" data-ai-label="CRM">
                     <span className="text-gray-600">CRM:</span>
                     <span className="font-medium">{selectedOpp.clientDetails.crm}</span>
                   </div>
-                  <div className="flex justify-between">
+                  <div className="flex justify-between" data-ai-field="nameIR" data-ai-label="Name (IR)">
                     <span className="text-gray-600">Name (IR):</span>
                     <span className="font-medium">{selectedOpp.clientDetails.nameIR}</span>
                   </div>
-                  <div className="flex justify-between">
+                  <div className="flex justify-between" data-ai-field="dateOfBirth" data-ai-label="Date of Birth">
                     <span className="text-gray-600">Date Birth:</span>
                     <span className="font-medium">{selectedOpp.clientDetails.dateOfBirth}</span>
                   </div>
@@ -384,7 +367,7 @@ export function OpportunitiesView({
             </div>
 
             {/* Opportunity Metadata */}
-            <div className="bg-white border-b border-gray-200 p-4 lg:px-6 lg:py-4">
+            <div className="bg-white border-b border-gray-200 p-4 lg:px-6 lg:py-4" data-ai-section="Opportunity Metadata">
               <div className="flex flex-wrap items-center gap-3">
                 <span className={`
                   px-3 py-1 rounded-sm text-sm font-medium flex items-center gap-1.5
@@ -393,19 +376,19 @@ export function OpportunitiesView({
                   ${selectedOpp.type === 'Insurance' ? 'bg-orange-100 text-orange-700' : ''}
                   ${selectedOpp.type === 'KiwiSaver' ? 'bg-green-100 text-green-700' : ''}
                   ${selectedOpp.type === 'Retirement' ? 'bg-indigo-100 text-indigo-700' : ''}
-                `}>
+                `} data-ai-field="opportunityType" data-ai-label="Opportunity Type">
                   {getAdviceIcon(getTypeIcon(selectedOpp.type))}
                   {selectedOpp.type}
                 </span>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
+                <div className="flex items-center gap-2 text-sm text-gray-600" data-ai-field="advisor" data-ai-label="Advisor">
                   <User className="w-4 h-4" />
                   <span>{selectedOpp.advisor}</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
+                <div className="flex items-center gap-2 text-sm text-gray-600" data-ai-field="opportunityDate" data-ai-label="Date">
                   <CalendarIcon className="w-4 h-4" />
                   <span>{selectedOpp.date}</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
+                <div className="flex items-center gap-2 text-sm text-gray-600" data-ai-field="probability" data-ai-label="Probability">
                   <div className="flex items-center gap-1.5">
                     <span className="font-medium">Probability:</span>
                     <span className="font-semibold text-emerald-900">{selectedOpp.probability}%</span>

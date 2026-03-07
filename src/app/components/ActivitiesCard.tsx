@@ -21,7 +21,7 @@ export function ActivitiesCard({ visibleModules, activities, changeTab }: Activi
 
   return (
     <div className="hidden lg:block lg:flex-1 lg:order-3">
-      <div className="bg-white rounded-sm border border-gray-200 p-4 h-full flex flex-col">
+      <div className="bg-white rounded-sm border border-gray-200 p-4 h-full flex flex-col" data-ai-section="Recent Activities">
         <div className="flex items-center gap-2 mb-5 flex-shrink-0">
           <div className="w-8 h-8 bg-gray-100 rounded-sm flex items-center justify-center">
             <Clock className="w-5 h-5 text-sky-600" />
@@ -34,14 +34,14 @@ export function ActivitiesCard({ visibleModules, activities, changeTab }: Activi
             <div className="text-xs font-medium text-gray-500 mb-3">JANUARY 2026</div>
             
             {activities.map((activity, idx) => (
-              <div key={activity.id} className="relative">
+              <div key={activity.id} className="relative" data-ai-field="activity" data-ai-label={activity.title}>
                 {idx !== activities.length - 1 && (
                   <div className="absolute left-4 top-10 bottom-0 w-px bg-gray-200"></div>
                 )}
                 <div className="flex gap-3">
                   <div className={`w-8 h-8 rounded flex items-center justify-center flex-shrink-0 ${
-                    activity.status === 'upcoming' 
-                      ? 'bg-stone-200/50' 
+                    activity.status === 'upcoming'
+                      ? 'bg-stone-200/50'
                       : 'bg-gray-100'
                   }`}>
                     {activity.type === 'meeting' && <CalendarIcon className="w-4 h-4 text-emerald-700" />}
@@ -51,16 +51,16 @@ export function ActivitiesCard({ visibleModules, activities, changeTab }: Activi
                   <div className="flex-1 pb-4">
                     <div className="flex items-start justify-between mb-1">
                       <div>
-                        <div className="text-sm font-medium text-gray-900">{activity.title}</div>
-                        <div className="text-sm text-gray-600">{activity.subtitle}</div>
+                        <div className="text-sm font-medium text-gray-900" data-ai-field="activityTitle" data-ai-label="Activity Title">{activity.title}</div>
+                        <div className="text-sm text-gray-600" data-ai-field="activitySubtitle" data-ai-label="Activity Detail">{activity.subtitle}</div>
                       </div>
                       {activity.status === 'upcoming' && (
-                        <span className="text-xs font-medium text-emerald-900 bg-stone-200/20 px-2 py-1 rounded">
+                        <span className="text-xs font-medium text-emerald-900 bg-stone-200/20 px-2 py-1 rounded" data-ai-field="activityStatus" data-ai-label="Status">
                           Upcoming
                         </span>
                       )}
                     </div>
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-gray-500" data-ai-field="activityDate" data-ai-label="Activity Date">
                       {activity.date} • {activity.time}
                     </div>
                   </div>

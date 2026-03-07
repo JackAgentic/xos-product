@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { QuickActionsMenu } from './QuickActionsMenu';
 import { financialSnapshots as seedSnapshots, seedAssets, seedLiabilities, seedIncome, seedExpenses, seedGoals } from '../data/seedData';
 import {
   Plus,
@@ -76,14 +75,13 @@ interface GoalItem {
   priority: string;
 }
 
-export function FinancialsView({ 
+export function FinancialsView({
   setShowAddEventModal,
   setShowSendEmailModal,
   setShowAddDocumentModal,
   setShowAddNoteModal,
   setShowAddTaskModal,
-  setShowAddOpportunityModal,
-  setShowAIAssistantModal
+  setShowAddOpportunityModal
 }: {
   setShowAddEventModal: (show: boolean) => void;
   setShowSendEmailModal: (show: boolean) => void;
@@ -91,7 +89,6 @@ export function FinancialsView({
   setShowAddNoteModal: (show: boolean) => void;
   setShowAddTaskModal: (show: boolean) => void;
   setShowAddOpportunityModal: (show: boolean) => void;
-  setShowAIAssistantModal: (show: boolean) => void;
 }) {
   const [snapshots, setSnapshots] = useState<FinancialSnapshot[]>(seedSnapshots);
 
@@ -320,22 +317,10 @@ export function FinancialsView({
   };
 
   return (
-    <div className="flex h-full overflow-hidden bg-gray-50 relative">
-      {/* Quick Actions Menu - fixed to bottom right of viewport */}
-      <div className="fixed bottom-6 right-6 z-40">
-        <QuickActionsMenu 
-          setShowAddEventModal={setShowAddEventModal}
-          setShowSendEmailModal={setShowSendEmailModal}
-          setShowAddDocumentModal={setShowAddDocumentModal}
-          setShowAddNoteModal={setShowAddNoteModal}
-          setShowAddTaskModal={setShowAddTaskModal}
-          setShowAddOpportunityModal={setShowAddOpportunityModal}
-          setShowAIAssistantModal={setShowAIAssistantModal}
-        />
-      </div>
+    <div className="flex h-full overflow-hidden bg-gray-50 relative" data-ai-section="Financials">
 
       {/* Left Sidebar - Snapshots List */}
-      <div className="w-80 border-r border-gray-200 bg-white flex flex-col h-full">
+      <div className="w-80 border-r border-gray-200 bg-white flex flex-col h-full" data-ai-section="Financial Snapshots">
         {/* Header */}
         <div className="p-4 border-b border-gray-200">
           <div className="flex items-center justify-between mb-3">
@@ -347,7 +332,7 @@ export function FinancialsView({
               <Plus className="w-4 h-4" />
             </button>
           </div>
-          
+
           {/* Search */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -416,11 +401,12 @@ export function FinancialsView({
                 <div
                   key={snapshot.id}
                   onClick={() => setSelectedSnapshot(snapshot)}
-                  className={`p-3 mb-2 rounded-sm border cursor-pointer transition-colors relative ${
-                    selectedSnapshot?.id === snapshot.id
-                      ? 'border-emerald-900 bg-stone-200'
-                      : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                  }`}
+                  className={`p-3 mb-2 rounded-sm border cursor-pointer transition-colors relative ${selectedSnapshot?.id === snapshot.id
+                    ? 'border-emerald-900 bg-stone-200'
+                    : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                    }`}
+                  data-ai-field="snapshotCard"
+                  data-ai-label={`Snapshot: ${snapshot.name}`}
                 >
                   {/* Action Menu */}
                   <div className="absolute top-2 right-2">
@@ -433,7 +419,7 @@ export function FinancialsView({
                     >
                       <MoreVertical className="w-4 h-4 text-gray-500" />
                     </button>
-                    
+
                     {showActionMenu === snapshot.id && (
                       <div className="absolute top-8 right-0 w-40 bg-white border border-gray-200 rounded-sm shadow-lg z-10">
                         <button
@@ -452,12 +438,12 @@ export function FinancialsView({
                   </div>
 
                   <div className="pr-6">
-                    <div className="font-medium text-gray-900 mb-1">{snapshot.name}</div>
-                    <div className="flex items-center gap-2 text-xs text-gray-500 mb-2">
+                    <div className="font-medium text-gray-900 mb-1" data-ai-field="snapshotName" data-ai-label="Snapshot Name">{snapshot.name}</div>
+                    <div className="flex items-center gap-2 text-xs text-gray-500 mb-2" data-ai-field="snapshotDate" data-ai-label="Snapshot Date">
                       <Calendar className="w-3 h-3" />
                       {formatDate(snapshot.date)}
                     </div>
-                    
+
                     {/* Status Badge */}
                     <div className="flex items-center gap-2 mb-2">
                       <span className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium ${getStatusColor(snapshot.status)}`}>
@@ -481,7 +467,7 @@ export function FinancialsView({
 
                     {/* Net Worth */}
                     {snapshot.status === 'completed' && (
-                      <div className="text-sm">
+                      <div className="text-sm" data-ai-field="snapshotNetWorth" data-ai-label="Snapshot Net Worth">
                         <span className="text-gray-500">Net Worth: </span>
                         <span className={`font-medium ${snapshot.netWorth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                           {formatCurrency(snapshot.netWorth)}
@@ -552,11 +538,10 @@ export function FinancialsView({
                       <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
-                        className={`flex items-center gap-2 px-6 py-3 text-sm font-medium whitespace-nowrap transition-colors ${
-                          activeTab === tab.id
-                            ? 'text-emerald-900 border-b-2 border-emerald-900 bg-stone-200/30'
-                            : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                        }`}
+                        className={`flex items-center gap-2 px-6 py-3 text-sm font-medium whitespace-nowrap transition-colors ${activeTab === tab.id
+                          ? 'text-emerald-900 border-b-2 border-emerald-900 bg-stone-200/30'
+                          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                          }`}
                       >
                         <Icon className="w-4 h-4" />
                         {tab.label}
@@ -570,7 +555,7 @@ export function FinancialsView({
               <div className="bg-white rounded-sm border border-gray-200 p-6">
                 {/* Assets Tab */}
                 {activeTab === 'assets' && (
-                  <div className="space-y-6">
+                  <div className="space-y-6" data-ai-section="Assets">
                     <div className="flex items-center justify-between">
                       <div>
                         <h3 className="text-lg font-semibold">Assets</h3>
@@ -599,7 +584,7 @@ export function FinancialsView({
                     ) : (
                       <div className="space-y-4">
                         {assets.map((asset, index) => (
-                          <div key={asset.id} className="p-4 border border-gray-200 rounded-sm">
+                          <div key={asset.id} className="p-4 border border-gray-200 rounded-sm" data-ai-field="assetEntry" data-ai-label={`Asset: ${asset.description || `Asset ${index + 1}`}`}>
                             <div className="flex items-center justify-between mb-4">
                               <h4 className="font-medium text-gray-900">Asset {index + 1}</h4>
                               <button
@@ -617,6 +602,7 @@ export function FinancialsView({
                                   value={asset.type}
                                   onChange={(e) => updateAsset(asset.id, 'type', e.target.value)}
                                   className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
+                                  data-ai-field="assetType" data-ai-label="Asset Type" data-ai-editable="true"
                                 >
                                   <option value="">Select type</option>
                                   {assetTypes.map((type) => (
@@ -633,6 +619,7 @@ export function FinancialsView({
                                   onChange={(e) => updateAsset(asset.id, 'value', e.target.value)}
                                   placeholder="$100,000"
                                   className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
+                                  data-ai-field="assetValue" data-ai-label="Asset Value" data-ai-editable="true"
                                 />
                               </div>
 
@@ -644,6 +631,7 @@ export function FinancialsView({
                                   onChange={(e) => updateAsset(asset.id, 'description', e.target.value)}
                                   placeholder="e.g., Main residence, Investment portfolio"
                                   className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
+                                  data-ai-field="assetDescription" data-ai-label="Asset Description" data-ai-editable="true"
                                 />
                               </div>
 
@@ -653,6 +641,7 @@ export function FinancialsView({
                                   value={asset.ownership}
                                   onChange={(e) => updateAsset(asset.id, 'ownership', e.target.value)}
                                   className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
+                                  data-ai-field="assetOwnership" data-ai-label="Asset Ownership" data-ai-editable="true"
                                 >
                                   <option value="">Select ownership</option>
                                   <option value="individual">Individual</option>
@@ -671,7 +660,7 @@ export function FinancialsView({
 
                 {/* Liabilities Tab */}
                 {activeTab === 'liabilities' && (
-                  <div className="space-y-6">
+                  <div className="space-y-6" data-ai-section="Liabilities">
                     <div className="flex items-center justify-between">
                       <div>
                         <h3 className="text-lg font-semibold">Liabilities</h3>
@@ -700,7 +689,7 @@ export function FinancialsView({
                     ) : (
                       <div className="space-y-4">
                         {liabilities.map((liability, index) => (
-                          <div key={liability.id} className="p-4 border border-gray-200 rounded-sm">
+                          <div key={liability.id} className="p-4 border border-gray-200 rounded-sm" data-ai-field="liabilityEntry" data-ai-label={`Liability: ${liability.description || `Liability ${index + 1}`}`}>
                             <div className="flex items-center justify-between mb-4">
                               <h4 className="font-medium text-gray-900">Liability {index + 1}</h4>
                               <button
@@ -718,6 +707,7 @@ export function FinancialsView({
                                   value={liability.type}
                                   onChange={(e) => updateLiability(liability.id, 'type', e.target.value)}
                                   className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
+                                  data-ai-field="liabilityType" data-ai-label="Liability Type" data-ai-editable="true"
                                 >
                                   <option value="">Select type</option>
                                   {liabilityTypes.map((type) => (
@@ -734,6 +724,7 @@ export function FinancialsView({
                                   onChange={(e) => updateLiability(liability.id, 'balance', e.target.value)}
                                   placeholder="$250,000"
                                   className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
+                                  data-ai-field="liabilityBalance" data-ai-label="Current Balance" data-ai-editable="true"
                                 />
                               </div>
 
@@ -745,6 +736,7 @@ export function FinancialsView({
                                   onChange={(e) => updateLiability(liability.id, 'description', e.target.value)}
                                   placeholder="e.g., Home mortgage, Car loan"
                                   className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
+                                  data-ai-field="liabilityDescription" data-ai-label="Liability Description" data-ai-editable="true"
                                 />
                               </div>
 
@@ -756,6 +748,7 @@ export function FinancialsView({
                                   onChange={(e) => updateLiability(liability.id, 'interestRate', e.target.value)}
                                   placeholder="5.5%"
                                   className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
+                                  data-ai-field="liabilityInterestRate" data-ai-label="Interest Rate" data-ai-editable="true"
                                 />
                               </div>
 
@@ -767,6 +760,7 @@ export function FinancialsView({
                                   onChange={(e) => updateLiability(liability.id, 'payment', e.target.value)}
                                   placeholder="$1,500"
                                   className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
+                                  data-ai-field="liabilityPayment" data-ai-label="Monthly Payment" data-ai-editable="true"
                                 />
                               </div>
                             </div>
@@ -779,9 +773,9 @@ export function FinancialsView({
 
                 {/* Income & Expenses Tab */}
                 {activeTab === 'income-expenses' && (
-                  <div className="space-y-8">
+                  <div className="space-y-8" data-ai-section="Income and Expenses">
                     {/* Income Section */}
-                    <div>
+                    <div data-ai-section="Income">
                       <div className="flex items-center justify-between mb-4">
                         <div>
                           <h3 className="text-lg font-semibold">Income Sources</h3>
@@ -809,7 +803,7 @@ export function FinancialsView({
                       ) : (
                         <div className="space-y-3">
                           {incomeItems.map((income, index) => (
-                            <div key={income.id} className="p-4 border border-gray-200 rounded-sm">
+                            <div key={income.id} className="p-4 border border-gray-200 rounded-sm" data-ai-field="incomeEntry" data-ai-label={`Income: ${income.source || `Income ${index + 1}`}`}>
                               <div className="flex items-center justify-between mb-3">
                                 <h4 className="font-medium text-gray-900">Income {index + 1}</h4>
                                 <button
@@ -829,6 +823,7 @@ export function FinancialsView({
                                     onChange={(e) => updateIncome(income.id, 'source', e.target.value)}
                                     placeholder="e.g., Salary, Rental"
                                     className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
+                                    data-ai-field="incomeSource" data-ai-label="Income Source" data-ai-editable="true"
                                   />
                                 </div>
 
@@ -840,6 +835,7 @@ export function FinancialsView({
                                     onChange={(e) => updateIncome(income.id, 'amount', e.target.value)}
                                     placeholder="$5,000"
                                     className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
+                                    data-ai-field="incomeAmount" data-ai-label="Income Amount" data-ai-editable="true"
                                   />
                                 </div>
 
@@ -849,6 +845,7 @@ export function FinancialsView({
                                     value={income.frequency}
                                     onChange={(e) => updateIncome(income.id, 'frequency', e.target.value)}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
+                                    data-ai-field="incomeFrequency" data-ai-label="Income Frequency" data-ai-editable="true"
                                   >
                                     <option value="weekly">Weekly</option>
                                     <option value="fortnightly">Fortnightly</option>
@@ -864,7 +861,7 @@ export function FinancialsView({
                     </div>
 
                     {/* Expenses Section */}
-                    <div className="border-t border-gray-200 pt-8">
+                    <div className="border-t border-gray-200 pt-8" data-ai-section="Expenses">
                       <div className="flex items-center justify-between mb-4">
                         <div>
                           <h3 className="text-lg font-semibold">Expenses</h3>
@@ -892,7 +889,7 @@ export function FinancialsView({
                       ) : (
                         <div className="space-y-3">
                           {expenseItems.map((expense, index) => (
-                            <div key={expense.id} className="p-4 border border-gray-200 rounded-sm">
+                            <div key={expense.id} className="p-4 border border-gray-200 rounded-sm" data-ai-field="expenseEntry" data-ai-label={`Expense: ${expense.category || `Expense ${index + 1}`}`}>
                               <div className="flex items-center justify-between mb-3">
                                 <h4 className="font-medium text-gray-900">Expense {index + 1}</h4>
                                 <button
@@ -912,6 +909,7 @@ export function FinancialsView({
                                     onChange={(e) => updateExpense(expense.id, 'category', e.target.value)}
                                     placeholder="e.g., Housing, Food"
                                     className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
+                                    data-ai-field="expenseCategory" data-ai-label="Expense Category" data-ai-editable="true"
                                   />
                                 </div>
 
@@ -923,6 +921,7 @@ export function FinancialsView({
                                     onChange={(e) => updateExpense(expense.id, 'amount', e.target.value)}
                                     placeholder="$2,000"
                                     className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
+                                    data-ai-field="expenseAmount" data-ai-label="Expense Amount" data-ai-editable="true"
                                   />
                                 </div>
 
@@ -932,6 +931,7 @@ export function FinancialsView({
                                     value={expense.frequency}
                                     onChange={(e) => updateExpense(expense.id, 'frequency', e.target.value)}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
+                                    data-ai-field="expenseFrequency" data-ai-label="Expense Frequency" data-ai-editable="true"
                                   >
                                     <option value="weekly">Weekly</option>
                                     <option value="fortnightly">Fortnightly</option>
@@ -950,7 +950,7 @@ export function FinancialsView({
 
                 {/* Goals Tab */}
                 {activeTab === 'goals' && (
-                  <div className="space-y-6">
+                  <div className="space-y-6" data-ai-section="Financial Goals">
                     <div className="flex items-center justify-between">
                       <div>
                         <h3 className="text-lg font-semibold">Financial Goals</h3>
@@ -979,7 +979,7 @@ export function FinancialsView({
                     ) : (
                       <div className="space-y-4">
                         {goals.map((goal, index) => (
-                          <div key={goal.id} className="p-4 border border-gray-200 rounded-sm">
+                          <div key={goal.id} className="p-4 border border-gray-200 rounded-sm" data-ai-field="goalEntry" data-ai-label={`Goal: ${goal.name || `Goal ${index + 1}`}`}>
                             <div className="flex items-center justify-between mb-4">
                               <h4 className="font-medium text-gray-900">Goal {index + 1}</h4>
                               <button
@@ -999,6 +999,7 @@ export function FinancialsView({
                                   onChange={(e) => updateGoal(goal.id, 'name', e.target.value)}
                                   placeholder="e.g., Retirement Fund, House Deposit"
                                   className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
+                                  data-ai-field="goalName" data-ai-label="Goal Name" data-ai-editable="true"
                                 />
                               </div>
 
@@ -1010,6 +1011,7 @@ export function FinancialsView({
                                   onChange={(e) => updateGoal(goal.id, 'targetAmount', e.target.value)}
                                   placeholder="$500,000"
                                   className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
+                                  data-ai-field="goalTargetAmount" data-ai-label="Target Amount" data-ai-editable="true"
                                 />
                               </div>
 
@@ -1020,6 +1022,7 @@ export function FinancialsView({
                                   value={goal.targetDate}
                                   onChange={(e) => updateGoal(goal.id, 'targetDate', e.target.value)}
                                   className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
+                                  data-ai-field="goalTargetDate" data-ai-label="Target Date" data-ai-editable="true"
                                 />
                               </div>
 
@@ -1029,6 +1032,7 @@ export function FinancialsView({
                                   value={goal.priority}
                                   onChange={(e) => updateGoal(goal.id, 'priority', e.target.value)}
                                   className="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 h-10"
+                                  data-ai-field="goalPriority" data-ai-label="Goal Priority" data-ai-editable="true"
                                 >
                                   <option value="low">Low</option>
                                   <option value="medium">Medium</option>
@@ -1045,7 +1049,7 @@ export function FinancialsView({
 
                 {/* Summary Tab */}
                 {activeTab === 'summary' && (
-                  <div className="space-y-6">
+                  <div className="space-y-6" data-ai-section="Net Worth Summary">
                     <div>
                       <h3 className="text-lg font-semibold mb-4">Net Worth Summary</h3>
                       <p className="text-sm text-gray-600 mb-6">Overview of total financial position</p>
@@ -1053,46 +1057,45 @@ export function FinancialsView({
 
                     {/* Summary Cards */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-sm border border-green-200">
+                      <div className="p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-sm border border-green-200" data-ai-field="totalAssets" data-ai-label="Total Assets">
                         <div className="flex items-center gap-2 text-green-700 mb-2">
                           <TrendingUp className="w-5 h-5" />
                           <span className="text-sm font-medium">Total Assets</span>
                         </div>
-                        <div className="text-2xl font-bold text-green-900">
+                        <div className="text-2xl font-bold text-green-900" data-ai-field="totalAssetsValue" data-ai-label="Total Assets Value">
                           {formatCurrency(calculateTotals().totalAssets)}
                         </div>
-                        <div className="text-xs text-green-600 mt-1">{assets.length} items</div>
+                        <div className="text-xs text-green-600 mt-1" data-ai-field="totalAssetsCount" data-ai-label="Number of Assets">{assets.length} items</div>
                       </div>
 
-                      <div className="p-6 bg-gradient-to-br from-red-50 to-red-100 rounded-sm border border-red-200">
+                      <div className="p-6 bg-gradient-to-br from-red-50 to-red-100 rounded-sm border border-red-200" data-ai-field="totalLiabilities" data-ai-label="Total Liabilities">
                         <div className="flex items-center gap-2 text-red-700 mb-2">
                           <TrendingDown className="w-5 h-5" />
                           <span className="text-sm font-medium">Total Liabilities</span>
                         </div>
-                        <div className="text-2xl font-bold text-red-900">
+                        <div className="text-2xl font-bold text-red-900" data-ai-field="totalLiabilitiesValue" data-ai-label="Total Liabilities Value">
                           {formatCurrency(calculateTotals().totalLiabilities)}
                         </div>
-                        <div className="text-xs text-red-600 mt-1">{liabilities.length} items</div>
+                        <div className="text-xs text-red-600 mt-1" data-ai-field="totalLiabilitiesCount" data-ai-label="Number of Liabilities">{liabilities.length} items</div>
                       </div>
 
-                      <div className="p-6 bg-gradient-to-br from-stone-200 to-sky-100 rounded-sm border border-emerald-900">
+                      <div className="p-6 bg-gradient-to-br from-stone-200 to-sky-100 rounded-sm border border-emerald-900" data-ai-field="netWorth" data-ai-label="Net Worth">
                         <div className="flex items-center gap-2 text-emerald-950 mb-2">
                           <DollarSign className="w-5 h-5" />
                           <span className="text-sm font-medium">Net Worth</span>
                         </div>
-                        <div className={`text-2xl font-bold ${
-                          calculateTotals().netWorth >= 0 ? 'text-emerald-950' : 'text-red-900'
-                        }`}>
+                        <div className={`text-2xl font-bold ${calculateTotals().netWorth >= 0 ? 'text-emerald-950' : 'text-red-900'
+                          }`} data-ai-field="netWorthValue" data-ai-label="Net Worth Value">
                           {formatCurrency(calculateTotals().netWorth)}
                         </div>
-                        <div className="text-xs text-emerald-900 mt-1">
+                        <div className="text-xs text-emerald-900 mt-1" data-ai-field="netWorthPosition" data-ai-label="Net Worth Position">
                           {calculateTotals().netWorth >= 0 ? 'Positive position' : 'Negative position'}
                         </div>
                       </div>
                     </div>
 
                     {/* Breakdown Table */}
-                    <div className="border border-gray-200 rounded-sm overflow-hidden">
+                    <div className="border border-gray-200 rounded-sm overflow-hidden" data-ai-section="Net Worth Breakdown">
                       <table className="w-full">
                         <thead className="bg-gray-50 border-b border-gray-200">
                           <tr>
@@ -1104,14 +1107,14 @@ export function FinancialsView({
                           {assets.map((asset) => {
                             const value = parseFloat(asset.value.replace(/[^0-9.-]+/g, '')) || 0;
                             return (
-                              <tr key={asset.id}>
+                              <tr key={asset.id} data-ai-field="assetBreakdownRow" data-ai-label={`Asset: ${asset.description || 'Unnamed Asset'}`}>
                                 <td className="px-4 py-3 text-sm">
-                                  <div className="font-medium text-gray-900">
+                                  <div className="font-medium text-gray-900" data-ai-field="breakdownAssetName" data-ai-label="Asset Name">
                                     {asset.description || 'Unnamed Asset'}
                                   </div>
-                                  <div className="text-xs text-gray-500 capitalize">{asset.type || 'Asset'}</div>
+                                  <div className="text-xs text-gray-500 capitalize" data-ai-field="breakdownAssetType" data-ai-label="Asset Type">{asset.type || 'Asset'}</div>
                                 </td>
-                                <td className="px-4 py-3 text-sm text-right font-medium text-green-600">
+                                <td className="px-4 py-3 text-sm text-right font-medium text-green-600" data-ai-field="breakdownAssetValue" data-ai-label="Asset Value">
                                   {formatCurrency(value)}
                                 </td>
                               </tr>
@@ -1120,14 +1123,14 @@ export function FinancialsView({
                           {liabilities.map((liability) => {
                             const value = parseFloat(liability.balance.replace(/[^0-9.-]+/g, '')) || 0;
                             return (
-                              <tr key={liability.id}>
+                              <tr key={liability.id} data-ai-field="liabilityBreakdownRow" data-ai-label={`Liability: ${liability.description || 'Unnamed Liability'}`}>
                                 <td className="px-4 py-3 text-sm">
-                                  <div className="font-medium text-gray-900">
+                                  <div className="font-medium text-gray-900" data-ai-field="breakdownLiabilityName" data-ai-label="Liability Name">
                                     {liability.description || 'Unnamed Liability'}
                                   </div>
-                                  <div className="text-xs text-gray-500 capitalize">{liability.type || 'Liability'}</div>
+                                  <div className="text-xs text-gray-500 capitalize" data-ai-field="breakdownLiabilityType" data-ai-label="Liability Type">{liability.type || 'Liability'}</div>
                                 </td>
-                                <td className="px-4 py-3 text-sm text-right font-medium text-red-600">
+                                <td className="px-4 py-3 text-sm text-right font-medium text-red-600" data-ai-field="breakdownLiabilityValue" data-ai-label="Liability Value">
                                   -{formatCurrency(value)}
                                 </td>
                               </tr>
