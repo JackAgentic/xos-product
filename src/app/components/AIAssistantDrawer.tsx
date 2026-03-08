@@ -630,7 +630,7 @@ export function AIAssistantDrawer({ isOpen, onClose, elementContext, dashboardCo
             </div>
 
             {/* Input Area */}
-            <div className="bg-white border-t border-gray-200 px-4 py-4 relative">
+            <div className="bg-white border-t border-gray-200 pl-16 sm:pl-12 pr-4 py-4 relative">
               {/* Voice Recording Overlay */}
               <AnimatePresence>
                 {isRecording && (

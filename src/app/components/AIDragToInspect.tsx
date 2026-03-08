@@ -126,6 +126,10 @@ export function AIDragProvider({
   const orbAnchorCircleRef = useRef<HTMLDivElement>(null);
   const orbIconCircleRef = useRef<HTMLDivElement>(null);
   const orbIconRef = useRef<HTMLDivElement>(null);
+  // Proximity gooey tracking refs
+  const proximityLayerRef = useRef<HTMLDivElement>(null);
+  const proximityDockBlobRef = useRef<HTMLDivElement>(null);
+  const proximityTrackBlobRef = useRef<HTMLDivElement>(null);
 
   const dragState = useRef({
     active: false,
@@ -202,12 +206,25 @@ export function AIDragProvider({
     const drawerWidth = windowWidth >= 768 ? 600 : 500;
 
     if (isDrawerOpen && !isMobile) {
-      // Dock to Drawer Header (replaces the static Sparkles icon)
+      // Dock to drawer left edge, aligned with chat input — half in, half out
       return {
-        left: `${windowWidth - drawerWidth + 30}px`,
-        top: '32px',
-        bottom: 'auto',
-        transform: 'translate(-50%, -50%) scale(0.65)',
+        left: `${windowWidth - drawerWidth}px`,
+        bottom: '12px',
+        top: 'auto',
+        transform: 'translateX(-50%) scale(1)',
+        opacity: 1,
+        pointerEvents: 'auto' as const,
+        zIndex: 100,
+      };
+    }
+
+    if (isDrawerOpen && isMobile) {
+      // Mobile: fully inside drawer at bottom-left, beside the chat input
+      return {
+        left: '32px',
+        bottom: '12px',
+        top: 'auto',
+        transform: 'translateX(-50%) scale(1)',
         opacity: 1,
         pointerEvents: 'auto' as const,
         zIndex: 100,
@@ -340,8 +357,8 @@ export function AIDragProvider({
       const _scale = state.hasDetached ? 1 : Math.max(0.6, 0.6 + (dist / DETACH_DISTANCE) * 0.4);
       // Touch thumbs are much larger — push the icon bubble further away
       const isTouch = (e as PointerEvent).pointerType === 'touch';
-      const iconX = e.clientX + (isTouch ? -10 : -14);
-      const iconY = e.clientY + (isTouch ? -60 : -48);
+      const iconX = e.clientX + (isTouch ? -10 : -42);
+      const iconY = e.clientY + (isTouch ? -60 : -20);
 
       if (orbAnchorCircleRef.current) {
         orbAnchorCircleRef.current.style.left = `${e.clientX}px`;
@@ -623,6 +640,81 @@ export function AIDragProvider({
     };
   }, [isDragging, clearHighlight, onOpenAI]);
 
+  // Proximity gooey cursor tracking — liquid stretch toward nearby cursor
+  useEffect(() => {
+    if (isDragging || !showButton) return;
+    const PROXIMITY_RANGE = 120;
+    let inRange = false;
+
+    const onMove = (e: PointerEvent) => {
+      if (e.pointerType !== 'mouse' || !dockRef.current) return;
+
+      const rect = dockRef.current.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const dx = e.clientX - cx;
+      const dy = e.clientY - cy;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      if (dist < PROXIMITY_RANGE && dist > 5) {
+        const proximity = 1 - dist / PROXIMITY_RANGE; // 0 at edge → 1 at center
+
+        if (!inRange) {
+          inRange = true;
+          if (proximityLayerRef.current) {
+            proximityLayerRef.current.style.transition = 'opacity 0.15s';
+            proximityLayerRef.current.style.opacity = '1';
+          }
+        }
+
+        // Dock blob: centered on orb
+        if (proximityDockBlobRef.current) {
+          proximityDockBlobRef.current.style.transform = `translate(${cx}px, ${cy}px) translate(-50%, -50%) scale(1.05)`;
+          proximityDockBlobRef.current.style.width = `${rect.width}px`;
+          proximityDockBlobRef.current.style.height = `${rect.height}px`;
+        }
+
+        // Track blob: stretches from orb toward cursor, grows with proximity
+        // Use exponential curve so stretching ramps up aggressively when close
+        const aggressiveProximity = proximity * proximity * proximity; // cubic ease-in
+        const blobScale = 0.04 + aggressiveProximity * 0.35;
+        const extension = 0.7 + aggressiveProximity * 0.25; // reaches further when close
+        const blobX = cx + dx * extension;
+        const blobY = cy + dy * extension;
+        if (proximityTrackBlobRef.current) {
+          proximityTrackBlobRef.current.style.transform = `translate(${blobX}px, ${blobY}px) translate(-50%, -50%) scale(${blobScale})`;
+        }
+
+        // Orb deformation toward cursor — aggressive when close
+        if (dockBgRef.current) {
+          const pullFactor = aggressiveProximity * 0.18;
+          const angle = Math.atan2(dy, dx);
+          const squish = 1 + aggressiveProximity * 0.12;
+          dockBgRef.current.style.transition = 'transform 0.1s ease-out';
+          dockBgRef.current.style.transform = [
+            `translate(${Math.cos(angle) * dist * pullFactor}px, ${Math.sin(angle) * dist * pullFactor}px)`,
+            `rotate(${angle}rad)`,
+            `scaleX(${squish})`,
+            `scaleY(${1 / squish})`,
+            `rotate(${-angle}rad)`,
+          ].join(' ');
+        }
+      } else if (inRange) {
+        inRange = false;
+        if (proximityLayerRef.current) {
+          proximityLayerRef.current.style.transition = 'opacity 0.3s';
+          proximityLayerRef.current.style.opacity = '0';
+        }
+        if (dockBgRef.current) {
+          dockBgRef.current.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
+          dockBgRef.current.style.transform = '';
+        }
+      }
+    };
+
+    document.addEventListener('pointermove', onMove);
+    return () => document.removeEventListener('pointermove', onMove);
+  }, [isDragging, showButton]);
 
   const clearSelection = useCallback(() => setSelectedElement(null), []);
 
@@ -744,6 +836,31 @@ export function AIDragProvider({
           ` : ''}
         `}
       </style>
+
+      {/* Proximity gooey cursor tracking layer */}
+      {showButton && !isDragging && (
+        <div
+          ref={proximityLayerRef}
+          className="fixed inset-0 pointer-events-none"
+          style={{
+            filter: 'url(#ai-liquid-goo)',
+            opacity: 0,
+            zIndex: 49,
+            willChange: 'opacity',
+          }}
+        >
+          <div
+            ref={proximityDockBlobRef}
+            className="absolute bg-white rounded-full"
+            style={{ willChange: 'transform' }}
+          />
+          <div
+            ref={proximityTrackBlobRef}
+            className="absolute w-2.5 h-2.5 bg-white rounded-full"
+            style={{ willChange: 'transform' }}
+          />
+        </div>
+      )}
 
       {/* Drag overlay — z above drawer when drawer is open */}
       {isDragging && (

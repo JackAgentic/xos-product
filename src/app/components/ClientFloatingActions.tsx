@@ -97,7 +97,7 @@ export function ClientFloatingActions({
 
         setActions(
             <AnimatePresence mode="wait">
-                <div className="flex items-center justify-center gap-2 h-14">
+                <div className="flex items-center justify-center gap-1 h-14">
                     {/* Placeholder for the AI Orb to track resting position */}
                     {!isDrawerOpen && <div ref={registerPlaceholder} className="w-14 h-14 flex-shrink-0" />}
 
