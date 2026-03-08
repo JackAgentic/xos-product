@@ -257,6 +257,11 @@ function App() {
           onConfigChange={setDashboardConfig}
           dashboardData={dashboardData}
           onDataChange={setDashboardData}
+          onNavigate={handleMainMenuClick}
+          setShowAddOpportunityModal={setShowAddOpportunityModal}
+          setShowAddEventModal={setShowAddEventModal}
+          setShowSendEmailModal={setShowSendEmailModal}
+          setShowAddTaskModal={setShowAddTaskModal}
         />
       );
     }

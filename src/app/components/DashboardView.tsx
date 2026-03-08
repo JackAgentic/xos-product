@@ -16,6 +16,8 @@ import {
   Activity,
   Gauge,
   Award,
+  Plus,
+  Eye,
 } from 'lucide-react';
 import { apiFetch } from '../lib/api';
 import { topClientsData } from '../data/seedData';
@@ -47,6 +49,11 @@ export function DashboardView({
   onConfigChange,
   dashboardData,
   onDataChange,
+  onNavigate,
+  setShowAddOpportunityModal,
+  setShowAddEventModal,
+  setShowSendEmailModal,
+  setShowAddTaskModal,
 }: {
   setMobileDrawerOpen: (open: boolean) => void;
   clients?: any[];
@@ -56,6 +63,11 @@ export function DashboardView({
   onConfigChange: (config: DashboardConfig) => void;
   dashboardData: DashboardData;
   onDataChange: (data: DashboardData) => void;
+  onNavigate: (view: string) => void;
+  setShowAddOpportunityModal: (open: boolean) => void;
+  setShowAddEventModal: (open: boolean) => void;
+  setShowSendEmailModal: (open: boolean) => void;
+  setShowAddTaskModal: (open: boolean) => void;
 }) {
   const [timeRange, setTimeRange] = useState<'week' | 'month' | 'quarter' | 'year'>('year');
   const [apiDashboard, setApiDashboard] = useState<any>(null);
@@ -377,6 +389,31 @@ export function DashboardView({
 
     const { headline, subMetrics } = cardContent();
 
+    const cardActions: Record<string, { label: string; icon: typeof Plus; onClick: () => void }[]> = {
+      revenueGoal: [
+        { label: 'Add Opportunity', icon: Plus, onClick: () => setShowAddOpportunityModal(true) },
+        { label: 'View Clients', icon: Eye, onClick: () => onNavigate('clients') },
+      ],
+      pipelineHealth: [
+        { label: 'New Opportunity', icon: Plus, onClick: () => setShowAddOpportunityModal(true) },
+        { label: 'View Pipeline', icon: Eye, onClick: () => onNavigate('opportunities') },
+      ],
+      performanceMetrics: [
+        { label: 'Log Activity', icon: Plus, onClick: () => setShowAddTaskModal(true) },
+        { label: 'View Opportunities', icon: Eye, onClick: () => onNavigate('opportunities') },
+      ],
+      activityMetrics: [
+        { label: 'Schedule Meeting', icon: Plus, onClick: () => setShowAddEventModal(true) },
+        { label: 'Send Email', icon: Mail, onClick: () => setShowSendEmailModal(true) },
+      ],
+      customerInsights: [
+        { label: 'Add Opportunity', icon: Plus, onClick: () => setShowAddOpportunityModal(true) },
+        { label: 'View Clients', icon: Eye, onClick: () => onNavigate('clients') },
+      ],
+    };
+
+    const actions = cardActions[config.metricId] || [];
+
     return (
       <div
         key={config.id}
@@ -406,6 +443,23 @@ export function DashboardView({
           <span className={`text-xs ${trendColor} font-medium`}>{config.trendValue}</span>
           <span className="text-xs text-gray-400">vs prior</span>
         </div>
+        {actions.length > 0 && (
+          <div className="flex items-center justify-between pt-3 mt-3 border-t border-gray-100">
+            {actions.map((action) => {
+              const ActionIcon = action.icon;
+              return (
+                <button
+                  key={action.label}
+                  onClick={action.onClick}
+                  className="flex items-center gap-1 text-[11px] whitespace-nowrap text-gray-400 hover:text-emerald-800 transition-colors"
+                >
+                  <ActionIcon className="w-3 h-3 flex-shrink-0" />
+                  {action.label}
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
     );
   }
@@ -462,10 +516,10 @@ export function DashboardView({
           <>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900">{config.title}</h3>
-              <button className="text-sm text-emerald-900 hover:text-emerald-950 font-medium">View All</button>
+              <button onClick={() => onNavigate('calendar')} className="text-sm text-emerald-900 hover:text-emerald-950 font-medium">View All</button>
             </div>
             <div className="space-y-3">
-              {upcomingMeetings.slice(0, config.maxItems).map((meeting) => (
+              {upcomingMeetings.slice(0, config.maxItems).map((meeting: any) => (
                 <div key={meeting.id} className="p-3 bg-gray-50 rounded-sm hover:bg-gray-100 transition-colors cursor-pointer border border-gray-100">
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
@@ -522,10 +576,10 @@ export function DashboardView({
           <>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900">{config.title}</h3>
-              <button className="text-sm text-emerald-900 hover:text-emerald-950 font-medium">View All</button>
+              <button onClick={() => setShowAddTaskModal(true)} className="text-sm text-emerald-900 hover:text-emerald-950 font-medium">Log Activity</button>
             </div>
             <div className="space-y-3">
-              {recentActivities.slice(0, config.maxItems).map((activity) => {
+              {recentActivities.slice(0, config.maxItems).map((activity: any) => {
                 const Icon = activity.icon;
                 return (
                   <div key={activity.id} className="flex items-start gap-3 p-3 rounded-sm hover:bg-gray-50 transition-colors cursor-pointer">
@@ -553,7 +607,7 @@ export function DashboardView({
                 <h3 className="text-lg font-semibold text-gray-900">{config.title}</h3>
                 <p className="text-sm text-gray-500 mt-1">Based on revenue and deal count</p>
               </div>
-              <button className="text-sm text-emerald-900 hover:text-emerald-950 font-medium">View All Clients</button>
+              <button onClick={() => onNavigate('clients')} className="text-sm text-emerald-900 hover:text-emerald-950 font-medium">View All Clients</button>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full">
