@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { verifyToken, type TokenPayload } from './auth';
+import { verifyToken, type TokenPayload } from './auth.js';
 
 export function cors(req: VercelRequest, res: VercelResponse): boolean {
   res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');

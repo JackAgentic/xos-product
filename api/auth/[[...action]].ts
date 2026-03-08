@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { sql } from '../../lib/db';
-import { hashPassword, comparePassword, signToken } from '../../lib/auth';
-import { cors, requireAuth, methodGuard } from '../../lib/middleware';
+import { sql } from '../../lib/db.js';
+import { hashPassword, comparePassword, signToken } from '../../lib/auth.js';
+import { cors, requireAuth, methodGuard } from '../../lib/middleware.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (cors(req, res)) return;
