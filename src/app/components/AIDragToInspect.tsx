@@ -335,11 +335,13 @@ export function AIDragProvider({
         }
       }
 
-      // === Update ghost: anchor at cursor, icon top-right ===
+      // === Update ghost: anchor at cursor, icon top-left ===
       const opacity = state.hasDetached ? 1 : Math.min(1, dist / 5);
       const _scale = state.hasDetached ? 1 : Math.max(0.6, 0.6 + (dist / DETACH_DISTANCE) * 0.4);
-      const iconX = e.clientX - 18;
-      const iconY = e.clientY - 22;
+      // Touch thumbs are much larger — push the icon bubble further away
+      const isTouch = (e as PointerEvent).pointerType === 'touch';
+      const iconX = e.clientX + (isTouch ? -10 : -14);
+      const iconY = e.clientY + (isTouch ? -60 : -48);
 
       if (orbAnchorCircleRef.current) {
         orbAnchorCircleRef.current.style.left = `${e.clientX}px`;
@@ -786,8 +788,8 @@ export function AIDragProvider({
               ref={orbAnchorCircleRef}
               style={{
                 position: 'absolute',
-                width: 22,
-                height: 22,
+                width: 28,
+                height: 28,
                 borderRadius: '50%',
                 background: 'white',
                 transform: 'translate(-50%, -50%)',
@@ -849,8 +851,8 @@ export function AIDragProvider({
           </filter>
           {/* Two-circle drag orb gooey stretch (anchor + icon body) */}
           <filter id="drag-orb-goo">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="13" result="blur" />
-            <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -9" result="goo" />
+            <feGaussianBlur in="SourceGraphic" stdDeviation="20" result="blur" />
+            <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -8" result="goo" />
           </filter>
         </defs>
       </svg>
