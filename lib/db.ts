@@ -1,9 +1,7 @@
 import { neon } from '@neondatabase/serverless';
-import { config } from 'dotenv';
-import { resolve } from 'path';
 
-// Load .env.local for local development (no-op in production where env vars are set)
-config({ path: resolve(process.cwd(), '.env.local') });
+// Load .env.local for local development only (dotenv is a devDependency)
+try { require('dotenv').config({ path: require('path').resolve(process.cwd(), '.env.local') }); } catch {}
 
 const sql = neon(process.env.DATABASE_URL!);
 
