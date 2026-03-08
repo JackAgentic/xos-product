@@ -8,7 +8,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const auth = requireAuth(req, res);
   if (!auth) return;
 
-  const type = (req.query.type as string[])?.[0];
+  const type = req.query.type as string || (req.query['[...type]'] as string);
   const clientId = req.query.clientId ? parseInt(req.query.clientId as string) : null;
   if (!clientId) return res.status(400).json({ error: 'clientId is required' });
 

@@ -6,8 +6,7 @@ import { cors, requireAuth, methodGuard } from '../../lib/middleware.js';
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (cors(req, res)) return;
 
-  const action = (req.query.action as string[])?.[0];
-  console.log('AUTH DEBUG query:', JSON.stringify(req.query), 'action:', action, 'url:', req.url);
+  const action = req.query.action as string || (req.query['[...action]'] as string);
 
   if (action === 'login') {
     if (!methodGuard(req, res, ['POST'])) return;
