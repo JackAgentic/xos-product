@@ -1,13 +1,53 @@
+import { useState } from 'react';
 import { motion } from 'motion/react';
-import { NotebookPen, X } from 'lucide-react';
+import { NotebookPen, X, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { apiFetch } from '../lib/api';
 
 interface AddNoteModalProps {
   isOpen: boolean;
   onClose: () => void;
+  clientId?: number | null;
 }
 
-export function AddNoteModal({ isOpen, onClose }: AddNoteModalProps) {
+export function AddNoteModal({ isOpen, onClose, clientId }: AddNoteModalProps) {
+  const [title, setTitle] = useState('');
+  const [category, setCategory] = useState('General');
+  const [content, setContent] = useState('');
+  const [pinned, setPinned] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   if (!isOpen) return null;
+
+  const resetForm = () => {
+    setTitle(''); setCategory('General'); setContent(''); setPinned(false);
+  };
+
+  const handleSubmit = async () => {
+    if (!title || !content) {
+      toast.error('Please fill in required fields', { description: 'Title and Content are required' });
+      return;
+    }
+    setLoading(true);
+    try {
+      await apiFetch('/api/communications', {
+        method: 'POST',
+        body: JSON.stringify({
+          clientId: clientId || null,
+          subject: `[${category}] ${title}`,
+          preview: content.slice(0, 200),
+          type: 'note',
+        }),
+      });
+      toast.success('Note saved', { description: `"${title}" (${category})` });
+      resetForm();
+      onClose();
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to save note');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-black/50 z-[70] flex items-end sm:items-center sm:justify-center">
@@ -42,6 +82,8 @@ export function AddNoteModal({ isOpen, onClose }: AddNoteModalProps) {
             </label>
             <input
               type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g. Call Summary"
               className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
             />
@@ -51,7 +93,11 @@ export function AddNoteModal({ isOpen, onClose }: AddNoteModalProps) {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Category
             </label>
-            <select className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500">
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500"
+            >
               <option>General</option>
               <option>Call Notes</option>
               <option>Meeting Notes</option>
@@ -67,6 +113,8 @@ export function AddNoteModal({ isOpen, onClose }: AddNoteModalProps) {
             </label>
             <textarea
               rows={10}
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
               placeholder="Write your note here..."
               className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 resize-none"
             />
@@ -76,6 +124,8 @@ export function AddNoteModal({ isOpen, onClose }: AddNoteModalProps) {
             <input
               type="checkbox"
               id="pinNote"
+              checked={pinned}
+              onChange={(e) => setPinned(e.target.checked)}
               className="w-4 h-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500"
             />
             <label htmlFor="pinNote" className="text-sm text-gray-700">
@@ -86,7 +136,6 @@ export function AddNoteModal({ isOpen, onClose }: AddNoteModalProps) {
 
         {/* Modal Footer */}
         <div className="sticky bottom-0 bg-white border-t border-gray-200 px-6 py-4 flex gap-3 justify-end">
-
           <button
             onClick={onClose}
             className="px-4 py-1.5 text-sm font-medium border border-gray-200 rounded-sm hover:bg-gray-50 transition-colors"
@@ -94,9 +143,11 @@ export function AddNoteModal({ isOpen, onClose }: AddNoteModalProps) {
             Cancel
           </button>
           <button
-            onClick={onClose}
-            className="px-4 py-2 bg-orange-600 text-white rounded-sm hover:bg-orange-700 transition-colors"
+            onClick={handleSubmit}
+            disabled={loading}
+            className="px-4 py-2 bg-orange-600 text-white rounded-sm hover:bg-orange-700 transition-colors disabled:opacity-50 flex items-center gap-2"
           >
+            {loading && <Loader2 className="w-4 h-4 animate-spin" />}
             Save Note
           </button>
         </div>

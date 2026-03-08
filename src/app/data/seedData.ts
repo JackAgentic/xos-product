@@ -21,60 +21,171 @@ export const overviewOpportunities = [
   { id: 4, name: 'Investment Portfolio Setup', value: '$250,000', stage: 'Discovery', probability: 40 },
 ];
 
-// ─── Dashboard Revenue Data ──────────────────────────────────────────────────
+// ─── Dashboard Revenue Data (24 months: Apr 2024 – Mar 2026) ────────────────
+// Trailing 24 months of commission + fee revenue for a mid-size NZ advisory practice
 export const revenueData = [
-  { month: 'Jul', revenue: 42000, target: 45000 },
-  { month: 'Aug', revenue: 48500, target: 45000 },
-  { month: 'Sep', revenue: 51200, target: 48000 },
-  { month: 'Oct', revenue: 47800, target: 48000 },
-  { month: 'Nov', revenue: 56300, target: 50000 },
-  { month: 'Dec', revenue: 44100, target: 50000 },
-  { month: 'Jan', revenue: 52800, target: 52000 },
-  { month: 'Feb', revenue: 61400, target: 52000 },
-  { month: 'Mar', revenue: 58900, target: 55000 },
+  // FY2024-25
+  { month: 'Apr 24', revenue: 34800, target: 38000, lastYear: 31200 },
+  { month: 'May 24', revenue: 39200, target: 38000, lastYear: 34500 },
+  { month: 'Jun 24', revenue: 43500, target: 40000, lastYear: 38900 },
+  { month: 'Jul 24', revenue: 40100, target: 40000, lastYear: 36200 },
+  { month: 'Aug 24', revenue: 41800, target: 40000, lastYear: 37400 },
+  { month: 'Sep 24', revenue: 44200, target: 43000, lastYear: 39100 },
+  { month: 'Oct 24', revenue: 42900, target: 43000, lastYear: 38600 },
+  { month: 'Nov 24', revenue: 48300, target: 45000, lastYear: 43100 },
+  { month: 'Dec 24', revenue: 38600, target: 45000, lastYear: 35200 },
+  { month: 'Jan 25', revenue: 46100, target: 47000, lastYear: 41800 },
+  { month: 'Feb 25', revenue: 49800, target: 47000, lastYear: 44300 },
+  { month: 'Mar 25', revenue: 52400, target: 50000, lastYear: 47600 },
+  // FY2025-26
+  { month: 'Apr 25', revenue: 38420, target: 42000, lastYear: 34800 },
+  { month: 'May 25', revenue: 44610, target: 42000, lastYear: 39200 },
+  { month: 'Jun 25', revenue: 51380, target: 45000, lastYear: 43500 },
+  { month: 'Jul 25', revenue: 42150, target: 45000, lastYear: 40100 },
+  { month: 'Aug 25', revenue: 48730, target: 45000, lastYear: 41800 },
+  { month: 'Sep 25', revenue: 53940, target: 48000, lastYear: 44200 },
+  { month: 'Oct 25', revenue: 46280, target: 48000, lastYear: 42900 },
+  { month: 'Nov 25', revenue: 57610, target: 50000, lastYear: 48300 },
+  { month: 'Dec 25', revenue: 41820, target: 50000, lastYear: 38600 },
+  { month: 'Jan 26', revenue: 54370, target: 52000, lastYear: 46100 },
+  { month: 'Feb 26', revenue: 63140, target: 52000, lastYear: 49800 },
+  { month: 'Mar 26', revenue: 59480, target: 55000, lastYear: 52400 },
 ];
 
 // ─── Dashboard Pipeline Data ─────────────────────────────────────────────────
+// Derived from 125 opportunities across 25 clients (5 product types each)
 export const pipelineData = [
-  { name: 'Lead', value: 18, amount: 245000, color: '#94a3b8' },
-  { name: 'Qualified', value: 12, amount: 380000, color: '#0B3D2E' },
-  { name: 'Proposal', value: 8, amount: 295000, color: '#081C15' },
-  { name: 'Negotiation', value: 5, amount: 185000, color: '#16a34a' },
-  { name: 'Closed Won', value: 11, amount: 520000, color: '#0ea5e9' },
+  { name: 'Lead', value: 31, amount: 1842000, color: '#94a3b8' },
+  { name: 'Qualified', value: 24, amount: 2156000, color: '#0B3D2E' },
+  { name: 'Proposal', value: 18, amount: 1735000, color: '#081C15' },
+  { name: 'Negotiation', value: 12, amount: 984000, color: '#16a34a' },
+  { name: 'Closed Won', value: 40, amount: 3480000, color: '#0ea5e9' },
 ];
 
-// ─── Dashboard Activity Trend ────────────────────────────────────────────────
+// ─── Dashboard Activity Trend (4-week view) ─────────────────────────────────
 export const activityTrendData = [
-  { day: 'Mon', meetings: 5, calls: 14, emails: 32 },
-  { day: 'Tue', meetings: 7, calls: 18, emails: 28 },
-  { day: 'Wed', meetings: 4, calls: 11, emails: 35 },
-  { day: 'Thu', meetings: 9, calls: 20, emails: 30 },
-  { day: 'Fri', meetings: 6, calls: 16, emails: 26 },
-  { day: 'Sat', meetings: 1, calls: 4, emails: 10 },
-  { day: 'Sun', meetings: 0, calls: 2, emails: 6 },
+  { day: 'W/C 10 Feb', meetings: 18, calls: 42, emails: 96 },
+  { day: 'W/C 17 Feb', meetings: 22, calls: 51, emails: 108 },
+  { day: 'W/C 24 Feb', meetings: 16, calls: 38, emails: 87 },
+  { day: 'W/C 3 Mar', meetings: 24, calls: 55, emails: 114 },
 ];
 
 // ─── Dashboard Recent Activities ─────────────────────────────────────────────
 export const dashboardRecentActivities = [
-  { id: 1, type: 'meeting', client: 'Hannah Williams', action: 'Completed annual KiwiSaver review', time: '1 hour ago', iconType: 'video' as const, color: 'text-blue-600 bg-blue-50' },
-  { id: 2, type: 'task', client: 'Andrew Smith', action: 'Mortgage application submitted to ANZ', time: '2 hours ago', iconType: 'mail' as const, color: 'text-green-600 bg-green-50' },
-  { id: 3, type: 'opportunity', client: 'Laura Mitchell', action: 'Insurance proposal sent for review', time: '3 hours ago', iconType: 'file' as const, color: 'text-purple-600 bg-purple-50' },
-  { id: 4, type: 'call', client: 'George Patterson', action: 'Phone consultation — retirement planning', time: '5 hours ago', iconType: 'phone' as const, color: 'text-orange-600 bg-orange-50' },
-  { id: 5, type: 'meeting', client: 'Olivia Walker', action: 'Quarterly portfolio review scheduled', time: '6 hours ago', iconType: 'calendar' as const, color: 'text-[#0B3D2E] bg-[#F2E9E4]/20' },
-  { id: 6, type: 'task', client: 'Rachel Green', action: 'AML/CDD verification completed', time: '1 day ago', iconType: 'file' as const, color: 'text-purple-600 bg-purple-50' },
-  { id: 7, type: 'call', client: 'James Robertson', action: 'Follow-up call — investment options', time: '1 day ago', iconType: 'phone' as const, color: 'text-orange-600 bg-orange-50' },
-  { id: 8, type: 'meeting', client: 'David Morrison', action: 'Discovery call completed', time: '2 days ago', iconType: 'video' as const, color: 'text-blue-600 bg-blue-50' },
+  { id: 1, type: 'meeting', client: 'Aitken Family Trust', action: 'Completed annual KiwiSaver and insurance review', time: '32 min ago', iconType: 'video' as const, color: 'text-blue-600 bg-blue-50' },
+  { id: 2, type: 'task', client: 'Andrew Carter', action: 'Mortgage application submitted to ANZ — $485k refinance', time: '1 hour ago', iconType: 'mail' as const, color: 'text-green-600 bg-green-50' },
+  { id: 3, type: 'opportunity', client: 'Agentic Intelligence Ltd', action: 'Key person insurance proposal ($1.2M cover) sent for board review', time: '2 hours ago', iconType: 'file' as const, color: 'text-purple-600 bg-purple-50' },
+  { id: 4, type: 'call', client: 'George Patterson', action: 'Phone consultation — NZ Super drawdown strategy at age 65', time: '3 hours ago', iconType: 'phone' as const, color: 'text-orange-600 bg-orange-50' },
+  { id: 5, type: 'meeting', client: 'Haines & Co Accountants', action: 'Quarterly portfolio review — Milford Growth Fund up 14.2% YTD', time: '5 hours ago', iconType: 'calendar' as const, color: 'text-[#0B3D2E] bg-[#F2E9E4]/20' },
+  { id: 6, type: 'task', client: 'Olivia Walker', action: 'AML/CDD verification completed — passport and proof of address verified', time: '6 hours ago', iconType: 'file' as const, color: 'text-purple-600 bg-purple-50' },
+  { id: 7, type: 'call', client: 'James Robertson', action: 'Follow-up call — confirmed switch from Conservative to Balanced KiwiSaver', time: '1 day ago', iconType: 'phone' as const, color: 'text-orange-600 bg-orange-50' },
+  { id: 8, type: 'meeting', client: 'Fraser Investments', action: 'Discovery call — $2.4M managed fund rebalance discussed', time: '1 day ago', iconType: 'video' as const, color: 'text-blue-600 bg-blue-50' },
+  { id: 9, type: 'task', client: 'Rachel Green', action: 'Income protection claim lodged with Partners Life — 13-week stand-down', time: '1 day ago', iconType: 'file' as const, color: 'text-purple-600 bg-purple-50' },
+  { id: 10, type: 'opportunity', client: 'David Morrison', action: 'Investment property finance — conditional approval from Westpac ($720k)', time: '2 days ago', iconType: 'mail' as const, color: 'text-green-600 bg-green-50' },
+  { id: 11, type: 'call', client: 'Laura Mitchell', action: 'Discussed trauma cover options — AIA vs Asteron Life comparison', time: '2 days ago', iconType: 'phone' as const, color: 'text-orange-600 bg-orange-50' },
+  { id: 12, type: 'meeting', client: 'Thompson & Associates', action: 'Estate planning workshop — 4 attendees, trust restructure recommended', time: '3 days ago', iconType: 'video' as const, color: 'text-blue-600 bg-blue-50' },
 ];
 
 // ─── Dashboard Upcoming Meetings ─────────────────────────────────────────────
 export const dashboardUpcomingMeetings = [
-  { id: 1, client: 'Hannah Williams', type: 'KiwiSaver Review', time: 'Today, 2:00 PM', duration: '60 min' },
-  { id: 2, client: 'Andrew Smith', type: 'Mortgage Pre-Approval', time: 'Today, 4:00 PM', duration: '45 min' },
-  { id: 3, client: 'Laura Mitchell', type: 'Insurance Proposal', time: 'Tomorrow, 9:30 AM', duration: '90 min' },
-  { id: 4, client: 'George Patterson', type: 'Retirement Planning', time: 'Tomorrow, 2:00 PM', duration: '60 min' },
-  { id: 5, client: 'Olivia Walker', type: 'Quarterly Review', time: 'Thu, 10:00 AM', duration: '45 min' },
-  { id: 6, client: 'Fraser Investments', type: 'Portfolio Rebalance', time: 'Fri, 11:00 AM', duration: '60 min' },
+  { id: 1, client: 'Andrew Carter', type: 'Mortgage Pre-Approval Review', time: 'Today, 2:00 PM', duration: '45 min', advisor: "Brett O'Donnell" },
+  { id: 2, client: 'Aitken Family Trust', type: 'Annual Insurance Review', time: 'Today, 4:00 PM', duration: '60 min', advisor: 'Steven Johnston' },
+  { id: 3, client: 'Laura Mitchell', type: 'Life & Trauma Proposal', time: 'Tomorrow, 9:30 AM', duration: '90 min', advisor: 'Sarah Williams' },
+  { id: 4, client: 'George Patterson', type: 'Retirement Income Strategy', time: 'Tomorrow, 2:00 PM', duration: '60 min', advisor: "Brett O'Donnell" },
+  { id: 5, client: 'Olivia Walker', type: 'KiwiSaver Quarterly Review', time: 'Thu, 10:00 AM', duration: '45 min', advisor: 'Michael Chen' },
+  { id: 6, client: 'Fraser Investments', type: 'Portfolio Rebalance', time: 'Thu, 2:30 PM', duration: '60 min', advisor: 'David Lee' },
+  { id: 7, client: 'Haines & Co Accountants', type: 'Group Scheme Review', time: 'Fri, 11:00 AM', duration: '90 min', advisor: 'Steven Johnston' },
+  { id: 8, client: 'James Robertson', type: 'Investment Strategy Follow-up', time: 'Mon, 9:00 AM', duration: '45 min', advisor: 'Sarah Williams' },
 ];
+
+// ─── Top Clients Performance Data ────────────────────────────────────────────
+// Deterministic revenue and deal counts tied to actual client IDs
+export const topClientsData: Record<number, { revenue: number; deals: number }> = {
+  2: { revenue: 186400, deals: 8 },    // Aitken Family Trust
+  5: { revenue: 142800, deals: 6 },    // Angela Whitfield
+  3: { revenue: 128500, deals: 5 },    // Agentic Intelligence Ltd
+  7: { revenue: 97200, deals: 4 },     // Brad Fraser
+  1: { revenue: 84600, deals: 7 },     // Andrew Carter
+  13: { revenue: 76300, deals: 3 },    // George Patterson
+  22: { revenue: 68900, deals: 4 },    // Olivia Walker
+  8: { revenue: 62100, deals: 3 },     // Charlotte Evans
+  19: { revenue: 58400, deals: 5 },    // Laura Mitchell
+  9: { revenue: 51200, deals: 2 },     // David Morrison
+};
+
+// ─── Dashboard KPI Metrics (derived from operational data) ──────────────────
+// These simulate backend-computed aggregate metrics for the dashboard cards
+export const dashboardKPIs = {
+  // Revenue & Goal Tracking
+  revenue: {
+    totalRevenue: 601930,       // sum of revenueData[].revenue
+    totalTarget: 574000,        // sum of revenueData[].target
+    attainment: 104.9,          // (totalRevenue / totalTarget) * 100
+    mtdRevenue: 59480,          // Mar (current month)
+    mtdTarget: 55000,           // Mar target
+    growthVsPrior: 14.2,        // % increase vs same period last year
+    byProduct: {
+      Mortgage: 218400,
+      Insurance: 124600,
+      KiwiSaver: 98200,
+      Investment: 108730,
+      Retirement: 52000,
+    },
+  },
+  // Pipeline Health
+  pipeline: {
+    totalPipelineValue: 10197000,  // sum of all pipeline amounts
+    coverageRatio: 2.94,           // pipeline value / annual target
+    conversionRate: 32.0,          // (Closed Won / total opportunities) * 100
+    avgSalesCycle: 47,             // days from Lead to Closed Won
+    openOpportunities: 85,        // Lead + Qualified + Proposal + Negotiation
+    weightedPipeline: 5840000,    // probability-weighted pipeline value
+  },
+  // Performance Metrics
+  performance: {
+    winRate: 76.9,               // Closed Won / (Closed Won + Closed Lost)
+    lossRate: 23.1,
+    avgDealSize: 87000,          // avg value of Closed Won deals
+    quotaAttainment: 104.9,      // same as revenue attainment
+    closedWon: 40,
+    closedLost: 12,
+    avgDaysToClose: 34,
+    advisorPerformance: [
+      { name: "Brett O'Donnell", revenue: 168200, deals: 14, quota: 110 },
+      { name: 'Steven Johnston', revenue: 142800, deals: 11, quota: 98 },
+      { name: 'Sarah Williams', revenue: 128400, deals: 9, quota: 95 },
+      { name: 'Michael Chen', revenue: 96300, deals: 8, quota: 87 },
+      { name: 'David Lee', revenue: 66230, deals: 6, quota: 72 },
+    ],
+  },
+  // Activity Metrics (current week: W/C 3 Mar)
+  activity: {
+    meetingsThisWeek: 24,
+    callsThisWeek: 55,
+    emailsThisWeek: 114,
+    totalThisWeek: 193,
+    meetingsLastWeek: 16,
+    callsLastWeek: 38,
+    emailsLastWeek: 87,
+    totalLastWeek: 141,
+    weekOverWeekChange: 36.9,   // % increase
+    avgMeetingsPerDay: 4.8,
+    avgCallsPerDay: 11.0,
+  },
+  // Customer Insights
+  customers: {
+    totalClients: 25,
+    activeClients: 18,
+    prospectClients: 5,
+    inactiveClients: 2,
+    cac: 1240,                    // customer acquisition cost ($)
+    avgLtv: 48600,                // average lifetime value ($)
+    ltvCacRatio: 39.2,            // LTV / CAC
+    churnRate: 3.2,               // annual % churn
+    nps: 72,                      // net promoter score
+    topClientsByRevenue: [2, 5, 3, 7, 1],  // client IDs in revenue order
+  },
+};
 
 // ─── Meetings ────────────────────────────────────────────────────────────────
 export const meetingsData = [

@@ -1,13 +1,52 @@
+import { useState } from 'react';
 import { motion } from 'motion/react';
-import { MailPlus, FilePlus, X } from 'lucide-react';
+import { MailPlus, FilePlus, X, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { apiFetch } from '../lib/api';
 
 interface SendEmailModalProps {
   isOpen: boolean;
   onClose: () => void;
+  clientId?: number | null;
 }
 
-export function SendEmailModal({ isOpen, onClose }: SendEmailModalProps) {
+export function SendEmailModal({ isOpen, onClose, clientId }: SendEmailModalProps) {
+  const [to, setTo] = useState('');
+  const [subject, setSubject] = useState('');
+  const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+
   if (!isOpen) return null;
+
+  const resetForm = () => {
+    setTo(''); setSubject(''); setMessage('');
+  };
+
+  const handleSubmit = async () => {
+    if (!subject || !message) {
+      toast.error('Please fill in required fields', { description: 'Subject and Message are required' });
+      return;
+    }
+    setLoading(true);
+    try {
+      await apiFetch('/api/communications', {
+        method: 'POST',
+        body: JSON.stringify({
+          clientId: clientId || null,
+          subject,
+          preview: message.slice(0, 200),
+          type: 'email',
+        }),
+      });
+      toast.success('Email logged', { description: `"${subject}" ${to ? `to ${to}` : ''}` });
+      resetForm();
+      onClose();
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to log email');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-black/50 z-[70] flex items-end sm:items-center sm:justify-center">
@@ -38,12 +77,13 @@ export function SendEmailModal({ isOpen, onClose }: SendEmailModalProps) {
         <div className="p-6 space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              To <span className="text-red-500">*</span>
+              To
             </label>
             <input
               type="email"
+              value={to}
+              onChange={(e) => setTo(e.target.value)}
               placeholder="client@example.com"
-              defaultValue="test@test.com"
               className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
             />
           </div>
@@ -54,6 +94,8 @@ export function SendEmailModal({ isOpen, onClose }: SendEmailModalProps) {
             </label>
             <input
               type="text"
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
               placeholder="Email subject"
               className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
             />
@@ -65,6 +107,8 @@ export function SendEmailModal({ isOpen, onClose }: SendEmailModalProps) {
             </label>
             <textarea
               rows={8}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
               placeholder="Write your message..."
               className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
             />
@@ -84,7 +128,6 @@ export function SendEmailModal({ isOpen, onClose }: SendEmailModalProps) {
 
         {/* Modal Footer */}
         <div className="sticky bottom-0 bg-white border-t border-gray-200 px-6 py-4 flex gap-3 justify-end">
-
           <button
             onClick={onClose}
             className="px-4 py-1.5 text-sm font-medium border border-gray-200 rounded-sm hover:bg-gray-50 transition-colors"
@@ -92,9 +135,11 @@ export function SendEmailModal({ isOpen, onClose }: SendEmailModalProps) {
             Cancel
           </button>
           <button
-            onClick={onClose}
-            className="px-4 py-2 bg-purple-600 text-white rounded-sm hover:bg-purple-700 transition-colors"
+            onClick={handleSubmit}
+            disabled={loading}
+            className="px-4 py-2 bg-purple-600 text-white rounded-sm hover:bg-purple-700 transition-colors disabled:opacity-50 flex items-center gap-2"
           >
+            {loading && <Loader2 className="w-4 h-4 animate-spin" />}
             Send Email
           </button>
         </div>

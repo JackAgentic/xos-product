@@ -1,7 +1,21 @@
-import { Plus, Search, Mail, Phone, ChevronDown, UserCircle, Sparkles, RefreshCw } from 'lucide-react';
-import { contactsData } from '../data/seedData';
+import { useState, useEffect, useCallback } from 'react';
+import { Plus, Search, Mail, Phone, ChevronDown, UserCircle, Sparkles, RefreshCw, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { apiFetch } from '../lib/api';
+
+function mapContact(row: any) {
+  return {
+    ...row,
+    firstName: row.first_name ?? row.firstName ?? '',
+    lastName: row.last_name ?? row.lastName ?? '',
+    middleName: row.middle_name ?? row.middleName ?? '',
+    dateOfBirth: row.date_of_birth ?? row.dateOfBirth ?? '',
+    clientId: row.client_id ?? row.clientId,
+  };
+}
 
 interface ContactsViewProps {
+  clientId: number | null;
   selectedContact: number;
   setSelectedContact: (n: number) => void;
   setShowAddEventModal: (show: boolean) => void;
@@ -13,6 +27,7 @@ interface ContactsViewProps {
 }
 
 export function ContactsView({
+  clientId,
   selectedContact,
   setSelectedContact,
   setShowAddEventModal,
@@ -22,9 +37,93 @@ export function ContactsView({
   setShowAddTaskModal,
   setShowAddOpportunityModal
 }: ContactsViewProps) {
-  const contacts = contactsData;
+  const [contacts, setContacts] = useState<any[]>([]);
+  const [search, setSearch] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newContact, setNewContact] = useState({ firstName: '', lastName: '', email: '', phone: '', relationship: '' });
 
-  const selected = contacts[selectedContact];
+  const fetchContacts = useCallback(() => {
+    if (clientId) {
+      apiFetch<any[]>(`/api/contacts?clientId=${clientId}`)
+        .then(rows => setContacts(rows.map(mapContact)))
+        .catch(() => {});
+    }
+  }, [clientId]);
+
+  useEffect(() => { fetchContacts(); }, [fetchContacts]);
+
+  const selected = contacts.find(c => c.id === selectedContact);
+  const filteredContacts = search
+    ? contacts.filter(c => c.name.toLowerCase().includes(search.toLowerCase()) || c.email?.toLowerCase().includes(search.toLowerCase()))
+    : contacts;
+
+  const updateField = async (field: string, value: string) => {
+    if (!selected) return;
+    const nameFields = ['firstName', 'lastName'];
+    const updatedContact = { ...selected, [field]: value };
+    if (nameFields.includes(field)) {
+      updatedContact.name = `${updatedContact.firstName} ${updatedContact.lastName}`.trim();
+    }
+    setContacts(prev => prev.map(c => c.id === selected.id ? updatedContact : c));
+    setSaving(true);
+    try {
+      const body: any = { [field]: value };
+      if (nameFields.includes(field)) body.name = updatedContact.name;
+      await apiFetch(`/api/contacts/${selected.id}`, {
+        method: 'PUT',
+        body: JSON.stringify(body),
+      });
+    } catch {
+      toast.error('Failed to save');
+      fetchContacts();
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleAddContact = async () => {
+    if (!newContact.firstName || !newContact.lastName || !clientId) {
+      toast.error('First and last name are required');
+      return;
+    }
+    try {
+      const created = await apiFetch<any>('/api/contacts', {
+        method: 'POST',
+        body: JSON.stringify({
+          clientId,
+          name: `${newContact.firstName} ${newContact.lastName}`,
+          firstName: newContact.firstName,
+          lastName: newContact.lastName,
+          email: newContact.email || null,
+          phone: newContact.phone || null,
+          relationship: newContact.relationship || null,
+          type: 'other',
+        }),
+      });
+      const mapped = mapContact(created);
+      setContacts(prev => [...prev, mapped]);
+      setSelectedContact(mapped.id);
+      setNewContact({ firstName: '', lastName: '', email: '', phone: '', relationship: '' });
+      setShowAddForm(false);
+      toast.success('Contact added');
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to add contact');
+    }
+  };
+
+  const handleDeleteContact = async () => {
+    if (!selected) return;
+    if (!window.confirm(`Delete ${selected.name}?`)) return;
+    try {
+      await apiFetch(`/api/contacts/${selected.id}`, { method: 'DELETE' });
+      setContacts(prev => prev.filter(c => c.id !== selected.id));
+      setSelectedContact(0);
+      toast.success('Contact deleted');
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to delete contact');
+    }
+  };
 
   return (
     <div className="flex h-full overflow-hidden bg-gray-50 relative" data-ai-section="Contacts">
@@ -35,7 +134,7 @@ export function ContactsView({
         <div className="p-4 border-b border-gray-200 flex-shrink-0">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-lg font-semibold">Contacts</h2>
-            <button className="p-2 bg-emerald-900 text-white rounded-sm hover:bg-emerald-950 transition-colors">
+            <button onClick={() => setShowAddForm(!showAddForm)} className="p-2 bg-emerald-900 text-white rounded-sm hover:bg-emerald-950 transition-colors">
               <Plus className="w-4 h-4" />
             </button>
           </div>
@@ -45,6 +144,8 @@ export function ContactsView({
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
               placeholder="Search contacts..."
               className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-900 text-sm"
             />
@@ -53,8 +154,22 @@ export function ContactsView({
 
         {/* Contacts List */}
         <div className="flex-1 overflow-y-auto" data-ai-section="Contact List">
+          {showAddForm && (
+            <div className="p-3 border-b border-gray-200 bg-gray-50 space-y-2">
+              <div className="grid grid-cols-2 gap-2">
+                <input type="text" placeholder="First name *" value={newContact.firstName} onChange={e => setNewContact({ ...newContact, firstName: e.target.value })} className="px-2 py-1.5 border border-gray-300 rounded-sm text-sm focus:outline-none focus:ring-2 focus:ring-emerald-900" />
+                <input type="text" placeholder="Last name *" value={newContact.lastName} onChange={e => setNewContact({ ...newContact, lastName: e.target.value })} className="px-2 py-1.5 border border-gray-300 rounded-sm text-sm focus:outline-none focus:ring-2 focus:ring-emerald-900" />
+              </div>
+              <input type="email" placeholder="Email" value={newContact.email} onChange={e => setNewContact({ ...newContact, email: e.target.value })} className="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm focus:outline-none focus:ring-2 focus:ring-emerald-900" />
+              <input type="tel" placeholder="Phone" value={newContact.phone} onChange={e => setNewContact({ ...newContact, phone: e.target.value })} className="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm focus:outline-none focus:ring-2 focus:ring-emerald-900" />
+              <div className="flex gap-2">
+                <button onClick={() => setShowAddForm(false)} className="flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded-sm hover:bg-gray-100">Cancel</button>
+                <button onClick={handleAddContact} className="flex-1 px-3 py-1.5 text-sm bg-emerald-900 text-white rounded-sm hover:bg-emerald-950">Add</button>
+              </div>
+            </div>
+          )}
           <div className="p-2">
-            {contacts.map((contact) => (
+            {filteredContacts.map((contact) => (
               <div
                 key={contact.id}
                 onClick={() => setSelectedContact(contact.id)}
@@ -89,7 +204,7 @@ export function ContactsView({
 
         {/* Add Button */}
         <div className="p-4 border-t border-gray-200 flex-shrink-0">
-          <button className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-sm hover:bg-gray-50 transition-colors text-sm font-medium">
+          <button onClick={() => setShowAddForm(true)} className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-sm hover:bg-gray-50 transition-colors text-sm font-medium">
             <Plus className="w-4 h-4" />
             Add
           </button>
@@ -113,14 +228,17 @@ export function ContactsView({
 
         {/* Scrollable Content */}
         <div className="flex-1 overflow-auto p-4 sm:p-6 pb-24">
+          {!selected ? (
+            <div className="flex items-center justify-center h-full text-gray-400 text-sm">
+              Select a contact to view details
+            </div>
+          ) : (
           <div className="max-w-3xl">
             {/* AI Summary */}
             <div className="bg-gradient-to-br from-purple-50 via-blue-50 to-purple-50 rounded-sm border border-purple-100 p-4 sm:p-6 mb-4 sm:mb-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <div className="w-10 h-10 bg-white rounded-sm flex items-center justify-center">
-                    <Sparkles className="w-5 h-5 text-purple-600" />
-                  </div>
+                  <Sparkles className="w-4 h-4 text-purple-600" />
                   <h3 className="font-semibold text-gray-900">AI Summary</h3>
                 </div>
                 <button className="text-gray-400 hover:text-gray-600 transition-colors">
@@ -134,11 +252,17 @@ export function ContactsView({
 
             {/* Personal Information */}
             <div className="bg-white rounded-sm border border-gray-200 p-4 sm:p-6" data-ai-section="Personal Information">
-              <div className="flex items-center gap-2 mb-6">
-                <div className="w-8 h-8 bg-stone-200/50 rounded-sm flex items-center justify-center">
-                  <UserCircle className="w-5 h-5 text-emerald-900" />
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 bg-stone-200/50 rounded-sm flex items-center justify-center">
+                    <UserCircle className="w-5 h-5 text-emerald-900" />
+                  </div>
+                  <h3 className="font-semibold">PERSONAL</h3>
+                  {saving && <span className="text-xs text-gray-400 ml-2">Saving...</span>}
                 </div>
-                <h3 className="font-semibold">PERSONAL</h3>
+                <button onClick={handleDeleteContact} className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-sm transition-colors" title="Delete contact">
+                  <Trash2 className="w-4 h-4" />
+                </button>
               </div>
 
               <div className="space-y-4">
@@ -151,8 +275,9 @@ export function ContactsView({
                     <input
                       type="text"
                       value={selected.firstName || ''}
-                      className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-sm"
-                      readOnly
+                      onChange={(e) => setContacts(prev => prev.map(c => c.id === selected.id ? { ...c, firstName: e.target.value } : c))}
+                      onBlur={(e) => updateField('firstName', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-200 rounded-sm"
                     />
                   </div>
 
@@ -161,7 +286,8 @@ export function ContactsView({
                     <input
                       type="text"
                       value={selected.middleName || ''}
-                      onChange={() => { }}
+                      onChange={(e) => setContacts(prev => prev.map(c => c.id === selected.id ? { ...c, middleName: e.target.value } : c))}
+                      onBlur={(e) => updateField('middleName', e.target.value)}
                       placeholder="Middle name"
                       className="w-full px-3 py-2 border border-gray-200 rounded-sm"
                     />
@@ -174,8 +300,9 @@ export function ContactsView({
                     <input
                       type="text"
                       value={selected.lastName || ''}
-                      className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-sm"
-                      readOnly
+                      onChange={(e) => setContacts(prev => prev.map(c => c.id === selected.id ? { ...c, lastName: e.target.value } : c))}
+                      onBlur={(e) => updateField('lastName', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-200 rounded-sm"
                     />
                   </div>
                 </div>
@@ -187,7 +314,8 @@ export function ContactsView({
                     <input
                       type="email"
                       value={selected.email || ''}
-                      onChange={() => { }}
+                      onChange={(e) => setContacts(prev => prev.map(c => c.id === selected.id ? { ...c, email: e.target.value } : c))}
+                      onBlur={(e) => updateField('email', e.target.value)}
                       placeholder="email@example.com"
                       className="w-full px-3 py-2 border border-gray-200 rounded-sm"
                     />
@@ -198,7 +326,8 @@ export function ContactsView({
                     <input
                       type="tel"
                       value={selected.phone || ''}
-                      onChange={() => { }}
+                      onChange={(e) => setContacts(prev => prev.map(c => c.id === selected.id ? { ...c, phone: e.target.value } : c))}
+                      onBlur={(e) => updateField('phone', e.target.value)}
                       placeholder="0987654321"
                       className="w-full px-3 py-2 border border-gray-200 rounded-sm"
                     />
@@ -212,7 +341,8 @@ export function ContactsView({
                     <input
                       type="text"
                       value={selected.dateOfBirth || ''}
-                      onChange={() => { }}
+                      onChange={(e) => setContacts(prev => prev.map(c => c.id === selected.id ? { ...c, dateOfBirth: e.target.value } : c))}
+                      onBlur={(e) => updateField('dateOfBirth', e.target.value)}
                       placeholder="dd/mm/yyyy"
                       className="w-full px-3 py-2 border border-gray-200 rounded-sm"
                     />
@@ -222,7 +352,7 @@ export function ContactsView({
                     <label className="block text-sm font-medium mb-2">Gender</label>
                     <select
                       value={selected.gender || ''}
-                      onChange={() => { }}
+                      onChange={(e) => updateField('gender', e.target.value)}
                       className="w-full px-3 py-2 border border-gray-200 rounded-sm text-gray-500"
                     >
                       <option value="">Select gender</option>
@@ -236,7 +366,7 @@ export function ContactsView({
                     <label className="block text-sm font-medium mb-2">Relationship</label>
                     <select
                       value={selected.relationship || ''}
-                      onChange={() => { }}
+                      onChange={(e) => updateField('relationship', e.target.value)}
                       className="w-full px-3 py-2 border border-gray-200 rounded-sm text-gray-500"
                     >
                       <option value="">Select relationship</option>
@@ -258,6 +388,7 @@ export function ContactsView({
               </div>
             </div>
           </div>
+          )}
         </div>
       </div>
     </div>

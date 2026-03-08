@@ -5,8 +5,6 @@ import {
   ChevronsUpDown,
   ArrowUp,
 } from 'lucide-react';
-import { CLIENTS_LOOKUP } from '../data/clients';
-
 export interface OpportunityFilterModalProps {
   showFilterModal: boolean;
   setShowFilterModal: (show: boolean) => void;
@@ -14,6 +12,7 @@ export interface OpportunityFilterModalProps {
   setFilterClient: (client: number | null) => void;
   filterType: string;
   setFilterType: (type: string) => void;
+  clients: { id: number; name: string }[];
 }
 
 export interface OpportunitySortModalProps {
@@ -32,6 +31,7 @@ export function OpportunityFilterModal({
   setFilterClient,
   filterType,
   setFilterType,
+  clients: CLIENTS_LOOKUP,
 }: OpportunityFilterModalProps) {
   if (!showFilterModal) return null;
 

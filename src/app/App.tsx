@@ -1,9 +1,9 @@
 import image_23c8042e2a3d5a6b784a2b190a05b08f0fe4ae3d from 'figma:asset/23c8042e2a3d5a6b784a2b190a05b08f0fe4ae3d.png'
 // CRM Application v1.0.1 - Refactored into components
-import { useState, useEffect, useCallback } from 'react';
-import { CLIENTS_LOOKUP } from './data/clients';
-import { generateOpportunities } from './data/opportunities';
-import { initialClientsData } from './data/clientsInitialState';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { LoginPage } from './components/LoginPage';
+import { apiFetch } from './lib/api';
 import { toast, Toaster } from 'sonner';
 import { Sidebar } from './components/Sidebar';
 import { ClientDetailView } from './components/ClientDetailView';
@@ -20,14 +20,15 @@ import { AddNoteModal } from './components/AddNoteModal';
 import { AddTaskModal } from './components/AddTaskModal';
 import { AIDragProvider, type AIElementContext } from './components/AIDragToInspect';
 import { mainMenuItems } from './data/menuData';
-import { DEFAULT_DASHBOARD_CONFIG, type DashboardConfig } from './data/dashboardConfig';
+import { DEFAULT_DASHBOARD_CONFIG, DASHBOARD_CONFIG_VERSION, DEFAULT_DASHBOARD_DATA, DASHBOARD_DATA_VERSION, type DashboardConfig, type DashboardData } from './data/dashboardConfig';
 
 function App() {
   // Navigation state
-  const [activeMainMenu, setActiveMainMenu] = useState('clients');
+  const [activeMainMenu, setActiveMainMenu] = useState('dashboard');
   const [viewingClient, setViewingClient] = useState(false);
   const [selectedClientId, setSelectedClientId] = useState<number | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
+  const changeClientTabRef = useRef<((tab: string) => void) | null>(null);
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
 
   // Modal states
@@ -51,25 +52,43 @@ function App() {
     probability: '',
     notes: ''
   });
-  const [allOpportunities, setAllOpportunities] = useState(() => generateOpportunities());
+  const [allOpportunities, setAllOpportunities] = useState<any[]>([]);
   const [selectedOpportunityId, setSelectedOpportunityId] = useState<number | null>(null);
 
   // Clients state
-  const [clients, setClients] = useState(initialClientsData);
+  const [clients, setClients] = useState<any[]>([]);
 
   // Dashboard config state (persisted to localStorage)
   const [dashboardConfig, setDashboardConfig] = useState<DashboardConfig>(() => {
     try {
       const saved = localStorage.getItem('xos-dashboard-config');
-      return saved ? JSON.parse(saved) : DEFAULT_DASHBOARD_CONFIG;
-    } catch {
-      return DEFAULT_DASHBOARD_CONFIG;
-    }
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.version === DASHBOARD_CONFIG_VERSION) return parsed;
+      }
+    } catch { /* fall through */ }
+    return DEFAULT_DASHBOARD_CONFIG;
   });
 
   useEffect(() => {
     localStorage.setItem('xos-dashboard-config', JSON.stringify(dashboardConfig));
   }, [dashboardConfig]);
+
+  // Dashboard data state (mutable, persisted to localStorage)
+  const [dashboardData, setDashboardData] = useState<DashboardData>(() => {
+    try {
+      const saved = localStorage.getItem('xos-dashboard-data');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.version === DASHBOARD_DATA_VERSION) return parsed;
+      }
+    } catch { /* fall through */ }
+    return DEFAULT_DASHBOARD_DATA;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('xos-dashboard-data', JSON.stringify(dashboardData));
+  }, [dashboardData]);
 
   // Desktop breakpoint detection
   const [isDesktop, setIsDesktop] = useState(false);
@@ -81,50 +100,51 @@ function App() {
     return () => window.removeEventListener('resize', checkDesktop);
   }, []);
 
+  // Fetch clients and opportunities from API
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    apiFetch<any[]>('/api/clients').then(setClients).catch(() => {});
+    apiFetch<any[]>('/api/opportunities').then(setAllOpportunities).catch(() => {});
+  }, [isAuthenticated]);
+
   // Add new opportunity
-  const addOpportunity = (formData: typeof opportunityForm) => {
+  const addOpportunity = async (formData: typeof opportunityForm) => {
     if (!selectedClientId) return;
-    const client = CLIENTS_LOOKUP.find(c => c.id === selectedClientId);
+    const client = clients.find((c: any) => c.id === selectedClientId);
     if (!client) return;
 
-    const newOpportunity = {
-      id: allOpportunities.length + 1,
-      name: formData.name,
-      clientId: selectedClientId,
-      client: client.name,
-      advisor: 'John Smith',
-      clientDetails: {
-        email: client.email,
-        firstName: client.name.split(' ')[0],
-        kiwisaverCalc: 'Not set',
-        crm: 'Active',
-        nameIR: client.name,
-        dateOfBirth: '01/01/1990'
-      },
-      date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }),
-      stage: 'Prospect',
-      value: '$0',
-      probability: parseInt(formData.probability) || 0,
-      type: formData.type,
-      description: formData.notes || 'New opportunity created.',
-      notes: formData.notes ? [formData.notes] : []
-    };
+    try {
+      const newOpp = await apiFetch<any>('/api/opportunities', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: formData.name,
+          clientId: selectedClientId,
+          stage: 'Prospect',
+          value: 0,
+          probability: parseInt(formData.probability) || 0,
+          type: formData.type,
+          description: formData.notes || 'New opportunity created.',
+        }),
+      });
 
-    setAllOpportunities(prev => [...prev, newOpportunity]);
+      setAllOpportunities(prev => [...prev, { ...newOpp, client: client.name }]);
 
-    toast.success(`Opportunity "${formData.name}" created successfully`, {
-      description: `${formData.type} opportunity added for ${client.name}`,
-      duration: 4000,
-      action: {
-        label: 'View',
-        onClick: () => {
-          setSelectedOpportunityId(newOpportunity.id);
-        }
-      },
-    });
+      toast.success(`Opportunity "${formData.name}" created successfully`, {
+        description: `${formData.type} opportunity added for ${client.name}`,
+        duration: 4000,
+        action: {
+          label: 'View',
+          onClick: () => setSelectedOpportunityId(newOpp.id),
+        },
+      });
 
-    setShowAddOpportunityModal(false);
-    setOpportunityForm({ name: '', type: '', probability: '', notes: '' });
+      setShowAddOpportunityModal(false);
+      setOpportunityForm({ name: '', type: '', probability: '', notes: '' });
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to create opportunity');
+    }
   };
 
   // Update existing opportunity
@@ -132,6 +152,10 @@ function App() {
     setAllOpportunities(prev => prev.map(opp =>
       opp.id === id ? { ...opp, ...updates } : opp
     ));
+    apiFetch(`/api/opportunities/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(updates),
+    }).catch(() => {});
   };
 
   const handleMainMenuClick = (menuId: string) => {
@@ -199,6 +223,7 @@ function App() {
           selectedOpportunityId={selectedOpportunityId}
           setSelectedOpportunityId={setSelectedOpportunityId}
           onClientClick={handleClientClick}
+          onRegisterTabNav={(fn) => { changeClientTabRef.current = fn; }}
         />
       );
     }
@@ -230,6 +255,8 @@ function App() {
           handleClientClick={handleClientClick}
           dashboardConfig={dashboardConfig}
           onConfigChange={setDashboardConfig}
+          dashboardData={dashboardData}
+          onDataChange={setDashboardData}
         />
       );
     }
@@ -243,6 +270,18 @@ function App() {
       </div>
     );
   };
+
+  if (authLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-[radial-gradient(ellipse_1200px_1200px_at_top_left,_#2D6A4F_0%,_#081C15_45%,_#040E0A_100%)]">
+        <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <LoginPage />;
+  }
 
   return (
     <AIDragProvider onOpenAI={handleOpenAI} showButton={true} isDrawerOpen={showAIAssistantModal}>
@@ -271,11 +310,11 @@ function App() {
       </div>
 
       {/* Quick Action Modals */}
-      <AddEventModal isOpen={showAddEventModal} onClose={() => setShowAddEventModal(false)} />
-      <SendEmailModal isOpen={showSendEmailModal} onClose={() => setShowSendEmailModal(false)} />
-      <AddDocumentModal isOpen={showAddDocumentModal} onClose={() => setShowAddDocumentModal(false)} />
-      <AddNoteModal isOpen={showAddNoteModal} onClose={() => setShowAddNoteModal(false)} />
-      <AddTaskModal isOpen={showAddTaskModal} onClose={() => setShowAddTaskModal(false)} />
+      <AddEventModal isOpen={showAddEventModal} onClose={() => setShowAddEventModal(false)} clientId={selectedClientId} />
+      <SendEmailModal isOpen={showSendEmailModal} onClose={() => setShowSendEmailModal(false)} clientId={selectedClientId} />
+      <AddDocumentModal isOpen={showAddDocumentModal} onClose={() => setShowAddDocumentModal(false)} clientId={selectedClientId} />
+      <AddNoteModal isOpen={showAddNoteModal} onClose={() => setShowAddNoteModal(false)} clientId={selectedClientId} />
+      <AddTaskModal isOpen={showAddTaskModal} onClose={() => setShowAddTaskModal(false)} clientId={selectedClientId} />
 
       {/* New Opportunity Modal (from client list) */}
       <NewOpportunityModal
@@ -304,8 +343,26 @@ function App() {
         elementContext={aiElementContext}
         dashboardConfig={dashboardConfig}
         onDashboardConfigChange={setDashboardConfig}
+        dashboardData={dashboardData}
+        onDashboardDataChange={setDashboardData}
         activeView={activeMainMenu}
         clientName={selectedClientId ? clients.find(c => c.id === selectedClientId)?.name : undefined}
+        selectedClient={selectedClientId ? clients.find(c => c.id === selectedClientId) : undefined}
+        allClients={clients}
+        allOpportunities={allOpportunities}
+        onNavigateTab={(tab) => changeClientTabRef.current?.(tab)}
+        onClientClick={handleClientClick}
+        onAction={(action) => {
+          const setters: Record<string, (v: boolean) => void> = {
+            'add-event': setShowAddEventModal,
+            'send-email': setShowSendEmailModal,
+            'add-document': setShowAddDocumentModal,
+            'add-note': setShowAddNoteModal,
+            'add-task': setShowAddTaskModal,
+            'add-opportunity': setShowAddOpportunityModal,
+          };
+          setters[action]?.(true);
+        }}
       />
 
       {/* Toast Notifications */}
@@ -321,4 +378,12 @@ function App() {
   );
 }
 
-export default App;
+function AppWithAuth() {
+  return (
+    <AuthProvider>
+      <App />
+    </AuthProvider>
+  );
+}
+
+export default AppWithAuth;

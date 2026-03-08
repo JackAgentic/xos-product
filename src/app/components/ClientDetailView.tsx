@@ -3,8 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useSwipeable } from 'react-swipeable';
 import { toast } from 'sonner';
 import { clientMenuItems, adviceMenuItems, allTabs } from '../data/menuData';
-import { initialClientsData } from '../data/clientsInitialState';
-import { contactsData } from '../data/seedData';
+import { apiFetch } from '../lib/api';
 import { ClientDetailHeader } from './ClientDetailHeader';
 import { ClientFloatingActions } from './ClientFloatingActions';
 import { OverviewView } from './OverviewView';
@@ -36,7 +35,7 @@ const onboardingItemsTemplate = [
 
 interface ClientDetailViewProps {
   selectedClientId: number | null;
-  clients: typeof initialClientsData;
+  clients: any[];
   onBackToList: () => void;
   setMobileDrawerOpen: (open: boolean) => void;
   isDesktop: boolean;
@@ -55,6 +54,7 @@ interface ClientDetailViewProps {
   selectedOpportunityId: number | null;
   setSelectedOpportunityId: (id: number | null) => void;
   onClientClick: (id: number) => void;
+  onRegisterTabNav?: (fn: (tab: string) => void) => void;
 }
 
 export function ClientDetailView({
@@ -78,6 +78,7 @@ export function ClientDetailView({
   selectedOpportunityId,
   setSelectedOpportunityId,
   onClientClick,
+  onRegisterTabNav,
 }: ClientDetailViewProps) {
   const [activeClientMenu, setActiveClientMenu] = useState('overview');
   const [previousClientMenu, setPreviousClientMenu] = useState('overview');
@@ -95,22 +96,37 @@ export function ClientDetailView({
     opportunities: true, activities: true, quickActions: true,
   });
 
-  // Shared onboarding state (used by both OverviewView and FactFindView)
-  const onboardingContacts = contactsData.slice(0, 3);
-  const [contactOnboarding, setContactOnboarding] = useState(
-    onboardingContacts.map(contact => ({
-      contactId: contact.id,
-      contactName: contact.name,
-      contactType: contact.type,
-      items: onboardingItemsTemplate.map(item => ({
-        ...item,
-        completed: false,
-        completedDate: null as string | null,
-      })),
-    }))
-  );
+  // Fetch contacts for this client from API
+  const [clientContacts, setClientContacts] = useState<any[]>([]);
+  useEffect(() => {
+    if (selectedClientId) {
+      apiFetch<any[]>(`/api/contacts?clientId=${selectedClientId}`)
+        .then(setClientContacts)
+        .catch(() => {});
+    }
+  }, [selectedClientId]);
 
-  const allOnboardingCompleted = contactOnboarding.every(c => c.items.every(i => i.completed));
+  // Shared onboarding state (used by both OverviewView and FactFindView)
+  const [contactOnboarding, setContactOnboarding] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (clientContacts.length > 0) {
+      setContactOnboarding(
+        clientContacts.slice(0, 3).map((contact: any) => ({
+          contactId: contact.id,
+          contactName: contact.name,
+          contactType: contact.type,
+          items: onboardingItemsTemplate.map(item => ({
+            ...item,
+            completed: false,
+            completedDate: null as string | null,
+          })),
+        }))
+      );
+    }
+  }, [clientContacts]);
+
+  const allOnboardingCompleted = contactOnboarding.every((c: any) => c.items.every((i: any) => i.completed));
   const prevCompletionRef = useRef(allOnboardingCompleted);
 
   useEffect(() => {
@@ -124,12 +140,12 @@ export function ClientDetailView({
   }, [allOnboardingCompleted]);
 
   const toggleOnboardingItem = (contactId: number, itemId: string) => {
-    setContactOnboarding(prev =>
-      prev.map(contact =>
+    setContactOnboarding((prev: any[]) =>
+      prev.map((contact: any) =>
         contact.contactId === contactId
           ? {
             ...contact,
-            items: contact.items.map(item =>
+            items: contact.items.map((item: any) =>
               item.id === itemId
                 ? {
                   ...item,
@@ -163,6 +179,10 @@ export function ClientDetailView({
     setSlideDirection(newIndex > currentIndex ? 'left' : 'right');
     setActiveClientMenu(newTab);
   };
+
+  useEffect(() => {
+    onRegisterTabNav?.(changeTab);
+  });
 
   const swipeHandlers = useSwipeable({
     onSwipedLeft: () => {
@@ -206,21 +226,21 @@ export function ClientDetailView({
   const renderClientContent = () => {
     switch (activeClientMenu) {
       case 'overview':
-        return <OverviewView visibleModules={visibleModules} changeTab={changeTab} selectedClient={selectedClient} isViewsMenuOpen={isViewsMenuOpen} setIsViewsMenuOpen={setIsViewsMenuOpen} toggleModule={toggleModule} contactOnboarding={contactOnboarding} toggleOnboardingItem={toggleOnboardingItem} allOnboardingCompleted={allOnboardingCompleted} />;
+        return <OverviewView visibleModules={visibleModules} changeTab={changeTab} selectedClient={selectedClient} isViewsMenuOpen={isViewsMenuOpen} setIsViewsMenuOpen={setIsViewsMenuOpen} toggleModule={toggleModule} contactOnboarding={contactOnboarding} toggleOnboardingItem={toggleOnboardingItem} allOnboardingCompleted={allOnboardingCompleted} clientId={selectedClientId} allOpportunities={allOpportunities} />;
       case 'opportunities':
         return <OpportunitiesView clientId={selectedClientId as number} showAddOpportunityModal={showAddOpportunityModal} opportunityForm={opportunityForm} setOpportunityForm={setOpportunityForm} allOpportunities={allOpportunities} addOpportunity={addOpportunity} updateOpportunity={updateOpportunity} selectedOpportunityId={selectedOpportunityId} setSelectedOpportunityId={setSelectedOpportunityId} {...modalSetters} onClientClick={onClientClick} />;
       case 'onboarding':
         return <FactFindView contactOnboarding={contactOnboarding} toggleOnboardingItem={toggleOnboardingItem} {...modalSetters} />;
       case 'financials':
-        return <FinancialsView {...modalSetters} />;
+        return <FinancialsView clientId={selectedClientId} {...modalSetters} />;
       case 'contacts':
-        return <ContactsView selectedContact={selectedContact} setSelectedContact={setSelectedContact} {...modalSetters} />;
+        return <ContactsView clientId={selectedClientId} selectedContact={selectedContact} setSelectedContact={setSelectedContact} {...modalSetters} />;
       case 'meetings':
-        return <MeetingsView selectedMeeting={selectedMeeting} setSelectedMeeting={setSelectedMeeting} {...modalSetters} />;
+        return <MeetingsView clientId={selectedClientId} selectedMeeting={selectedMeeting} setSelectedMeeting={setSelectedMeeting} {...modalSetters} />;
       case 'documents':
-        return <DocumentsView {...modalSetters} />;
+        return <DocumentsView clientId={selectedClientId} {...modalSetters} />;
       case 'communication':
-        return <CommunicationView selectedCommunication={selectedCommunication} setSelectedCommunication={setSelectedCommunication} {...modalSetters} />;
+        return <CommunicationView clientId={selectedClientId} selectedCommunication={selectedCommunication} setSelectedCommunication={setSelectedCommunication} {...modalSetters} />;
       case 'notes':
         return <NotesView notesTab={notesTab} setNotesTab={setNotesTab} {...modalSetters} />;
       case 'mortgage':
@@ -228,9 +248,9 @@ export function ClientDetailView({
       case 'insurance':
         return (<div className="flex-1 flex items-center justify-center p-6 pb-24"><div className="text-center"><Shield className="w-16 h-16 text-gray-300 mx-auto mb-4" /><h2 className="text-2xl font-semibold mb-2">Insurance</h2><p className="text-gray-500">Insurance information coming soon</p></div></div>);
       case 'kiwisaver':
-        return <KiwiSaverView clientId={selectedClientId as number} clientName={selectedClient?.name || 'Client'} contacts={[{ id: 0, name: 'Andrew Carter', type: 'self', email: 'andrew.carter@gmail.com' }, { id: 1, name: 'Sarah Carter', type: 'primary_contact', email: 'sarah.carter@gmail.com' }, { id: 2, name: 'Margaret Carter', type: 'primary_contact', email: 'margaret.carter@xtra.co.nz' }]} setMobileDrawerOpen={setMobileDrawerOpen} />;
+        return <KiwiSaverView clientId={selectedClientId as number} clientName={selectedClient?.name || 'Client'} contacts={clientContacts.slice(0, 3).map((c: any) => ({ id: c.id, name: c.name, type: c.type, email: c.email }))} setMobileDrawerOpen={setMobileDrawerOpen} />;
       default:
-        return <OverviewView visibleModules={visibleModules} changeTab={changeTab} selectedClient={selectedClient} isViewsMenuOpen={isViewsMenuOpen} setIsViewsMenuOpen={setIsViewsMenuOpen} toggleModule={toggleModule} />;
+        return <OverviewView visibleModules={visibleModules} changeTab={changeTab} selectedClient={selectedClient} isViewsMenuOpen={isViewsMenuOpen} setIsViewsMenuOpen={setIsViewsMenuOpen} toggleModule={toggleModule} contactOnboarding={contactOnboarding} toggleOnboardingItem={toggleOnboardingItem} allOnboardingCompleted={allOnboardingCompleted} clientId={selectedClientId} allOpportunities={allOpportunities} />;
     }
   };
 

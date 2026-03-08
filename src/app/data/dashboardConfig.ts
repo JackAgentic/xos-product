@@ -1,7 +1,9 @@
 // Dashboard configuration types and defaults
 
+import { revenueData, pipelineData, activityTrendData, dashboardKPIs } from './seedData';
+
 export type ChartType = 'area' | 'bar' | 'pie' | 'line' | 'donut';
-export type MetricId = 'totalClients' | 'opportunities' | 'totalRevenue' | 'avgDealSize';
+export type MetricId = 'totalClients' | 'opportunities' | 'totalRevenue' | 'avgDealSize' | 'revenueGoal' | 'pipelineHealth' | 'performanceMetrics' | 'activityMetrics' | 'customerInsights';
 
 export interface SeriesConfig {
   dataKey: string;
@@ -35,6 +37,7 @@ export interface ChartWidgetConfig {
   colors: Record<string, string>;
   colSpan: 1 | 2;
   order: number;
+  dateRange?: { start: number; end: number };
 }
 
 export interface ListWidgetConfig {
@@ -51,76 +54,94 @@ export interface ListWidgetConfig {
 export type WidgetConfig = MetricCardConfig | ChartWidgetConfig | ListWidgetConfig;
 
 export interface DashboardConfig {
+  version?: number;
   widgets: WidgetConfig[];
 }
 
+export const DASHBOARD_CONFIG_VERSION = 3;
+
 export const DEFAULT_DASHBOARD_CONFIG: DashboardConfig = {
+  version: DASHBOARD_CONFIG_VERSION,
   widgets: [
-    // Metric cards
+    // Metric cards — 5 category cards
     {
-      id: 'metric-totalClients',
+      id: 'metric-revenueGoal',
       type: 'metric',
-      metricId: 'totalClients',
-      label: 'Total Clients',
+      metricId: 'revenueGoal',
+      label: 'Revenue & Goals',
       visible: true,
-      iconBgColor: 'bg-stone-200',
-      iconColor: 'text-emerald-950',
+      iconBgColor: 'bg-green-50',
+      iconColor: 'text-green-600',
       trendDirection: 'up',
-      trendValue: '+12%',
+      trendValue: '+14.2%',
       order: 0,
     },
     {
-      id: 'metric-opportunities',
+      id: 'metric-pipelineHealth',
       type: 'metric',
-      metricId: 'opportunities',
-      label: 'Opportunities',
+      metricId: 'pipelineHealth',
+      label: 'Pipeline Health',
       visible: true,
       iconBgColor: 'bg-orange-50',
       iconColor: 'text-orange-600',
       trendDirection: 'up',
-      trendValue: '+8%',
+      trendValue: '2.9x',
       order: 1,
     },
     {
-      id: 'metric-totalRevenue',
+      id: 'metric-performanceMetrics',
       type: 'metric',
-      metricId: 'totalRevenue',
-      label: 'Total Revenue',
-      visible: true,
-      iconBgColor: 'bg-green-50',
-      iconColor: 'text-green-600',
-      trendDirection: 'down',
-      trendValue: '-3%',
-      order: 2,
-    },
-    {
-      id: 'metric-avgDealSize',
-      type: 'metric',
-      metricId: 'avgDealSize',
-      label: 'Avg Deal Size',
+      metricId: 'performanceMetrics',
+      label: 'Performance',
       visible: true,
       iconBgColor: 'bg-blue-50',
       iconColor: 'text-blue-600',
       trendDirection: 'up',
-      trendValue: '+15%',
+      trendValue: '76.9%',
+      order: 2,
+    },
+    {
+      id: 'metric-activityMetrics',
+      type: 'metric',
+      metricId: 'activityMetrics',
+      label: 'Activity',
+      visible: true,
+      iconBgColor: 'bg-purple-50',
+      iconColor: 'text-purple-600',
+      trendDirection: 'up',
+      trendValue: '+36.9%',
       order: 3,
+    },
+    {
+      id: 'metric-customerInsights',
+      type: 'metric',
+      metricId: 'customerInsights',
+      label: 'Customer Insights',
+      visible: true,
+      iconBgColor: 'bg-stone-200',
+      iconColor: 'text-emerald-950',
+      trendDirection: 'up',
+      trendValue: '39.2x',
+      order: 4,
     },
     // Charts
     {
       id: 'chart-revenue',
       type: 'chart',
       chartType: 'area',
-      title: 'Revenue Overview',
-      subtitle: 'Monthly revenue vs target',
+      title: 'Revenue Overview (Year-on-Year Comparison)',
+      subtitle: 'Comparing current revenue with the same period last year',
       visible: true,
       dataSource: 'revenueData',
       series: [
         { dataKey: 'revenue', color: '#0B3D2E', label: 'Revenue', visible: true },
-        { dataKey: 'target', color: '#94a3b8', label: 'Target', visible: true },
+        { dataKey: 'target', color: '#16a34a', label: 'Target', visible: true },
+        { dataKey: 'lastYear', color: '#94a3b8', label: 'Last Year', visible: true },
       ],
       colors: { primary: '#0B3D2E', gradient: '#0B3D2E' },
       colSpan: 1,
       order: 10,
+      dateRange: { start: 12, end: 24 },
     },
     {
       id: 'chart-pipeline',
@@ -140,7 +161,7 @@ export const DEFAULT_DASHBOARD_CONFIG: DashboardConfig = {
       type: 'chart',
       chartType: 'bar',
       title: 'Activity Trend',
-      subtitle: 'Weekly activity breakdown',
+      subtitle: '4-week activity breakdown by type',
       visible: true,
       dataSource: 'activityTrendData',
       series: [
@@ -195,3 +216,59 @@ export const DEFAULT_DASHBOARD_CONFIG: DashboardConfig = {
     },
   ],
 };
+
+// ─── Dashboard Data (mutable, AI-controllable) ───────────────────────────────
+
+export interface RevenueDataPoint {
+  month: string;
+  revenue: number;
+  target: number;
+  lastYear: number;
+}
+
+export interface PipelineStage {
+  name: string;
+  value: number;
+  amount: number;
+  color: string;
+}
+
+export interface ActivityTrendPoint {
+  day: string;
+  meetings: number;
+  calls: number;
+  emails: number;
+}
+
+export interface DashboardData {
+  version: number;
+  revenueData: RevenueDataPoint[];
+  pipelineData: PipelineStage[];
+  activityTrendData: ActivityTrendPoint[];
+  kpis: typeof dashboardKPIs;
+}
+
+export const DASHBOARD_DATA_VERSION = 2;
+
+export const DEFAULT_DASHBOARD_DATA: DashboardData = {
+  version: DASHBOARD_DATA_VERSION,
+  revenueData: revenueData,
+  pipelineData: pipelineData,
+  activityTrendData: activityTrendData,
+  kpis: dashboardKPIs,
+};
+
+export function resolveChartData(
+  dataSource: string,
+  data: DashboardData,
+  dateRange?: { start: number; end: number },
+): any[] {
+  const sources: Record<string, any[]> = {
+    revenueData: data.revenueData,
+    pipelineData: data.pipelineData,
+    activityTrendData: data.activityTrendData,
+  };
+  let result = sources[dataSource] || data.revenueData;
+  if (dateRange) result = result.slice(dateRange.start, dateRange.end);
+  return result;
+}

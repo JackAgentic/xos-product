@@ -1,7 +1,9 @@
+import { useState, useEffect } from 'react';
 import { MessageSquare, Phone, Mail, MoreVertical, Search, Filter, Plus, StickyNote } from 'lucide-react';
-import { communicationsData } from '../data/seedData';
+import { apiFetch } from '../lib/api';
 
 interface CommunicationViewProps {
+  clientId: number | null;
   selectedCommunication: number | null;
   setSelectedCommunication: (n: number | null) => void;
   setShowAddEventModal: (show: boolean) => void;
@@ -13,6 +15,7 @@ interface CommunicationViewProps {
 }
 
 export function CommunicationView({
+  clientId,
   selectedCommunication,
   setSelectedCommunication,
   setShowAddEventModal,
@@ -22,8 +25,23 @@ export function CommunicationView({
   setShowAddTaskModal,
   setShowAddOpportunityModal
 }: CommunicationViewProps) {
-  const communications = [...communicationsData
-  ];
+  const [communications, setCommunications] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (clientId) {
+      apiFetch<any[]>(`/api/communications?clientId=${clientId}`).then(data => {
+        setCommunications(data.map((c: any) => ({
+          id: c.id,
+          from: c.from_name || 'Unknown',
+          subject: c.subject || '',
+          preview: c.message || '',
+          date: c.created_at ? new Date(c.created_at).toLocaleDateString('en-NZ', { month: 'short', day: 'numeric', year: 'numeric' }) : '',
+          type: c.type || 'email',
+          unread: false,
+        })));
+      }).catch(() => {});
+    }
+  }, [clientId]);
 
   return (
     <div className="flex h-full overflow-hidden bg-gray-50 relative" data-ai-section="Communications">
@@ -99,23 +117,31 @@ export function CommunicationView({
             <h3 className="text-lg font-medium mb-2">Select a communication to view details</h3>
             <p className="text-gray-500">Choose an item from the list to see its content</p>
           </div>
-        ) : (
+        ) : (() => {
+          const selectedComm = communications.find(c => c.id === selectedCommunication);
+          if (!selectedComm) return (
+            <div className="flex items-center justify-center h-full text-gray-400 text-sm">
+              Communication not found
+            </div>
+          );
+          return (
           <div className="w-full h-full p-6 pb-24">
             <div className="bg-white rounded-sm border border-gray-200 p-6 max-w-4xl mx-auto">
               <div className="mb-6">
-                <h3 className="text-xl font-semibold mb-2" data-ai-field="detailSubject" data-ai-label="Subject">{communications[selectedCommunication].subject}</h3>
+                <h3 className="text-xl font-semibold mb-2" data-ai-field="detailSubject" data-ai-label="Subject">{selectedComm.subject}</h3>
                 <div className="flex items-center gap-3 text-sm text-gray-500">
-                  <span data-ai-field="detailFrom" data-ai-label="From">From: {communications[selectedCommunication].from}</span>
+                  <span data-ai-field="detailFrom" data-ai-label="From">From: {selectedComm.from}</span>
                   <span>•</span>
-                  <span data-ai-field="detailDate" data-ai-label="Date">{communications[selectedCommunication].date}</span>
+                  <span data-ai-field="detailDate" data-ai-label="Date">{selectedComm.date}</span>
                 </div>
               </div>
               <div className="prose max-w-none" data-ai-field="detailContent" data-ai-label="Message Content">
-                <p>{communications[selectedCommunication].preview}</p>
+                <p>{selectedComm.preview}</p>
               </div>
             </div>
           </div>
-        )}
+          );
+        })()}
       </div>
     </div>
   );

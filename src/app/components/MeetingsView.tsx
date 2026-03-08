@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus, Search, Filter, Calendar as CalendarIcon, Clock, Users, X, FileText, Shield, Target, CheckSquare, Send, Paperclip, Video, Phone, Sparkles } from 'lucide-react';
+import { apiFetch } from '../lib/api';
 
 interface MeetingsViewProps {
+  clientId: number | null;
   selectedMeeting: number;
   setSelectedMeeting: (n: number) => void;
   setShowAddEventModal: (show: boolean) => void;
@@ -13,6 +15,7 @@ interface MeetingsViewProps {
 }
 
 export function MeetingsView({
+  clientId,
   selectedMeeting,
   setSelectedMeeting,
   setShowAddEventModal,
@@ -22,17 +25,32 @@ export function MeetingsView({
   setShowAddTaskModal,
   setShowAddOpportunityModal
 }: MeetingsViewProps) {
-  const meetings = [
-    { id: 0, title: 'Annual KiwiSaver Review', date: 'Thu, Mar 6, 2026', time: '10:00 AM to 11:00 AM', attendees: 2 },
-    { id: 1, title: 'Mortgage Pre-Approval Discussion', date: 'Thu, Mar 6, 2026', time: '2:00 PM to 2:45 PM', attendees: 1 },
-    { id: 2, title: 'Insurance Proposal Presentation', date: 'Fri, Mar 7, 2026', time: '9:30 AM to 11:00 AM', attendees: 3 },
-    { id: 3, title: 'Retirement Income Planning', date: 'Fri, Mar 7, 2026', time: '2:00 PM to 3:00 PM', attendees: 2 },
-    { id: 4, title: 'Quarterly Portfolio Review', date: 'Mon, Mar 10, 2026', time: '10:00 AM to 10:45 AM', attendees: 1 },
-    { id: 5, title: 'Estate Planning Consultation', date: 'Tue, Mar 11, 2026', time: '11:00 AM to 12:00 PM', attendees: 4 },
-    { id: 6, title: 'Investment Strategy Workshop', date: 'Wed, Mar 12, 2026', time: '1:00 PM to 2:30 PM', attendees: 2 },
-    { id: 7, title: 'Follow-up — Risk Assessment', date: 'Thu, Mar 13, 2026', time: '3:00 PM to 3:30 PM', attendees: 1 },
-  ];
+  const [meetings, setMeetings] = useState<any[]>([]);
 
+  useEffect(() => {
+    if (clientId) {
+      apiFetch<any[]>(`/api/meetings?clientId=${clientId}`).then(data => {
+        setMeetings(data.map((m: any) => ({
+          id: m.id,
+          title: m.title,
+          rawDate: m.date || '',
+          date: m.date ? new Date(m.date).toLocaleDateString('en-NZ', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }) : '',
+          dateForInput: m.date ? new Date(m.date).toLocaleDateString('en-NZ', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '',
+          time: m.start_time || '',
+          duration: m.duration || 30,
+          endTime: m.start_time && m.duration
+            ? (() => { const [h, min] = m.start_time.split(':').map(Number); const end = new Date(2000, 0, 1, h, min + m.duration); return end.toLocaleTimeString('en-NZ', { hour: '2-digit', minute: '2-digit', hour12: false }); })()
+            : '',
+          location: m.location || '',
+          notes: m.notes || '',
+          advisor: m.advisor || '',
+          attendees: 1,
+        })));
+      }).catch(() => {});
+    }
+  }, [clientId]);
+
+  const selectedMeetingData = meetings[selectedMeeting] || null;
   const [activeTab, setActiveTab] = useState('meeting');
 
   return (
@@ -101,6 +119,14 @@ export function MeetingsView({
 
       {/* Meeting Details */}
       <div className="flex-1 overflow-auto" data-ai-section="Meeting Details">
+        {!selectedMeetingData ? (
+          <div className="h-full flex items-center justify-center text-gray-400 text-sm pb-24">
+            <div className="text-center">
+              <CalendarIcon className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+              <p>Select a meeting to view details</p>
+            </div>
+          </div>
+        ) : (
         <div className="bg-stone-200/20 p-4 sm:p-6 pb-24">
           <div className="bg-white rounded-sm border border-gray-200 p-4 sm:p-6">
             <div className="flex items-center justify-between mb-6">
@@ -172,7 +198,7 @@ export function MeetingsView({
                   <label className="block text-sm font-medium mb-2">Title:</label>
                   <input
                     type="text"
-                    value="Security Test"
+                    value={selectedMeetingData.title || ''}
                     onChange={() => { }}
                     className="w-full px-3 py-2 border border-gray-200 rounded-sm"
                   />
@@ -182,20 +208,20 @@ export function MeetingsView({
                     <label className="block text-sm font-medium mb-2">Date & Time:</label>
                     <input
                       type="text"
-                      value="15/01/2026"
+                      value={selectedMeetingData.dateForInput || ''}
                       onChange={() => { }}
                       className="w-full px-3 py-2 border border-gray-200 rounded-sm"
                     />
                   </div>
                   <input
                     type="text"
-                    value="23:00"
+                    value={selectedMeetingData.time || ''}
                     onChange={() => { }}
                     className="w-full px-3 py-2 border border-gray-200 rounded-sm mt-6"
                   />
                   <input
                     type="text"
-                    value="23:30"
+                    value={selectedMeetingData.endTime || ''}
                     onChange={() => { }}
                     className="w-full px-3 py-2 border border-gray-200 rounded-sm mt-6"
                   />
@@ -213,6 +239,8 @@ export function MeetingsView({
                 <label className="block text-sm font-medium mb-2">Location:</label>
                 <input
                   type="text"
+                  value={selectedMeetingData.location || ''}
+                  onChange={() => { }}
                   placeholder="Meeting location"
                   className="w-full px-3 py-2 border border-gray-200 rounded-sm"
                 />
@@ -274,6 +302,8 @@ export function MeetingsView({
 
               <div data-ai-field="meetingNotes" data-ai-label="Meeting Notes" data-ai-editable="true">
                 <textarea
+                  value={selectedMeetingData.notes || ''}
+                  onChange={() => { }}
                   placeholder="Enter meeting invitation notes here..."
                   rows={4}
                   className="w-full px-3 py-2 border border-gray-200 rounded-sm resize-none"
@@ -282,6 +312,7 @@ export function MeetingsView({
             </div>
           </div>
         </div>
+        )}
       </div>
     </div>
   );

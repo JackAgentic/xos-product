@@ -66,7 +66,7 @@ export const initialClientsData = [
     id: 4,
     name: 'Andrew Beckett',
     type: 'person' as const,
-    status: 'ACTIVE' as const,
+    status: 'INACTIVE' as const,
     advice: ['M', 'K', 'I', 'V'],
     adviceProgress: {
       M: { active: true, stage: 'Active', progress: 100 },
@@ -346,7 +346,7 @@ export const initialClientsData = [
     id: 20,
     name: 'Mark Stevenson',
     type: 'person' as const,
-    status: 'PROSPECT' as const,
+    status: 'INACTIVE' as const,
     advice: ['K', 'I'],
     adviceProgress: {
       M: { active: false, stage: null, progress: 0 },

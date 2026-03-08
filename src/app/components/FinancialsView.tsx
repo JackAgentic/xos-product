@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import { financialSnapshots as seedSnapshots, seedAssets, seedLiabilities, seedIncome, seedExpenses, seedGoals } from '../data/seedData';
+import { apiFetch } from '../lib/api';
 import {
   Plus,
   Search,
@@ -76,6 +76,7 @@ interface GoalItem {
 }
 
 export function FinancialsView({
+  clientId,
   setShowAddEventModal,
   setShowSendEmailModal,
   setShowAddDocumentModal,
@@ -83,6 +84,7 @@ export function FinancialsView({
   setShowAddTaskModal,
   setShowAddOpportunityModal
 }: {
+  clientId: number | null;
   setShowAddEventModal: (show: boolean) => void;
   setShowSendEmailModal: (show: boolean) => void;
   setShowAddDocumentModal: (show: boolean) => void;
@@ -90,7 +92,7 @@ export function FinancialsView({
   setShowAddTaskModal: (show: boolean) => void;
   setShowAddOpportunityModal: (show: boolean) => void;
 }) {
-  const [snapshots, setSnapshots] = useState<FinancialSnapshot[]>(seedSnapshots);
+  const [snapshots, setSnapshots] = useState<FinancialSnapshot[]>([]);
 
   const [selectedSnapshot, setSelectedSnapshot] = useState<FinancialSnapshot | null>(null);
   const [activeTab, setActiveTab] = useState('assets');
@@ -100,11 +102,33 @@ export function FinancialsView({
   const [showActionMenu, setShowActionMenu] = useState<string | null>(null);
 
   // Form data states
-  const [assets, setAssets] = useState<AssetItem[]>(seedAssets);
-  const [liabilities, setLiabilities] = useState<LiabilityItem[]>(seedLiabilities);
-  const [incomeItems, setIncomeItems] = useState<IncomeItem[]>(seedIncome);
-  const [expenseItems, setExpenseItems] = useState<ExpenseItem[]>(seedExpenses);
-  const [goals, setGoals] = useState<GoalItem[]>(seedGoals);
+  const [assets, setAssets] = useState<AssetItem[]>([]);
+  const [liabilities, setLiabilities] = useState<LiabilityItem[]>([]);
+  const [incomeItems, setIncomeItems] = useState<IncomeItem[]>([]);
+  const [expenseItems, setExpenseItems] = useState<ExpenseItem[]>([]);
+  const [goals, setGoals] = useState<GoalItem[]>([]);
+
+  useEffect(() => {
+    if (!clientId) return;
+    apiFetch<any[]>(`/api/financials/snapshots?clientId=${clientId}`).then(data => {
+      setSnapshots(data.map((s: any) => ({ ...s, id: String(s.id), netWorth: s.net_worth, totalAssets: s.total_assets, totalLiabilities: s.total_liabilities })));
+    }).catch(() => {});
+    apiFetch<any[]>(`/api/financials/assets?clientId=${clientId}`).then(data => {
+      setAssets(data.map((a: any) => ({ id: String(a.id), type: a.type, description: a.description, value: a.value, ownership: a.ownership })));
+    }).catch(() => {});
+    apiFetch<any[]>(`/api/financials/liabilities?clientId=${clientId}`).then(data => {
+      setLiabilities(data.map((l: any) => ({ id: String(l.id), type: l.type, description: l.description, balance: l.balance, interestRate: l.interest_rate, payment: l.payment })));
+    }).catch(() => {});
+    apiFetch<any[]>(`/api/financials/income?clientId=${clientId}`).then(data => {
+      setIncomeItems(data.map((i: any) => ({ id: String(i.id), source: i.source, amount: i.amount, frequency: i.frequency })));
+    }).catch(() => {});
+    apiFetch<any[]>(`/api/financials/expenses?clientId=${clientId}`).then(data => {
+      setExpenseItems(data.map((e: any) => ({ id: String(e.id), category: e.category, amount: e.amount, frequency: e.frequency })));
+    }).catch(() => {});
+    apiFetch<any[]>(`/api/financials/goals?clientId=${clientId}`).then(data => {
+      setGoals(data.map((g: any) => ({ id: String(g.id), name: g.name, targetAmount: g.target_amount, targetDate: g.target_date, priority: g.priority })));
+    }).catch(() => {});
+  }, [clientId]);
 
   const tabs = [
     { id: 'assets', label: 'Assets', icon: TrendingUp },

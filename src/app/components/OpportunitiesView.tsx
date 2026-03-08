@@ -9,10 +9,8 @@ import {
   User,
   Calendar as CalendarIcon,
 } from 'lucide-react';
-import { CLIENTS_LOOKUP } from '../data/clients';
 import { getAdviceIcon } from '../utils/adviceUtils';
 import { generateAIInsights } from '../utils/opportunityInsights';
-import { opportunityActivities } from '../data/seedData';
 import { OpportunitySidebar } from './OpportunitySidebar';
 import { OpportunityDetails } from './OpportunityDetails';
 import { OpportunityPipeline } from './OpportunityPipeline';
@@ -65,8 +63,12 @@ const pipelineStages = [
   { name: 'Lost', date: '25 Mar' }
 ];
 
-// Activity timeline data
-const activities = opportunityActivities;
+// Activity timeline data (static template — no per-opportunity API yet)
+const activities = [
+  { id: 1, type: 'document', date: '15 Feb', label: 'Feb 15', title: 'Application Form Submitted', description: 'Signed application submitted', assigned: true },
+  { id: 2, type: 'note', date: '18 Feb', label: 'Feb 18', title: 'Client Call', description: 'Discussed options with client', assigned: true },
+  { id: 3, type: 'meeting', date: '20 Feb', label: 'Feb 20', title: 'Discovery Meeting', description: 'Comprehensive financial review', location: 'Office', time: '20 Feb 2026 10:00 AM', assigned: true },
+];
 
 export function OpportunitiesView({
   clientId,
@@ -173,10 +175,7 @@ export function OpportunitiesView({
 
   const selectedOpp = opportunities.find(o => o.id === selectedOpportunity);
 
-  // Get client name from CLIENTS_LOOKUP if not present in opportunity
-  const clientName = selectedOpp
-    ? (selectedOpp.client || CLIENTS_LOOKUP.find(c => c.id === selectedOpp.clientId)?.name || 'Unknown Client')
-    : 'Unknown Client';
+  const clientName = selectedOpp?.client || 'Unknown Client';
 
   const togglePin = (id: number) => {
     setPinnedOpportunities(prev => {
@@ -438,6 +437,7 @@ export function OpportunitiesView({
         setFilterClient={setFilterClient}
         filterType={filterType}
         setFilterType={setFilterType}
+        clients={Array.from(new Map(allOpportunities.map((o: any) => [o.clientId || o.client_id, { id: o.clientId || o.client_id, name: o.client }])).values())}
       />
 
       {/* Sort Modal */}

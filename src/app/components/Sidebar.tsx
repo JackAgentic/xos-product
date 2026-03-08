@@ -4,7 +4,9 @@ import {
   ChevronLeft,
   PanelLeftClose,
   PanelLeftOpen,
+  LogOut,
 } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 import {
   Tooltip,
   TooltipContent,
@@ -29,11 +31,13 @@ export function Sidebar({
   mobileDrawerOpen,
   onCloseMobileDrawer,
 }: SidebarProps) {
+  const { user, logout } = useAuth();
+
   return (
     <div className={`${sidebarCollapsed ? 'w-[72px]' : 'w-[220px]'} bg-[radial-gradient(ellipse_1200px_1200px_at_top_left,_#2D6A4F_0%,_#081C15_45%,_#040E0A_100%)] text-white flex flex-col flex-shrink-0 transition-all duration-300 fixed lg:relative inset-y-0 left-0 z-50 overflow-hidden ${mobileDrawerOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
       {/* Logo */}
       <button
-        onClick={() => onMenuClick('clients')}
+        onClick={() => onMenuClick('dashboard')}
         className="p-2 py-4 w-full flex justify-center"
       >
         {sidebarCollapsed ? (
@@ -109,6 +113,40 @@ export function Sidebar({
         </TooltipProvider>
       </nav>
 
+      {/* User Profile + Logout */}
+      {user && (
+        <div className="border-t border-stone-200/20 p-3">
+          <div className={`flex items-center ${sidebarCollapsed ? 'justify-center' : 'gap-3'}`}>
+            <div className="w-8 h-8 rounded-full bg-emerald-800 flex items-center justify-center text-white text-xs font-semibold flex-shrink-0">
+              {user.initials}
+            </div>
+            {!sidebarCollapsed && (
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-white truncate">{user.fullName}</p>
+                <p className="text-[11px] text-stone-400 truncate">{user.email}</p>
+              </div>
+            )}
+            {!sidebarCollapsed && (
+              <button
+                onClick={logout}
+                className="p-1.5 rounded-sm text-stone-400 hover:text-white hover:bg-white/10 transition-colors"
+                title="Sign out"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+          {sidebarCollapsed && (
+            <button
+              onClick={logout}
+              className="w-full mt-2 p-2 rounded-sm text-stone-400 hover:text-white hover:bg-white/10 transition-colors flex justify-center"
+              title="Sign out"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }

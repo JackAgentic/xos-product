@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import {
   Users,
   Target,
@@ -13,22 +13,27 @@ import {
   Mail,
   Video,
   FileText,
+  Activity,
+  Gauge,
+  Award,
 } from 'lucide-react';
-import { AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { revenueData as seedRevenue, pipelineData as seedPipeline, activityTrendData, dashboardRecentActivities, dashboardUpcomingMeetings } from '../data/seedData';
-import type { DashboardConfig, MetricCardConfig, ChartWidgetConfig, ListWidgetConfig, WidgetConfig } from '../data/dashboardConfig';
+import { apiFetch } from '../lib/api';
+import { topClientsData } from '../data/seedData';
+import { resolveChartData } from '../data/dashboardConfig';
+import type { DashboardConfig, DashboardData, MetricCardConfig, ChartWidgetConfig, ListWidgetConfig, WidgetConfig } from '../data/dashboardConfig';
+import { ChartWidget } from './ChartWidget';
+import { ChartSettings } from './ChartSettings';
 
 const METRIC_ICONS: Record<string, any> = {
   totalClients: Users,
   opportunities: Target,
   totalRevenue: DollarSign,
   avgDealSize: TrendingUp,
-};
-
-const DATA_SOURCES: Record<string, any[]> = {
-  revenueData: seedRevenue,
-  pipelineData: seedPipeline,
-  activityTrendData: activityTrendData,
+  revenueGoal: DollarSign,
+  pipelineHealth: Gauge,
+  performanceMetrics: Award,
+  activityMetrics: Activity,
+  customerInsights: Users,
 };
 
 const iconMap: Record<string, any> = { video: Video, mail: Mail, file: FileText, phone: Phone, calendar: Calendar };
@@ -40,6 +45,8 @@ export function DashboardView({
   handleClientClick,
   dashboardConfig,
   onConfigChange,
+  dashboardData,
+  onDataChange,
 }: {
   setMobileDrawerOpen: (open: boolean) => void;
   clients?: any[];
@@ -47,18 +54,72 @@ export function DashboardView({
   handleClientClick: (clientId: number) => void;
   dashboardConfig: DashboardConfig;
   onConfigChange: (config: DashboardConfig) => void;
+  dashboardData: DashboardData;
+  onDataChange: (data: DashboardData) => void;
 }) {
-  const [timeRange, setTimeRange] = useState<'week' | 'month' | 'quarter' | 'year'>('month');
+  const [timeRange, setTimeRange] = useState<'week' | 'month' | 'quarter' | 'year'>('year');
+  const [apiDashboard, setApiDashboard] = useState<any>(null);
+  const isLoading = apiDashboard === null;
 
-  const revenueData = seedRevenue;
-  const pipelineData = seedPipeline;
-  const activityData = activityTrendData;
+  useEffect(() => {
+    apiFetch<any>('/api/dashboard').then(setApiDashboard).catch(() => {});
+  }, []);
+
+  const { revenueData, pipelineData, kpis: dashboardKPIs } = dashboardData;
+
+  const PIPELINE_COLORS: Record<string, string> = {
+    Prospect: '#94a3b8',
+    Active: '#0B3D2E',
+    Application: '#081C15',
+    Settlement: '#16a34a',
+    Review: '#0ea5e9',
+  };
+
+  const apiPipeline = (apiDashboard?.pipelineData || []).map((s: any) => ({
+    ...s,
+    color: PIPELINE_COLORS[s.name] || '#6b7280',
+  }));
+
+  const apiRevenue = (apiDashboard?.revenueData || []).map((r: any) => ({
+    ...r,
+    lastYear: r.last_year ?? r.lastYear,
+  }));
+
+  // Merge API data into dashboardData so resolveChartData picks it up
+  const effectiveData: DashboardData = useMemo(() => ({
+    ...dashboardData,
+    revenueData: apiRevenue.length > 0 ? apiRevenue : revenueData,
+    pipelineData: apiPipeline.length > 0 ? apiPipeline : pipelineData,
+  }), [dashboardData, apiRevenue, apiPipeline, revenueData, pipelineData]);
+
+  // Apply time range filter to all chart widgets
+  const handleTimeRange = (range: 'week' | 'month' | 'quarter' | 'year') => {
+    setTimeRange(range);
+    const dataLengths: Record<string, number> = {
+      revenueData: effectiveData.revenueData.length,
+      activityTrendData: effectiveData.activityTrendData.length,
+    };
+    const rangeSlices: Record<string, number> = { week: 1, month: 3, quarter: 6, year: 12 };
+    const lastN = rangeSlices[range];
+
+    const newConfig = {
+      ...dashboardConfig,
+      widgets: dashboardConfig.widgets.map(w => {
+        if (w.type !== 'chart') return w;
+        const total = dataLengths[w.dataSource];
+        if (!total) return w; // pipeline etc. — no time filtering
+        if (lastN === 0 || lastN >= total) {
+          const { dateRange: _, ...rest } = w as any;
+          return rest;
+        }
+        return { ...w, dateRange: { start: total - lastN, end: total } };
+      }),
+    };
+    onConfigChange(newConfig);
+  };
 
   // Calculate metrics
   const totalClients = clients.length;
-  const activeOpportunities = allOpportunities.length;
-  const totalRevenue = revenueData.reduce((sum, item) => sum + item.revenue, 0);
-  const avgDealSize = totalRevenue / (pipelineData[4].value || 1);
 
   const prospectClients = clients.filter((c: any) => c.status === 'PROSPECT').length;
   const activeClients = clients.filter((c: any) => c.status === 'ACTIVE').length;
@@ -70,21 +131,45 @@ export function DashboardView({
     { name: 'Inactive', value: inactiveClients, color: '#94a3b8' },
   ];
 
-  const metricValues: Record<string, number> = {
-    totalClients,
-    opportunities: activeOpportunities,
-    totalRevenue,
-    avgDealSize,
-  };
+  const recentActivities = useMemo(() => {
+    const apiActivities = apiDashboard?.recentActivities || [];
+    return apiActivities.map((a: any) => {
+      const actType = (a.type || '').toLowerCase();
+      const iconType = actType === 'meeting' ? 'calendar' : actType === 'email' ? 'mail' : actType === 'call' ? 'phone' : 'file';
+      return {
+        id: a.id,
+        type: actType,
+        client: a.client_name || a.client || 'Unknown',
+        action: a.action || '',
+        time: a.created_at ? new Date(a.created_at).toLocaleDateString('en-NZ', { month: 'short', day: 'numeric' }) : '',
+        icon: iconMap[iconType] || FileText,
+        color: actType === 'meeting' ? 'bg-blue-50 text-blue-600' : actType === 'email' ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-600',
+      };
+    });
+  }, [apiDashboard]);
 
-  const recentActivities = dashboardRecentActivities.map(a => ({ ...a, icon: iconMap[a.iconType] }));
-  const upcomingMeetings = dashboardUpcomingMeetings;
+  const upcomingMeetings = useMemo(() => {
+    const apiMeetings = apiDashboard?.upcomingMeetings || [];
+    return apiMeetings.map((m: any) => ({
+      id: m.id,
+      client: m.client || 'Unknown',
+      type: m.title || 'Meeting',
+      time: m.date ? new Date(m.date).toLocaleDateString('en-NZ', { weekday: 'short', month: 'short', day: 'numeric' }) : '',
+      duration: m.duration ? `${m.duration} min` : '30 min',
+    }));
+  }, [apiDashboard]);
 
-  const topClients = useMemo(() => clients.slice(0, 5).map((client: any) => ({
-    ...client,
-    revenue: Math.floor(Math.random() * 100000) + 50000,
-    deals: Math.floor(Math.random() * 10) + 1,
-  })), [clients]);
+  const topClients = useMemo(() => {
+    return clients
+      .filter((c: any) => c.status === 'ACTIVE')
+      .map((c: any) => ({
+        ...c,
+        revenue: topClientsData[c.id as number]?.revenue ?? 0,
+        deals: topClientsData[c.id as number]?.deals ?? 0,
+      }))
+      .sort((a: any, b: any) => b.revenue - a.revenue)
+      .slice(0, 10);
+  }, [clients]);
 
   // Sort visible widgets by order
   const visibleWidgets = dashboardConfig.widgets
@@ -92,21 +177,205 @@ export function DashboardView({
     .sort((a, b) => a.order - b.order);
 
   const metrics = visibleWidgets.filter((w): w is MetricCardConfig => w.type === 'metric');
-  const chartsRow1 = visibleWidgets.filter(w => w.order >= 10 && w.order < 20 && w.type === 'chart') as ChartWidgetConfig[];
-  const row2 = visibleWidgets.filter(w => w.order >= 20 && w.order < 30);
-  const row3 = visibleWidgets.filter(w => w.order >= 30 && w.order < 40);
-  const row4 = visibleWidgets.filter(w => w.order >= 40 && w.order < 50);
+  const flowWidgets = visibleWidgets.filter(w => w.type !== 'metric');
 
-  function formatMetric(id: string, value: number): string {
-    if (id === 'totalRevenue' || id === 'avgDealSize') return `$${(value / 1000).toFixed(0)}k`;
-    return String(value);
+  function fmtCurrency(v: number): string {
+    if (v >= 1000000) return `$${(v / 1000000).toFixed(1)}M`;
+    if (v >= 1000) return `$${(v / 1000).toFixed(0)}k`;
+    return `$${v.toFixed(0)}`;
+  }
+
+  function renderMetricCardSkeleton(config: MetricCardConfig) {
+    return (
+      <div key={config.id} className="bg-white rounded-sm border border-gray-200 p-5 animate-pulse">
+        <div className="flex items-start justify-between mb-3">
+          <div className="h-3 w-24 bg-gray-200 rounded" />
+          <div className="w-7 h-7 bg-gray-200 rounded-sm" />
+        </div>
+        <div className="h-8 w-20 bg-gray-200 rounded mb-3" />
+        <div className="space-y-1.5 mb-3">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="flex items-center justify-between">
+              <div className="h-3 w-12 bg-gray-200 rounded" />
+              <div className="h-3 w-10 bg-gray-200 rounded" />
+            </div>
+          ))}
+        </div>
+        <div className="pt-2 border-t border-gray-100">
+          <div className="h-3 w-24 bg-gray-200 rounded" />
+        </div>
+      </div>
+    );
+  }
+
+  function renderChartWidgetSkeleton(config: ChartWidgetConfig) {
+    return (
+      <div key={config.id} className="bg-white rounded-sm border border-gray-200 p-6 flex flex-col animate-pulse">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <div className="h-5 w-40 bg-gray-200 rounded mb-2" />
+            <div className="h-3 w-56 bg-gray-200 rounded" />
+          </div>
+          <div className="w-8 h-8 bg-gray-200 rounded-sm" />
+        </div>
+        <div className="h-[300px] bg-gray-100 rounded-sm" />
+      </div>
+    );
+  }
+
+  function renderListWidgetSkeleton(config: ListWidgetConfig) {
+    return (
+      <div key={config.id} className="bg-white rounded-sm border border-gray-200 p-6 animate-pulse">
+        <div className="flex items-center justify-between mb-4">
+          <div className="h-5 w-40 bg-gray-200 rounded" />
+          <div className="h-4 w-16 bg-gray-200 rounded" />
+        </div>
+
+        {(config.listType === 'meetings') && (
+          <div className="space-y-3">
+            {Array.from({ length: config.maxItems }).map((_, i) => (
+              <div key={i} className="p-3 bg-gray-50 rounded-sm border border-gray-100">
+                <div className="flex items-start justify-between gap-2 mb-2">
+                  <div className="flex-1">
+                    <div className="h-4 w-32 bg-gray-200 rounded mb-1.5" />
+                    <div className="h-3 w-24 bg-gray-200 rounded" />
+                  </div>
+                  <div className="w-4 h-4 bg-gray-200 rounded" />
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="h-3 w-20 bg-gray-200 rounded" />
+                  <div className="h-3 w-12 bg-gray-200 rounded" />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {(config.listType === 'activity') && (
+          <div className="space-y-3">
+            {Array.from({ length: config.maxItems }).map((_, i) => (
+              <div key={i} className="flex items-start gap-3 p-3 rounded-sm">
+                <div className="w-8 h-8 bg-gray-200 rounded-sm flex-shrink-0" />
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <div className="h-4 w-28 bg-gray-200 rounded" />
+                    <div className="h-3 w-14 bg-gray-200 rounded" />
+                  </div>
+                  <div className="h-3 w-44 bg-gray-200 rounded" />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {(config.listType === 'clientStatus') && (
+          <div className="space-y-4 mt-2">
+            {[1, 2, 3].map(i => (
+              <div key={i}>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-gray-200 rounded-full" />
+                    <div className="h-3 w-16 bg-gray-200 rounded" />
+                  </div>
+                  <div className="h-3 w-8 bg-gray-200 rounded" />
+                </div>
+                <div className="w-full bg-gray-100 rounded-full h-2" />
+                <div className="h-3 w-20 bg-gray-200 rounded mt-1" />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {(config.listType === 'topClients') && (
+          <div className="mt-2">
+            <div className="flex gap-4 border-b border-gray-200 pb-3 mb-3">
+              {['w-16', 'w-14', 'w-16', 'w-12', 'w-14', 'w-12'].map((w, i) => (
+                <div key={i} className={`h-3 ${w} bg-gray-200 rounded`} />
+              ))}
+            </div>
+            <div className="space-y-4">
+              {Array.from({ length: config.maxItems }).map((_, i) => (
+                <div key={i} className="flex items-center gap-4">
+                  <div className="flex items-center gap-3 flex-1">
+                    <div className="w-10 h-10 bg-gray-200 rounded-full flex-shrink-0" />
+                    <div>
+                      <div className="h-4 w-28 bg-gray-200 rounded mb-1" />
+                      <div className="h-3 w-36 bg-gray-200 rounded" />
+                    </div>
+                  </div>
+                  <div className="h-4 w-14 bg-gray-200 rounded-full" />
+                  <div className="h-4 w-12 bg-gray-200 rounded" />
+                  <div className="h-4 w-14 bg-gray-200 rounded" />
+                  <div className="w-7 h-7 bg-gray-200 rounded-full" />
+                  <div className="h-4 w-20 bg-gray-200 rounded" />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    );
   }
 
   function renderMetricCard(config: MetricCardConfig) {
     const Icon = METRIC_ICONS[config.metricId] || Users;
-    const value = metricValues[config.metricId] ?? 0;
     const TrendIcon = config.trendDirection === 'up' ? ArrowUpRight : ArrowDownRight;
     const trendColor = config.trendDirection === 'up' ? 'text-green-600' : 'text-red-600';
+    const kpi = dashboardKPIs;
+
+    const cardContent = (): { headline: string; subMetrics: { label: string; value: string }[] } => {
+      switch (config.metricId) {
+        case 'revenueGoal':
+          return {
+            headline: fmtCurrency(kpi.revenue.totalRevenue),
+            subMetrics: [
+              { label: 'Target', value: fmtCurrency(kpi.revenue.totalTarget) },
+              { label: 'Attainment', value: `${kpi.revenue.attainment}%` },
+              { label: 'MTD', value: fmtCurrency(kpi.revenue.mtdRevenue) },
+            ],
+          };
+        case 'pipelineHealth':
+          return {
+            headline: fmtCurrency(kpi.pipeline.totalPipelineValue),
+            subMetrics: [
+              { label: 'Coverage', value: `${kpi.pipeline.coverageRatio}x` },
+              { label: 'Conversion', value: `${kpi.pipeline.conversionRate}%` },
+              { label: 'Avg Cycle', value: `${kpi.pipeline.avgSalesCycle}d` },
+            ],
+          };
+        case 'performanceMetrics':
+          return {
+            headline: `${kpi.performance.winRate}%`,
+            subMetrics: [
+              { label: 'Deal Size', value: fmtCurrency(kpi.performance.avgDealSize) },
+              { label: 'Won/Lost', value: `${kpi.performance.closedWon}/${kpi.performance.closedLost}` },
+              { label: 'Quota', value: `${kpi.performance.quotaAttainment}%` },
+            ],
+          };
+        case 'activityMetrics':
+          return {
+            headline: `${kpi.activity.totalThisWeek}`,
+            subMetrics: [
+              { label: 'Meetings', value: `${kpi.activity.meetingsThisWeek}` },
+              { label: 'Calls', value: `${kpi.activity.callsThisWeek}` },
+              { label: 'Emails', value: `${kpi.activity.emailsThisWeek}` },
+            ],
+          };
+        case 'customerInsights':
+          return {
+            headline: `${kpi.customers.ltvCacRatio}x`,
+            subMetrics: [
+              { label: 'Active Clients', value: `${kpi.customers.activeClients}` },
+              { label: 'CAC', value: fmtCurrency(kpi.customers.cac) },
+              { label: 'LTV', value: fmtCurrency(kpi.customers.avgLtv) },
+            ],
+          };
+        default:
+          return { headline: '—', subMetrics: [] };
+      }
+    };
+
+    const { headline, subMetrics } = cardContent();
 
     return (
       <div
@@ -115,30 +384,45 @@ export function DashboardView({
         data-ai-field={config.id}
         data-ai-label={config.label}
         data-ai-editable="true"
-        className="bg-white rounded-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
+        className="bg-white rounded-sm border border-gray-200 p-5 hover:shadow-md transition-shadow"
       >
-        <div className="flex items-start justify-between">
-          <div>
-            <p className="text-sm text-gray-600 mb-1">{config.label}</p>
-            <h3 className="text-3xl font-bold text-gray-900">{formatMetric(config.metricId, value)}</h3>
-            <div className="flex items-center gap-1 mt-2">
-              <TrendIcon className={`w-4 h-4 ${trendColor}`} />
-              <span className={`text-sm ${trendColor} font-medium`}>{config.trendValue}</span>
-              <span className="text-sm text-gray-500">vs last month</span>
+        <div className="flex items-start justify-between mb-3">
+          <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">{config.label}</p>
+          <div className={`${config.iconBgColor} rounded-sm p-1.5`}>
+            <Icon className={`w-4 h-4 ${config.iconColor}`} />
+          </div>
+        </div>
+        <h3 className="text-2xl font-bold text-gray-900 mb-3">{headline}</h3>
+        <div className="space-y-1.5 mb-3">
+          {subMetrics.map((sm) => (
+            <div key={sm.label} className="flex items-center justify-between">
+              <span className="text-xs text-gray-500">{sm.label}</span>
+              <span className="text-xs font-semibold text-gray-700">{sm.value}</span>
             </div>
-          </div>
-          <div className={`${config.iconBgColor} rounded-sm p-3`}>
-            <Icon className={`w-6 h-6 ${config.iconColor}`} />
-          </div>
+          ))}
+        </div>
+        <div className="flex items-center gap-1 pt-2 border-t border-gray-100">
+          <TrendIcon className={`w-3.5 h-3.5 ${trendColor}`} />
+          <span className={`text-xs ${trendColor} font-medium`}>{config.trendValue}</span>
+          <span className="text-xs text-gray-400">vs prior</span>
         </div>
       </div>
     );
   }
 
+  function updateWidget(widgetId: string, patch: Partial<ChartWidgetConfig>) {
+    onConfigChange({
+      ...dashboardConfig,
+      widgets: dashboardConfig.widgets.map(w =>
+        w.id === widgetId && w.type === 'chart'
+          ? { ...w, ...patch } as ChartWidgetConfig
+          : w
+      ),
+    });
+  }
+
   function renderChartWidget(config: ChartWidgetConfig) {
-    const data = DATA_SOURCES[config.dataSource] || revenueData;
-    const gradientId = `gradient-${config.id}`;
-    const primaryColor = config.series[0]?.color || config.colors.primary || '#0B3D2E';
+    const data = resolveChartData(config.dataSource, effectiveData, config.dateRange);
 
     return (
       <div
@@ -147,9 +431,9 @@ export function DashboardView({
         data-ai-field={config.id}
         data-ai-label={config.title}
         data-ai-editable="true"
-        className={`bg-white rounded-sm border border-gray-200 p-6 ${config.colSpan === 2 ? 'lg:col-span-2' : ''}`}
+        className="bg-white rounded-sm border border-gray-200 p-6 flex flex-col"
       >
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-4 flex-shrink-0">
           <div>
             <h3 className="text-lg font-semibold text-gray-900">{config.title}</h3>
             <p className="text-sm text-gray-500 mt-1">{config.subtitle}</p>
@@ -158,95 +442,8 @@ export function DashboardView({
             <MoreVertical className="w-5 h-5 text-gray-500" />
           </button>
         </div>
-
-        {config.chartType === 'area' && (
-          <ResponsiveContainer width="100%" height={300}>
-            <AreaChart data={data}>
-              <defs>
-                <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={primaryColor} stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor={primaryColor} stopOpacity={0}/>
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis dataKey={data[0] && 'month' in data[0] ? 'month' : 'day'} stroke="#6b7280" style={{ fontSize: '12px' }} />
-              <YAxis stroke="#6b7280" style={{ fontSize: '12px' }} tickFormatter={(value) => `$${value / 1000}k`} />
-              <Tooltip contentStyle={{ backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '8px' }} formatter={(value: any) => `$${value.toLocaleString()}`} />
-              {config.series.filter(s => s.visible).map((s, i) => (
-                i === 0
-                  ? <Area key={s.dataKey} type="monotone" dataKey={s.dataKey} stroke={s.color} strokeWidth={2} fillOpacity={1} fill={`url(#${gradientId})`} />
-                  : <Line key={s.dataKey} type="monotone" dataKey={s.dataKey} stroke={s.color} strokeWidth={2} strokeDasharray="5 5" dot={false} />
-              ))}
-            </AreaChart>
-          </ResponsiveContainer>
-        )}
-
-        {config.chartType === 'bar' && (
-          <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis dataKey={data[0] && 'day' in data[0] ? 'day' : 'month'} stroke="#6b7280" style={{ fontSize: '12px' }} />
-              <YAxis stroke="#6b7280" style={{ fontSize: '12px' }} />
-              <Tooltip contentStyle={{ backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '8px' }} />
-              <Legend />
-              {config.series.filter(s => s.visible).map(s => (
-                <Bar key={s.dataKey} dataKey={s.dataKey} name={s.label} fill={s.color} radius={[4, 4, 0, 0]} />
-              ))}
-            </BarChart>
-          </ResponsiveContainer>
-        )}
-
-        {config.chartType === 'line' && (
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis dataKey={data[0] && 'month' in data[0] ? 'month' : 'day'} stroke="#6b7280" style={{ fontSize: '12px' }} />
-              <YAxis stroke="#6b7280" style={{ fontSize: '12px' }} />
-              <Tooltip contentStyle={{ backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '8px' }} />
-              <Legend />
-              {config.series.filter(s => s.visible).map(s => (
-                <Line key={s.dataKey} type="monotone" dataKey={s.dataKey} name={s.label} stroke={s.color} strokeWidth={2} dot={{ r: 3 }} />
-              ))}
-            </LineChart>
-          </ResponsiveContainer>
-        )}
-
-        {(config.chartType === 'donut' || config.chartType === 'pie') && (
-          <div className="flex items-center justify-between">
-            <ResponsiveContainer width="40%" height={250}>
-              <PieChart>
-                <Pie
-                  data={data}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={config.chartType === 'donut' ? 60 : 0}
-                  outerRadius={90}
-                  paddingAngle={2}
-                  dataKey="value"
-                >
-                  {data.map((entry: any, index: number) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip formatter={(value: any) => `${value} opportunities`} />
-              </PieChart>
-            </ResponsiveContainer>
-            <div className="flex-1 space-y-3">
-              {data.map((stage: any, idx: number) => (
-                <div key={idx} className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: stage.color }} />
-                    <span className="text-sm text-gray-700">{stage.name}</span>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-sm font-semibold text-gray-900">{stage.value}</div>
-                    {stage.amount != null && <div className="text-xs text-gray-500">${(stage.amount / 1000).toFixed(0)}k</div>}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        <ChartSettings config={config} onUpdate={(patch) => updateWidget(config.id, patch)} />
+        <ChartWidget config={config} data={data} />
       </div>
     );
   }
@@ -259,7 +456,7 @@ export function DashboardView({
         data-ai-field={config.id}
         data-ai-label={config.title}
         data-ai-editable="true"
-        className={`bg-white rounded-sm border border-gray-200 p-6 ${config.colSpan === 2 ? 'lg:col-span-2' : ''}`}
+        className="bg-white rounded-sm border border-gray-200 p-6"
       >
         {config.listType === 'meetings' && (
           <>
@@ -434,6 +631,13 @@ export function DashboardView({
   }
 
   function renderWidget(widget: WidgetConfig) {
+    if (isLoading) {
+      switch (widget.type) {
+        case 'metric': return renderMetricCardSkeleton(widget);
+        case 'chart': return renderChartWidgetSkeleton(widget);
+        case 'list': return renderListWidgetSkeleton(widget);
+      }
+    }
     switch (widget.type) {
       case 'metric': return renderMetricCard(widget);
       case 'chart': return renderChartWidget(widget);
@@ -465,7 +669,7 @@ export function DashboardView({
             {['week', 'month', 'quarter', 'year'].map((range) => (
               <button
                 key={range}
-                onClick={() => setTimeRange(range as any)}
+                onClick={() => handleTimeRange(range as any)}
                 className={`px-3 py-1.5 text-sm font-medium rounded-sm transition-colors capitalize ${
                   timeRange === range
                     ? 'bg-white text-emerald-950 shadow-sm'
@@ -484,34 +688,28 @@ export function DashboardView({
         <div className="max-w-[1600px] mx-auto space-y-6">
           {/* Key Metrics Row */}
           {metrics.length > 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {metrics.map(m => renderMetricCard(m))}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+              {metrics.map(m => renderWidget(m))}
             </div>
           )}
 
-          {/* Charts Row 1 */}
-          {chartsRow1.length > 0 && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {chartsRow1.map(c => renderChartWidget(c))}
+          {/* Flow widgets — flex-wrap so cards reflow when moved/removed/resized */}
+          {flowWidgets.length > 0 && (
+            <div className="flex flex-wrap gap-6">
+              {flowWidgets.map(w => (
+                <div
+                  key={w.id}
+                  className={
+                    w.colSpan === 2
+                      ? 'flex-1 basis-0 min-w-[600px] max-lg:min-w-full'
+                      : 'flex-1 basis-0 min-w-[350px] max-lg:min-w-full'
+                  }
+                >
+                  {renderWidget(w)}
+                </div>
+              ))}
             </div>
           )}
-
-          {/* Row 2: Activity + Meetings */}
-          {row2.length > 0 && (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {row2.map(w => renderWidget(w))}
-            </div>
-          )}
-
-          {/* Row 3: Client Status + Recent Activity */}
-          {row3.length > 0 && (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {row3.map(w => renderWidget(w))}
-            </div>
-          )}
-
-          {/* Row 4: Full width widgets */}
-          {row4.map(w => renderWidget(w))}
         </div>
       </div>
     </div>

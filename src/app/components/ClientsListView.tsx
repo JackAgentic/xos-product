@@ -7,7 +7,6 @@ import {
   TooltipTrigger,
 } from './ui/tooltip';
 import { adviceLabels, getAdviceIcon } from '../utils/adviceUtils';
-import { initialClientsData } from '../data/clientsInitialState';
 import { ClientFilterModal } from './ClientFilterModal';
 import { AddClientModal } from './AddClientModal';
 
@@ -20,8 +19,8 @@ interface ClientsListViewProps {
   setSelectedOpportunityClient: (id: number | null) => void;
   selectedOpportunityType: string;
   setSelectedOpportunityType: (type: string) => void;
-  clients: typeof initialClientsData;
-  setClients: React.Dispatch<React.SetStateAction<typeof initialClientsData>>;
+  clients: any[];
+  setClients: React.Dispatch<React.SetStateAction<any[]>>;
 }
 
 export function ClientsListView({

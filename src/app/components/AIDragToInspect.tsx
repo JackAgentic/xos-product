@@ -140,6 +140,7 @@ export function AIDragProvider({
     highlightedEl: null as HTMLElement | null,
     elementInfo: null as AIElementContext | null,
     moved: false,
+    pointerType: 'mouse' as string,
   });
 
   const DETACH_DISTANCE = 70;
@@ -309,6 +310,7 @@ export function AIDragProvider({
       highlightedEl: null,
       elementInfo: null,
       moved: false,
+      pointerType: e.pointerType,
     };
 
     setIsDragging(true);
@@ -331,7 +333,8 @@ export function AIDragProvider({
       const totalMove = Math.sqrt(
         (e.clientX - state.startPos.x) ** 2 + (e.clientY - state.startPos.y) ** 2
       );
-      if (totalMove > 5) state.moved = true;
+      const moveThreshold = state.pointerType === 'touch' ? 20 : 5;
+      if (totalMove > moveThreshold) state.moved = true;
 
       if (!state.hasDetached && dist > DETACH_DISTANCE) {
         state.hasDetached = true;

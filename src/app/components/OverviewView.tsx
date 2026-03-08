@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ClientHeaderCard } from './ClientHeaderCard';
 import { ActivitiesCard } from './ActivitiesCard';
-import { overviewActivities, overviewOpportunities } from '../data/seedData';
+import { apiFetch } from '../lib/api';
 import {
   DollarSign,
   FileText,
@@ -32,13 +32,40 @@ interface OverviewViewProps {
   contactOnboarding: ContactOnboardingData[];
   toggleOnboardingItem: (contactId: number, itemId: string) => void;
   allOnboardingCompleted: boolean;
+  clientId: number | null;
+  allOpportunities: any[];
 }
 
-export function OverviewView({ visibleModules, changeTab, selectedClient, isViewsMenuOpen, setIsViewsMenuOpen, toggleModule, contactOnboarding, toggleOnboardingItem, allOnboardingCompleted }: OverviewViewProps) {
+export function OverviewView({ visibleModules, changeTab, selectedClient, isViewsMenuOpen, setIsViewsMenuOpen, toggleModule, contactOnboarding, toggleOnboardingItem, allOnboardingCompleted, clientId, allOpportunities }: OverviewViewProps) {
   const [editingDetails, setEditingDetails] = useState(false);
+  const [activities, setActivities] = useState<any[]>([]);
 
-  const activities = overviewActivities as any;
-  const opportunities = overviewOpportunities;
+  useEffect(() => {
+    if (clientId) {
+      apiFetch<any[]>(`/api/activities?clientId=${clientId}&limit=8`).then(data => {
+        setActivities(data.map((a: any) => ({
+          id: a.id,
+          type: a.type === 'meeting' ? 'meeting' : a.type === 'email' ? 'email' : 'document',
+          title: a.type === 'meeting' ? 'Meeting' : a.type === 'email' ? 'Email' : 'Document',
+          subtitle: a.action || '',
+          date: a.created_at ? new Date(a.created_at).toLocaleDateString('en-NZ', { month: 'short', day: 'numeric' }) : '',
+          time: a.created_at ? new Date(a.created_at).toLocaleTimeString('en-NZ', { hour: 'numeric', minute: '2-digit', hour12: true }) : '',
+          status: new Date(a.created_at) > new Date() ? 'upcoming' : 'completed',
+        })));
+      }).catch(() => {});
+    }
+  }, [clientId]);
+
+  const opportunities = (allOpportunities || [])
+    .filter((opp: any) => opp.clientId === clientId || opp.client_id === clientId)
+    .slice(0, 4)
+    .map((opp: any) => ({
+      id: opp.id,
+      name: opp.name,
+      value: typeof opp.value === 'number' ? `$${opp.value.toLocaleString()}` : opp.value || '$0',
+      stage: opp.stage || 'Prospect',
+      probability: opp.probability || 0,
+    }));
 
   // Determine which module fills the hero right column (priority order)
   const rightColumnModule = visibleModules.activities ? 'activities'
@@ -168,10 +195,10 @@ export function OverviewView({ visibleModules, changeTab, selectedClient, isView
           )}
 
           {/* Views Menu — corner cutout */}
-          <div className="absolute -top-px -right-px w-[80px] h-[80px] z-[50] pointer-events-none">
+          <div className="absolute top-0 right-0 w-[80px] h-[80px] z-[50] pointer-events-none">
             <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M 0 -0.5 L 0 0.5 Q 15.5 0.5 15.5 16 L 15.5 48.5 Q 15.5 64.5 31.5 64.5 L 63.5 64.5 Q 79.5 64.5 79.5 80.5 L 79.5 81 L 80.5 81 L 80.5 -0.5 Z" fill="#f9fafb" />
-              <path d="M 0 0.5 Q 15.5 0.5 15.5 16 L 15.5 48.5 Q 15.5 64.5 31.5 64.5 L 63.5 64.5 Q 79.5 64.5 79.5 80.5" stroke="#e5e7eb" strokeWidth="1" fill="none" />
+              <path d="M 0 0 L 0 1 Q 16 1 16 16 L 16 48 Q 16 64 32 64 L 64 64 Q 80 64 80 80 L 80 80 L 80 0 Z" fill="#f9fafb" />
+              <path d="M 0 1 Q 16 1 16 16 L 16 48 Q 16 64 32 64 L 64 64 Q 80 64 80 80" stroke="#e5e7eb" strokeWidth="1" fill="none" />
             </svg>
           </div>
 

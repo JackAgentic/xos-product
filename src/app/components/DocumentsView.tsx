@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Search, Folder, ChevronDown, ChevronRight, MoreVertical, File as FileIcon, Plus, Eye, Info, Database, Clock, Lock, Download, FileText } from 'lucide-react';
-import { documentFolders } from '../data/seedData';
+import { apiFetch } from '../lib/api';
 
 interface DocumentsViewProps {
+  clientId: number | null;
   setShowAddEventModal: (show: boolean) => void;
   setShowSendEmailModal: (show: boolean) => void;
   setShowAddDocumentModal: (show: boolean) => void;
@@ -12,6 +13,7 @@ interface DocumentsViewProps {
 }
 
 export function DocumentsView({
+  clientId,
   setShowAddEventModal,
   setShowSendEmailModal,
   setShowAddDocumentModal,
@@ -19,6 +21,31 @@ export function DocumentsView({
   setShowAddTaskModal,
   setShowAddOpportunityModal
 }: DocumentsViewProps) {
+  const [documents, setDocuments] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (clientId) {
+      apiFetch<any[]>(`/api/documents?clientId=${clientId}`).then(setDocuments).catch(() => {});
+    }
+  }, [clientId]);
+
+  // Group documents by folder
+  const documentFolders = useMemo(() => {
+    const folderMap: Record<string, { name: string; documents: any[] }> = {};
+    documents.forEach((doc: any) => {
+      const folder = doc.folder || 'Other';
+      if (!folderMap[folder]) {
+        folderMap[folder] = { name: folder, documents: [] };
+      }
+      folderMap[folder].documents.push({
+        name: doc.name,
+        size: doc.size || '0 KB',
+        status: doc.status,
+        id: doc.id,
+      });
+    });
+    return Object.values(folderMap);
+  }, [documents]);
   return (
     <div className="flex h-full overflow-hidden bg-gray-50 relative" data-ai-section="Documents">
 
