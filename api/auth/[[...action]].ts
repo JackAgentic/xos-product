@@ -7,6 +7,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (cors(req, res)) return;
 
   const action = (req.query.action as string[])?.[0];
+  console.log('AUTH DEBUG query:', JSON.stringify(req.query), 'action:', action, 'url:', req.url);
 
   if (action === 'login') {
     if (!methodGuard(req, res, ['POST'])) return;
