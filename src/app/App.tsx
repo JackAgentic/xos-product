@@ -152,7 +152,7 @@ function App() {
     setAllOpportunities(prev => prev.map(opp =>
       opp.id === id ? { ...opp, ...updates } : opp
     ));
-    apiFetch(`/api/opportunities/${id}`, {
+    apiFetch(`/api/opportunities?id=${id}`, {
       method: 'PUT',
       body: JSON.stringify(updates),
     }).catch(() => {});

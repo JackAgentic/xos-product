@@ -70,7 +70,7 @@ export function ContactsView({
     try {
       const body: any = { [field]: value };
       if (nameFields.includes(field)) body.name = updatedContact.name;
-      await apiFetch(`/api/contacts/${selected.id}`, {
+      await apiFetch(`/api/contacts?id=${selected.id}`, {
         method: 'PUT',
         body: JSON.stringify(body),
       });
@@ -116,7 +116,7 @@ export function ContactsView({
     if (!selected) return;
     if (!window.confirm(`Delete ${selected.name}?`)) return;
     try {
-      await apiFetch(`/api/contacts/${selected.id}`, { method: 'DELETE' });
+      await apiFetch(`/api/contacts?id=${selected.id}`, { method: 'DELETE' });
       setContacts(prev => prev.filter(c => c.id !== selected.id));
       setSelectedContact(0);
       toast.success('Contact deleted');

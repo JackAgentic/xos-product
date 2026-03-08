@@ -7,8 +7,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const auth = requireAuth(req, res);
   if (!auth) return;
 
-  const slug = req.query.slug as string || (req.query['[...slug]'] as string) || undefined;
-  const id = slug ? parseInt(slug) : NaN;
+  const id = req.query.id ? parseInt(req.query.id as string) : NaN;
 
   // /api/meetings/:id
   if (!isNaN(id)) {
