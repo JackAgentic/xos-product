@@ -65,8 +65,9 @@ export function MeetingsView({
               <button
                 key={meeting.id}
                 onClick={() => setSelectedMeeting(idx)}
-                data-ai-field={`meeting-${meeting.id}`}
-                data-ai-label={meeting.title}
+                data-ai-field="meetingRecord"
+                data-ai-label="Meeting Record"
+                data-ai-entity-id={meeting.id}
                 className={`w-full p-3 mb-2 rounded-sm border text-left transition-colors ${selectedMeeting === idx
                   ? 'border-emerald-900 bg-stone-200'
                   : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
@@ -78,15 +79,15 @@ export function MeetingsView({
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="font-medium truncate">{meeting.title}</div>
-                    <div className="text-xs text-gray-500 mt-1 flex items-center gap-1" data-ai-field="meetingDate" data-ai-label="Meeting Date">
+                    <div className="text-xs text-gray-500 mt-1 flex items-center gap-1">
                       <CalendarIcon className="w-3 h-3" />
                       {meeting.date}
                     </div>
-                    <div className="text-xs text-gray-500 flex items-center gap-1" data-ai-field="meetingTime" data-ai-label="Meeting Time">
+                    <div className="text-xs text-gray-500 flex items-center gap-1">
                       <Clock className="w-3 h-3" />
                       {meeting.time}
                     </div>
-                    <div className="text-xs text-gray-500 flex items-center gap-1 mt-1" data-ai-field="meetingAttendees" data-ai-label="Attendees">
+                    <div className="text-xs text-gray-500 flex items-center gap-1 mt-1">
                       <Users className="w-3 h-3" />
                       No attendees
                     </div>

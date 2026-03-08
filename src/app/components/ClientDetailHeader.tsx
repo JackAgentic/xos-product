@@ -29,6 +29,7 @@ interface ClientDetailHeaderProps {
   changeTab: (tab: string) => void;
   onBackToList: () => void;
   setMobileDrawerOpen: (open: boolean) => void;
+  visibleModules: { quickActions: boolean;[key: string]: boolean };
   setShowAddEventModal: (show: boolean) => void;
   setShowSendEmailModal: (show: boolean) => void;
   setShowAddDocumentModal: (show: boolean) => void;
@@ -43,6 +44,7 @@ export function ClientDetailHeader({
   changeTab,
   onBackToList,
   setMobileDrawerOpen,
+  visibleModules,
   setShowAddEventModal,
   setShowSendEmailModal,
   setShowAddDocumentModal,
@@ -350,71 +352,72 @@ export function ClientDetailHeader({
           </div>
 
           {/* Right: Quick Actions - Only visible on 2xl+ screens */}
-          <div className="hidden 2xl:flex items-center gap-0 py-2">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button onClick={() => setShowAddEventModal(true)} className="p-2 rounded transition-colors flex-shrink-0 text-emerald-700 hover:bg-emerald-700/10">
-                  <CalendarPlus className="w-5 h-5" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" sideOffset={10}>Schedule Meeting</TooltipContent>
-            </Tooltip>
+          {visibleModules.quickActions && (
+            <div className="hidden 2xl:flex items-center gap-0 py-2">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button onClick={() => setShowAddEventModal(true)} className="p-2 rounded transition-colors flex-shrink-0 text-emerald-700 hover:bg-emerald-700/10">
+                    <CalendarPlus className="w-5 h-5" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" sideOffset={10}>Schedule Meeting</TooltipContent>
+              </Tooltip>
 
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button onClick={() => setShowSendEmailModal(true)} className="p-2 rounded transition-colors flex-shrink-0 text-blue-600 hover:bg-blue-600/10">
-                  <MailPlus className="w-5 h-5" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" sideOffset={10}>Send Email</TooltipContent>
-            </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button onClick={() => setShowSendEmailModal(true)} className="p-2 rounded transition-colors flex-shrink-0 text-blue-600 hover:bg-blue-600/10">
+                    <MailPlus className="w-5 h-5" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" sideOffset={10}>Send Email</TooltipContent>
+              </Tooltip>
 
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button onClick={() => setShowAddDocumentModal(true)} className="p-2 rounded transition-colors flex-shrink-0 text-indigo-600 hover:bg-indigo-600/10">
-                  <FilePlus className="w-5 h-5" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" sideOffset={10}>Add Document</TooltipContent>
-            </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button onClick={() => setShowAddDocumentModal(true)} className="p-2 rounded transition-colors flex-shrink-0 text-indigo-600 hover:bg-indigo-600/10">
+                    <FilePlus className="w-5 h-5" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" sideOffset={10}>Add Document</TooltipContent>
+              </Tooltip>
 
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button onClick={() => setShowAddNoteModal(true)} className="p-2 rounded transition-colors flex-shrink-0 text-amber-600 hover:bg-amber-600/10">
-                  <NotebookPen className="w-5 h-5" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" sideOffset={10}>Create Note</TooltipContent>
-            </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button onClick={() => setShowAddNoteModal(true)} className="p-2 rounded transition-colors flex-shrink-0 text-amber-600 hover:bg-amber-600/10">
+                    <NotebookPen className="w-5 h-5" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" sideOffset={10}>Create Note</TooltipContent>
+              </Tooltip>
 
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button onClick={() => setShowAddTaskModal(true)} className="p-2 rounded transition-colors flex-shrink-0 text-cyan-600 hover:bg-cyan-600/10">
-                  <ClipboardCheck className="w-5 h-5" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" sideOffset={10}>Create Task</TooltipContent>
-            </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button onClick={() => setShowAddTaskModal(true)} className="p-2 rounded transition-colors flex-shrink-0 text-cyan-600 hover:bg-cyan-600/10">
+                    <ClipboardCheck className="w-5 h-5" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" sideOffset={10}>Create Task</TooltipContent>
+              </Tooltip>
 
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button onClick={() => setShowAddOpportunityModal(true)} className="p-2 rounded transition-colors flex-shrink-0 text-orange-600 hover:bg-orange-600/10">
-                  <Target className="w-5 h-5" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" sideOffset={10}>Add Opportunity</TooltipContent>
-            </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button onClick={() => setShowAddOpportunityModal(true)} className="p-2 rounded transition-colors flex-shrink-0 text-orange-600 hover:bg-orange-600/10">
+                    <Target className="w-5 h-5" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" sideOffset={10}>Add Opportunity</TooltipContent>
+              </Tooltip>
 
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button onClick={() => { }} className="p-2 rounded transition-colors flex-shrink-0 text-red-600 hover:bg-red-600/10">
-                  <Mic className="w-5 h-5" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" sideOffset={10}>Voice Recording</TooltipContent>
-            </Tooltip>
-
-          </div>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button onClick={() => { }} className="p-2 rounded transition-colors flex-shrink-0 text-red-600 hover:bg-red-600/10">
+                    <Mic className="w-5 h-5" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" sideOffset={10}>Voice Recording</TooltipContent>
+              </Tooltip>
+            </div>
+          )}
         </div>
       </div>
     </TooltipProvider>

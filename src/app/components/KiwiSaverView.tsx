@@ -976,7 +976,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
 
                           {/* ── Personal Details ── */}
                           <div id="section-personal" className="scroll-mt-4">
-                            <h2 className="text-lg font-bold text-gray-900 tracking-tight mb-3">Personal Details</h2>
+                            <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Personal Details</h2>
                             <div className="space-y-4">
                               <div className="bg-white rounded-sm border border-gray-100 p-4">
                                 <h3 className="text-base font-bold text-gray-900 mb-4">Basic Information</h3>
@@ -1031,7 +1031,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
 
                           {/* ── Enrolment Status ── */}
                           <div id="section-enrolment" className="scroll-mt-4">
-                            <h2 className="text-lg font-bold text-gray-900 tracking-tight mb-3">Enrolment Status</h2>
+                            <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Enrolment Status</h2>
                             <div className="bg-white rounded border border-gray-100 p-4">
                               <h3 className="text-lg font-bold text-gray-900 mb-1">KiwiSaver Enrolment</h3>
                               <p className="text-sm text-gray-500 mb-4 max-w-sm">Is the client currently enrolled in a KiwiSaver scheme?</p>
@@ -1060,7 +1060,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
 
                           {/* ── KiwiSaver Provider ── */}
                           <div id="section-provider" className="scroll-mt-4">
-                            <h2 className="text-lg font-bold text-gray-900 tracking-tight mb-3">KiwiSaver Provider</h2>
+                            <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">KiwiSaver Provider</h2>
                             <div className="space-y-4">
                               {/* Card 1: Provider */}
                               <div className="bg-white p-4 rounded-sm border border-gray-100 flex flex-col 2xl:flex-row items-start 2xl:items-center justify-between gap-4">
@@ -1206,7 +1206,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
 
                           {/* ── Employment & Tax ── */}
                           <div id="section-employment" className="scroll-mt-4">
-                            <h2 className="text-lg font-bold text-gray-900 tracking-tight mb-3">Employment & Tax</h2>
+                            <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Employment & Tax</h2>
                             <div className="space-y-4">
                               <div className="bg-white p-4 rounded-sm border border-gray-100">
                                 <h3 className="text-lg font-bold text-gray-900 mb-3">Employment Status</h3>
@@ -1371,7 +1371,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
 
                           {/* ── Primary Goals ── */}
                           <div id="section-goals" className="scroll-mt-4">
-                            <h2 className="text-lg font-bold text-gray-900 tracking-tight mb-3">Primary Goals</h2>
+                            <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Primary Goals</h2>
                             <div className="bg-white rounded border border-gray-100 p-4 sm:p-4">
                               <h3 className="text-lg font-bold text-gray-900 mb-1">Primary Objective</h3>
                               <p className="text-sm text-gray-500 mb-4 max-w-sm">What is {contacts.find(c => c.id === activeContactId)?.name || clientName}'s primary purpose for their KiwiSaver fund?</p>
@@ -1401,7 +1401,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
 
                           {/* ── Other Schemes ── */}
                           <div id="section-other" className="scroll-mt-4">
-                            <h2 className="text-lg font-bold text-gray-900 tracking-tight mb-3">Other Schemes</h2>
+                            <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Other Schemes</h2>
                             <div className="space-y-4">
                               {/* NZ Workplace */}
                               <div className="bg-white p-4 rounded-sm border border-gray-100">

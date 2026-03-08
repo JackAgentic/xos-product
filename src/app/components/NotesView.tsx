@@ -38,8 +38,8 @@ export function NotesView({
             <button
               onClick={() => setNotesTab('notes')}
               className={`flex-1 py-2 rounded-sm font-medium text-sm ${notesTab === 'notes'
-                  ? 'bg-emerald-900 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'bg-emerald-900 text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
             >
               Notes
@@ -47,8 +47,8 @@ export function NotesView({
             <button
               onClick={() => setNotesTab('history')}
               className={`flex-1 py-2 rounded-sm font-medium text-sm ${notesTab === 'history'
-                  ? 'bg-emerald-900 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'bg-emerald-900 text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
             >
               History
@@ -72,7 +72,7 @@ export function NotesView({
             <div className="w-16 h-16 bg-gray-100 rounded-sm flex items-center justify-center mb-4">
               <CalendarIcon className="w-8 h-8 text-gray-300" />
             </div>
-            <p className="text-gray-500 text-sm" data-ai-field="notesEmptyState" data-ai-label="Notes Empty State">No notes available</p>
+            <p className="text-gray-500 text-sm">No notes available</p>
           </div>
         </div>
       </div>
@@ -83,8 +83,8 @@ export function NotesView({
           <div className="w-20 h-20 bg-gray-100 rounded-sm flex items-center justify-center mx-auto mb-4">
             <FileText className="w-10 h-10 text-gray-300" />
           </div>
-          <h3 className="text-lg font-medium mb-2" data-ai-field="noteDetailTitle" data-ai-label="Note Title">Select a Note</h3>
-          <p className="text-gray-500" data-ai-field="noteDetailContent" data-ai-label="Note Content">Choose a note from the list to view its content</p>
+          <h3 className="text-lg font-medium mb-2">Select a Note</h3>
+          <p className="text-gray-500">Choose a note from the list to view its content</p>
         </div>
       </div>
     </div>

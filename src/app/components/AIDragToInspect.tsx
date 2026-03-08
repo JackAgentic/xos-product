@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useRef, useCallback, useEffect, useMemo } from 'react';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, X } from 'lucide-react';
 
 // === Types ===
 export interface AIElementContext {
@@ -9,6 +9,7 @@ export interface AIElementContext {
   section: string;
   editable: boolean;
   tagName: string;
+  entityName: string;
 }
 
 interface AIDragContextType {
@@ -17,6 +18,7 @@ interface AIDragContextType {
   isDragging: boolean;
   isDrawerOpen: boolean;
   setActions: (actions: React.ReactNode) => void;
+  registerPlaceholder: (el: HTMLDivElement | null) => void;
   openAI: (context?: AIElementContext) => void;
 }
 
@@ -27,6 +29,7 @@ const AIDragContext = createContext<AIDragContextType>({
   isDragging: false,
   isDrawerOpen: false,
   setActions: () => { },
+  registerPlaceholder: () => { },
   openAI: () => { },
 });
 
@@ -46,6 +49,7 @@ function findAITarget(el: Element | null): { element: HTMLElement; info: AIEleme
         section: section || findParentSection(current) || '',
         editable: current.getAttribute('data-ai-editable') === 'true',
         tagName: current.tagName.toLowerCase(),
+        entityName: '',
       };
       // Try to extract current value
       if (current instanceof HTMLInputElement || current instanceof HTMLSelectElement || current instanceof HTMLTextAreaElement) {
@@ -53,6 +57,17 @@ function findAITarget(el: Element | null): { element: HTMLElement; info: AIEleme
       } else {
         const input = current.querySelector('input, select, textarea') as HTMLInputElement | null;
         if (input) info.value = input.value;
+      }
+      // For macro 'Record' targets, extract the human-readable entity name from text content
+      if (field && field.endsWith('Record')) {
+        // Look for the primary text — first heading or bold span child
+        const nameEl = current.querySelector('h4, span.font-medium, span.font-semibold, .font-medium, .font-semibold');
+        if (nameEl) {
+          info.entityName = nameEl.textContent?.trim() || '';
+        } else {
+          // Fallback: take the first line of innerText
+          info.entityName = current.innerText?.split('\n')[0]?.trim() || '';
+        }
       }
       return { element: current, info };
     }
@@ -98,18 +113,23 @@ export function AIDragProvider({
   }, []);
 
   // ... (previous refs and state remain same)
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  const ghostRef = useRef<HTMLDivElement>(null);
+  const dockRef = useRef<HTMLButtonElement>(null);
+  const orbRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const labelRef = useRef<HTMLDivElement>(null);
   const liquidOverlayRef = useRef<HTMLDivElement>(null);
-  const buttonBlobRef = useRef<HTMLDivElement>(null);
-  const ghostBlobRef = useRef<HTMLDivElement>(null);
-  const buttonBgRef = useRef<HTMLDivElement>(null);
+  const dockBlobRef = useRef<HTMLDivElement>(null);
+  const orbBlobRef = useRef<HTMLDivElement>(null);
+  const dockBgRef = useRef<HTMLDivElement>(null);
+  // Two-circle drag orb refs
+  const orbGooLayerRef = useRef<HTMLDivElement>(null);
+  const orbAnchorCircleRef = useRef<HTMLDivElement>(null);
+  const orbIconCircleRef = useRef<HTMLDivElement>(null);
+  const orbIconRef = useRef<HTMLDivElement>(null);
 
   const dragState = useRef({
     active: false,
-    buttonCenter: { x: 0, y: 0 },
+    dockCenter: { x: 0, y: 0 },
     startPos: { x: 0, y: 0 },
     currentPos: { x: 0, y: 0 },
     hasDetached: false,
@@ -127,6 +147,53 @@ export function AIDragProvider({
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  const [placeholderElement, setPlaceholderElement] = useState<HTMLDivElement | null>(null);
+  const [restingPos, setRestingPos] = useState({ left: '50%', transform: 'translateX(-50%) scale(1)' });
+
+  // Reset any drag-induced deformation on the dock background whenever the drawer opens/closes
+  useEffect(() => {
+    if (dockBgRef.current) {
+      dockBgRef.current.style.transition = '';
+      dockBgRef.current.style.transform = '';
+      dockBgRef.current.style.backgroundColor = '';
+      dockBgRef.current.style.boxShadow = '';
+    }
+  }, [isDrawerOpen]);
+
+  useEffect(() => {
+    if (!placeholderElement) {
+      setRestingPos({ left: '50%', transform: 'translateX(-50%) scale(1)' });
+      return;
+    }
+
+    const measure = () => {
+      const rect = placeholderElement.getBoundingClientRect();
+      if (rect.width > 0 && rect.left > 0) {
+        setRestingPos({
+          left: `${rect.left + rect.width / 2}px`,
+          transform: 'translateX(-50%) scale(1)'
+        });
+      } else {
+        setRestingPos({ left: '50%', transform: 'translateX(-50%) scale(1)' });
+      }
+    };
+
+    // Measure immediately for general layout changes
+    measure();
+    // After drawer closes the actionsPosition has a 0.4s CSS transition.
+    // Delay re-measure until after it settles so we get the correct placeholder coords.
+    const timer = setTimeout(measure, 450);
+    const raf = requestAnimationFrame(measure);
+
+    const observer = new ResizeObserver(measure);
+    observer.observe(document.body); // broad observe to catch menu expands
+    return () => {
+      observer.disconnect();
+      clearTimeout(timer);
+      cancelAnimationFrame(raf);
+    };
+  }, [placeholderElement, currentActions, isDrawerOpen]);
 
   // Compute button right offset: normal position or drawer-edge
   // Compute positions: AI Orb docks to drawer header, while Actions stay centered in page area
@@ -148,29 +215,29 @@ export function AIDragProvider({
     }
 
     if (isDragging && isDetached) {
-      // Fade out home base while dragging once detached
+      // Keep home base visible as a drop zone for cancellation
       return {
-        left: '50%',
-        bottom: '16px',
+        left: restingPos.left,
+        bottom: windowWidth >= 1024 ? '12px' : '16px',
         top: 'auto',
-        transform: 'translateX(-50%) scale(0.6) translateY(20px)',
-        opacity: 0,
+        transform: restingPos.transform,
+        opacity: 1,
         pointerEvents: 'none' as const,
-        zIndex: 50,
+        zIndex: 40, // Below the floating ghost
       };
     }
 
     // Default centered at bottom
     return {
-      left: '50%',
-      bottom: '16px',
+      left: restingPos.left,
+      bottom: windowWidth >= 1024 ? '12px' : '16px',
       top: 'auto',
-      transform: 'translateX(-50%) scale(1)',
+      transform: restingPos.transform,
       opacity: 1,
       pointerEvents: 'auto' as const,
       zIndex: 50,
     };
-  }, [isDrawerOpen, isDragging, isDetached, windowWidth]);
+  }, [isDrawerOpen, isDragging, isDetached, windowWidth, restingPos]);
 
   // Actions should take the "available" page center when drawer is open
   const actionsPosition = useMemo(() => {
@@ -212,13 +279,13 @@ export function AIDragProvider({
     if (e.button !== 0) return;
     e.preventDefault();
 
-    const button = buttonRef.current;
+    const button = dockRef.current;
     if (!button) return;
 
     const rect = button.getBoundingClientRect();
     dragState.current = {
       active: true,
-      buttonCenter: { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 },
+      dockCenter: { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 },
       startPos: { x: e.clientX, y: e.clientY },
       currentPos: { x: e.clientX, y: e.clientY },
       hasDetached: false,
@@ -239,8 +306,8 @@ export function AIDragProvider({
       if (!state.active) return;
 
       state.currentPos = { x: e.clientX, y: e.clientY };
-      const dx = e.clientX - state.buttonCenter.x;
-      const dy = e.clientY - state.buttonCenter.y;
+      const dx = e.clientX - state.dockCenter.x;
+      const dy = e.clientY - state.dockCenter.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
 
       // Detect meaningful drag vs click
@@ -257,74 +324,98 @@ export function AIDragProvider({
         }, 250);
 
         // Button spring-back with overshoot
-        if (buttonRef.current) {
-          buttonRef.current.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
-          buttonRef.current.style.transform = 'scale(0.85)';
+        if (dockRef.current) {
+          dockRef.current.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
+          dockRef.current.style.transform = 'scale(0.85)';
           setTimeout(() => {
-            if (buttonRef.current) {
-              buttonRef.current.style.transform = 'scale(1)';
+            if (dockRef.current) {
+              dockRef.current.style.transform = 'scale(1)';
             }
           }, 120);
         }
       }
 
-      // === Update ghost position ===
-      if (ghostRef.current) {
-        // Keeping icon visible immediately upon movement
-        const opacity = state.hasDetached ? 1 : Math.min(1, dist / 5);
-        // Remove scale(0) starting point to prevent disappearing
-        const scale = state.hasDetached ? 1 : Math.max(0.6, 0.6 + (dist / DETACH_DISTANCE) * 0.4);
+      // === Update ghost: anchor at cursor, icon top-right ===
+      const opacity = state.hasDetached ? 1 : Math.min(1, dist / 5);
+      const _scale = state.hasDetached ? 1 : Math.max(0.6, 0.6 + (dist / DETACH_DISTANCE) * 0.4);
+      const iconX = e.clientX - 18;
+      const iconY = e.clientY - 22;
 
-        ghostRef.current.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%) scale(${scale})`;
-        ghostRef.current.style.opacity = String(opacity);
-
-        // Dynamic shadow and border
-        const detachFactor = Math.min(1, dist / (DETACH_DISTANCE * 0.8));
-        ghostRef.current.style.boxShadow = `0 0 ${20 * detachFactor}px rgba(147, 51, 234, ${0.4 * detachFactor}), 0 ${6 * detachFactor}px ${24 * detachFactor}px rgba(0, 0, 0, ${0.15 * detachFactor})`;
-        ghostRef.current.style.borderColor = `rgba(229, 231, 235, ${detachFactor})`;
+      if (orbAnchorCircleRef.current) {
+        orbAnchorCircleRef.current.style.left = `${e.clientX}px`;
+        orbAnchorCircleRef.current.style.top = `${e.clientY}px`;
+      }
+      if (orbIconCircleRef.current) {
+        orbIconCircleRef.current.style.left = `${iconX}px`;
+        orbIconCircleRef.current.style.top = `${iconY}px`;
+      }
+      if (orbIconRef.current) {
+        orbIconRef.current.style.left = `${iconX}px`;
+        orbIconRef.current.style.top = `${iconY}px`;
+        orbIconRef.current.style.opacity = String(opacity);
+      }
+      if (orbGooLayerRef.current) {
+        orbGooLayerRef.current.style.opacity = String(opacity);
       }
 
       // === Update Liquid Blobs (Gooey effect) ===
-      if (buttonBlobRef.current && ghostBlobRef.current && liquidOverlayRef.current) {
-        if (!state.hasDetached) {
+      const isNearCancel = state.hasDetached && dist < 60;
+
+      if (dockBlobRef.current && orbBlobRef.current && liquidOverlayRef.current) {
+        if (!state.hasDetached || isNearCancel) {
           liquidOverlayRef.current.style.opacity = '1';
 
-          const bRect = buttonRef.current?.getBoundingClientRect();
+          const bRect = dockRef.current?.getBoundingClientRect();
           if (bRect) {
             const bx = bRect.left + bRect.width / 2;
             const by = bRect.top + bRect.height / 2;
-            buttonBlobRef.current.style.transform = `translate(${bx}px, ${by}px) translate(-50%, -50%) scale(1.1)`;
-            buttonBlobRef.current.style.width = `${bRect.width}px`;
-            buttonBlobRef.current.style.height = `${bRect.height}px`;
+            dockBlobRef.current.style.transform = `translate(${bx}px, ${by}px) translate(-50%, -50%) scale(1.1)`;
+            dockBlobRef.current.style.width = `${bRect.width}px`;
+            dockBlobRef.current.style.height = `${bRect.height}px`;
           }
 
-          ghostBlobRef.current.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%) scale(1.1)`;
-          ghostBlobRef.current.style.opacity = '1';
+          orbBlobRef.current.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%) scale(1.1)`;
+          orbBlobRef.current.style.opacity = '1';
         } else {
-          // Bounce back to circle immediately on detachment
+          // Bounce back to circle immediately on detachment or when flying away
           if (liquidOverlayRef.current.style.opacity !== '0') {
             liquidOverlayRef.current.style.opacity = '0';
-            if (buttonBgRef.current) {
-              buttonBgRef.current.style.transition = 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
-              buttonBgRef.current.style.transform = 'scale(1)';
+            if (dockBgRef.current) {
+              dockBgRef.current.style.transition = 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
+              dockBgRef.current.style.transform = 'scale(1)';
             }
           }
         }
       }
 
-      // === Button deformation (before detach) ===
-      if (buttonBgRef.current && !state.hasDetached) {
-        const pullFactor = Math.min(0.2, dist / 400);
-        const angle = Math.atan2(dy, dx);
-        const squish = 1 + Math.min(0.3, dist / 250);
+      // === Button deformation / Cancel hover ===
+      if (dockBgRef.current) {
+        if (!state.hasDetached || isNearCancel) {
+          const pullFactor = Math.min(0.2, dist / 400);
+          const angle = Math.atan2(dy, dx);
+          const squish = 1 + Math.min(0.3, dist / 250);
 
-        buttonBgRef.current.style.transform = [
-          `translate(${Math.cos(angle) * dist * pullFactor}px, ${Math.sin(angle) * dist * pullFactor}px)`,
-          `rotate(${angle}rad)`,
-          `scaleX(${squish})`,
-          `scaleY(${1 / squish})`,
-          `rotate(${-angle}rad)`,
-        ].join(' ');
+          dockBgRef.current.style.transform = [
+            `translate(${Math.cos(angle) * dist * pullFactor}px, ${Math.sin(angle) * dist * pullFactor}px)`,
+            `rotate(${angle}rad)`,
+            `scaleX(${squish})`,
+            `scaleY(${1 / squish})`,
+            `rotate(${-angle}rad)`,
+          ].join(' ');
+
+          if (state.hasDetached && dist < 40) {
+            dockBgRef.current.style.backgroundColor = '#fef2f2'; // red-50
+            dockBgRef.current.style.boxShadow = '0 0 0 4px rgba(239, 68, 68, 0.1)'; // faint red ring
+          } else {
+            dockBgRef.current.style.backgroundColor = '#ffffff';
+            dockBgRef.current.style.boxShadow = '';
+          }
+        } else {
+          // It's fully detached and far away
+          dockBgRef.current.style.transform = 'scale(1)';
+          dockBgRef.current.style.backgroundColor = '#ffffff';
+          dockBgRef.current.style.boxShadow = '';
+        }
       }
 
       // === Element detection ===
@@ -334,32 +425,70 @@ export function AIDragProvider({
       if (overlayRef.current) overlayRef.current.style.pointerEvents = '';
 
       // Ignore the button itself
-      if (elUnder === buttonRef.current || buttonRef.current?.contains(elUnder as Node)) {
+      if (elUnder === dockRef.current || dockRef.current?.contains(elUnder as Node)) {
         clearHighlight();
         return;
       }
 
       const target = findAITarget(elUnder);
+      // A "real" selectable target must have a fieldName (data-ai-field), not just a section
+      const isSelectableField = !!(target?.info.fieldName);
+
       if (target && target.element !== state.highlightedEl) {
         clearHighlight();
         state.highlightedEl = target.element;
         state.elementInfo = target.info;
         target.element.style.transition = 'outline 0.15s, box-shadow 0.15s';
-        target.element.style.outline = '2px solid #9333ea';
+        target.element.style.outline = '2px solid #b25b8b';
         target.element.style.outlineOffset = '3px';
-        target.element.style.boxShadow = '0 0 0 6px rgba(147, 51, 234, 0.1), 0 0 20px rgba(147, 51, 234, 0.15)';
+        target.element.style.boxShadow = '0 0 0 6px rgba(178, 91, 139, 0.12), 0 0 20px rgba(178, 91, 139, 0.18)';
+
+        // Only animate icon when over a real field (not just a section background)
+        if (isSelectableField) {
+          if (orbIconCircleRef.current) {
+            orbIconCircleRef.current.style.transition = 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)';
+            orbIconCircleRef.current.style.transform = 'translate(-50%, -50%) scale(1.2)';
+          }
+          if (orbIconRef.current) {
+            orbIconRef.current.style.animation = 'drag-orb-hover 1.8s linear infinite';
+          }
+        } else {
+          // Section-only target — stop any prior animation
+          if (orbIconCircleRef.current) {
+            orbIconCircleRef.current.style.transition = 'transform 0.2s ease-out';
+            orbIconCircleRef.current.style.transform = 'translate(-50%, -50%) scale(1)';
+          }
+          if (orbIconRef.current) {
+            orbIconRef.current.style.animation = 'none';
+          }
+        }
 
         // Show label near ghost
         if (labelRef.current) {
           labelRef.current.textContent = target.info.label;
-          labelRef.current.style.transform = `translate(${e.clientX + 28}px, ${e.clientY - 20}px)`;
+          labelRef.current.style.transform = `translate(${e.clientX + 28}px, ${e.clientY - 80}px)`;
           labelRef.current.style.opacity = '1';
         }
       } else if (!target) {
         clearHighlight();
+        // Stop icon animation
+        if (orbIconCircleRef.current) {
+          orbIconCircleRef.current.style.transition = 'transform 0.2s ease-out';
+          orbIconCircleRef.current.style.transform = 'translate(-50%, -50%) scale(1)';
+        }
+        if (orbIconRef.current) {
+          orbIconRef.current.style.animation = 'none';
+        }
+      } else if (target && !isSelectableField && orbIconRef.current?.style.animation !== 'none') {
+        // Still on a non-field target — ensure animation is off
+        if (orbIconRef.current) orbIconRef.current.style.animation = 'none';
+        if (orbIconCircleRef.current) {
+          orbIconCircleRef.current.style.transition = 'transform 0.2s ease-out';
+          orbIconCircleRef.current.style.transform = 'translate(-50%, -50%) scale(1)';
+        }
       } else if (target && labelRef.current) {
-        // Same element, just update label position
-        labelRef.current.style.transform = `translate(${e.clientX + 28}px, ${e.clientY - 20}px)`;
+        // Same field element, just update label position
+        labelRef.current.style.transform = `translate(${e.clientX + 28}px, ${e.clientY - 80}px)`;
       }
     };
 
@@ -369,12 +498,22 @@ export function AIDragProvider({
       state.active = false;
 
       // Reset button transform
-      if (buttonBgRef.current && state.moved) {
-        buttonBgRef.current.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
-        buttonBgRef.current.style.transform = '';
+      if (dockBgRef.current && state.moved) {
+        dockBgRef.current.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
+        dockBgRef.current.style.transform = 'scale(1)';
         setTimeout(() => {
-          if (buttonBgRef.current) buttonBgRef.current.style.transition = '';
+          if (dockBgRef.current) {
+            dockBgRef.current.style.transition = '';
+            dockBgRef.current.style.transform = '';
+          }
         }, 500);
+      }
+
+      // Always reset drag-orb icon animation on pointer up
+      if (orbIconRef.current) orbIconRef.current.style.animation = 'none';
+      if (orbIconCircleRef.current) {
+        orbIconCircleRef.current.style.transition = 'transform 0.2s ease-out';
+        orbIconCircleRef.current.style.transform = 'translate(-50%, -50%) scale(1)';
       }
 
       // Hide label
@@ -387,7 +526,18 @@ export function AIDragProvider({
       // Sections are treated as background and zip back unless it was a click.
       const isTargetField = state.highlightedEl && state.elementInfo?.fieldName;
 
-      if (isTargetField && state.elementInfo && state.moved) {
+      const dx = _e.clientX - state.dockCenter.x;
+      const dy = _e.clientY - state.dockCenter.y;
+      const finalDist = Math.sqrt(dx * dx + dy * dy);
+      const isCancelDrop = state.hasDetached && finalDist < 40;
+
+      // Reset hover cancel styles
+      if (dockBgRef.current) {
+        dockBgRef.current.style.backgroundColor = '';
+        dockBgRef.current.style.boxShadow = '';
+      }
+
+      if (isTargetField && state.elementInfo && state.moved && !isCancelDrop) {
         const info = { ...state.elementInfo };
         const el = state.highlightedEl!;
 
@@ -410,47 +560,47 @@ export function AIDragProvider({
       } else {
         clearHighlight();
 
-        // Case 2: Moved far but hit Nothing (or just a background section) -> ZIP BACK
-        if (state.moved && ghostRef.current && buttonRef.current) {
-          setIsDetached(false); // Fade home base back in to "catch" the ghost
-          const ghost = ghostRef.current;
-          const button = buttonRef.current;
-          const buttonRect = button.getBoundingClientRect();
-          const bx = buttonRect.left + buttonRect.width / 2;
-          const by = buttonRect.top + buttonRect.height / 2;
+        // Case 2: Moved far but hit Nothing -> ZIP BACK
+        if (state.moved && dockRef.current) {
+          setIsDetached(false);
 
-          ghost.style.transition = 'none';
-          ghost.style.opacity = '1';
-          ghost.style.transform = `translate(${state.currentPos.x}px, ${state.currentPos.y}px) translate(-50%, -50%) scale(1)`;
-          ghost.offsetHeight;
-
-          const ghostBlob = ghostBlobRef.current;
-          if (ghostBlob) {
-            ghostBlob.style.transition = 'transform 0.45s cubic-bezier(0.2, 0, 0, 1.2), opacity 0.1s ease-in 0.35s';
-            ghostBlob.style.transform = `translate(${bx}px, ${by}px) translate(-50%, -50%) scale(0)`;
-            ghostBlob.style.opacity = '0';
+          if (orbGooLayerRef.current) {
+            orbGooLayerRef.current.style.transition = 'opacity 0.3s ease-in';
+            orbGooLayerRef.current.style.opacity = '0';
+          }
+          if (orbIconRef.current) {
+            orbIconRef.current.style.transition = 'opacity 0.3s ease-in';
+            orbIconRef.current.style.opacity = '0';
           }
 
-          ghost.style.transition = 'transform 0.45s cubic-bezier(0.2, 0, 0, 1.2), opacity 0.1s ease-in 0.35s';
-          ghost.style.transform = `translate(${bx}px, ${by}px) translate(-50%, -50%) scale(0)`;
-          ghost.style.opacity = '0';
+          const orbBlob = orbBlobRef.current;
+          if (orbBlob && dockRef.current) {
+            const dockRect2 = dockRef.current.getBoundingClientRect();
+            const bx2 = dockRect2.left + dockRect2.width / 2;
+            const by2 = dockRect2.top + dockRect2.height / 2;
+            orbBlob.style.transition = 'transform 0.35s cubic-bezier(0.2, 0, 0, 1.2), opacity 0.1s ease-in 0.25s';
+            orbBlob.style.transform = `translate(${bx2}px, ${by2}px) translate(-50%, -50%) scale(0)`;
+            orbBlob.style.opacity = '0';
+          }
 
           setTimeout(() => {
-            if (buttonBgRef.current) {
-              buttonBgRef.current.style.transition = 'transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1)';
-              buttonBgRef.current.style.transform = 'scale(1.28)';
+            if (dockRef.current) {
+              dockRef.current.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
+              dockRef.current.style.transform = 'scale(0.85)';
               setTimeout(() => {
-                if (buttonBgRef.current) {
-                  buttonBgRef.current.style.transform = 'scale(1)';
-                  setTimeout(() => { if (buttonBgRef.current) buttonBgRef.current.style.transition = ''; }, 450);
+                if (dockRef.current) {
+                  dockRef.current.style.transform = 'scale(1)';
+                  setTimeout(() => { if (dockRef.current) dockRef.current.style.transition = ''; }, 450);
                 }
-              }, 160);
+              }, 120);
             }
             if (liquidOverlayRef.current) liquidOverlayRef.current.style.opacity = '0';
+            if (orbGooLayerRef.current) orbGooLayerRef.current.style.transition = '';
+            if (orbIconRef.current) orbIconRef.current.style.transition = '';
             triggerRipple();
             setIsDragging(false);
             setIsDetached(false);
-          }, 400);
+          }, 300);
         } else {
           // Case 3: Simple Click (didn't move much) -> OPEN normally
           setIsDragging(false);
@@ -480,8 +630,9 @@ export function AIDragProvider({
         selectedElement,
         clearSelection,
         isDragging,
-        isDrawerOpen: isDrawerOpen || false, // Pass the prop value, default to false
+        isDrawerOpen: isDrawerOpen || false,
         setActions: setCurrentActions,
+        registerPlaceholder: setPlaceholderElement,
         openAI: onOpenAI,
       }}
     >
@@ -489,7 +640,7 @@ export function AIDragProvider({
 
       {/* Supplementary actions (Quick Actions, Views, etc) - Stays centered in Page area */}
       <div
-        className="fixed bottom-4 lg:bottom-3 z-40 pointer-events-none"
+        className="fixed bottom-4 lg:bottom-3 z-40 pointer-events-none flex items-center justify-center"
         style={{
           ...actionsPosition,
           transition: 'left 0.4s cubic-bezier(0.2, 0, 0, 1.2)',
@@ -510,7 +661,7 @@ export function AIDragProvider({
         <div className="pointer-events-auto">
           {showButton && (
             <button
-              ref={buttonRef}
+              ref={dockRef}
               onPointerDown={handlePointerDown}
               className={`group relative w-14 h-14 flex items-center justify-center select-none touch-none cursor-grab active:cursor-grabbing ${isDrawerOpen ? 'z-[72]' : 'z-50'
                 }`}
@@ -520,13 +671,13 @@ export function AIDragProvider({
               {!isDragging && (
                 <>
                   <div className="absolute inset-0 pointer-events-none group-hover:block hidden">
-                    <div className="absolute inset-0 rounded-full border-2 border-purple-400 opacity-0 animate-[ai-orb-ripple_2.5s_infinite]" />
-                    <div className="absolute inset-0 rounded-full border-2 border-purple-400 opacity-0 animate-[ai-orb-ripple_2.5s_infinite_1.2s]" />
+                    <div className="absolute inset-0 rounded-full border-2 border-ai-400 opacity-0 animate-[ai-orb-ripple_2.5s_infinite]" />
+                    <div className="absolute inset-0 rounded-full border-2 border-ai-400 opacity-0 animate-[ai-orb-ripple_2.5s_infinite_1.2s]" />
                   </div>
                   {isRippling && (
                     <div className="absolute inset-0 pointer-events-none">
-                      <div className="absolute inset-0 border-2 border-purple-400 opacity-0 animate-[ai-wobble-ripple_1s_ease-out]" />
-                      <div className="absolute inset-0 border-2 border-purple-300 opacity-0 animate-[ai-wobble-inner_0.8s_ease-out_0.1s]" />
+                      <div className="absolute inset-0 border-2 border-ai-400 opacity-0 animate-[ai-wobble-ripple_1s_ease-out]" />
+                      <div className="absolute inset-0 border-2 border-ai-300 opacity-0 animate-[ai-wobble-inner_0.8s_ease-out_0.1s]" />
                     </div>
                   )}
                 </>
@@ -534,14 +685,18 @@ export function AIDragProvider({
 
               {/* Deforming Background */}
               <div
-                ref={buttonBgRef}
+                ref={dockBgRef}
                 className="absolute inset-0 bg-white rounded-full shadow-lg border border-gray-200"
                 style={{ willChange: 'transform' }}
               />
 
               {/* Persistent Circular Icon */}
-              <div className="relative z-10 pointer-events-none">
-                <Sparkles className="w-5 h-5 text-purple-600" />
+              <div className="relative z-10 pointer-events-none transition-colors duration-200">
+                {isDragging && isDetached ? (
+                  <X className="w-5 h-5 text-red-500 font-bold" strokeWidth={3} />
+                ) : (
+                  <Sparkles className="w-5 h-5 text-ai-600" />
+                )}
               </div>
             </button>
           )}
@@ -565,6 +720,11 @@ export function AIDragProvider({
           @keyframes ai-wobble-inner {
             0% { transform: scale(1) rotate(0deg); opacity: 0.4; border-radius: 50% 50% 45% 55% / 45% 55% 50% 50%; }
             100% { transform: scale(1.8) rotate(-180deg); opacity: 0; border-radius: 50%; }
+          }
+
+          @keyframes drag-orb-hover {
+            0%   { transform: translate(-50%, -50%) scale(1.2) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) scale(1.2) rotate(360deg); }
           }
           
           ${isDragging ? `
@@ -600,35 +760,75 @@ export function AIDragProvider({
             }}
           >
             <div
-              ref={buttonBlobRef}
+              ref={dockBlobRef}
               className="absolute bg-white rounded-full"
               style={{ willChange: 'transform' }}
             />
             <div
-              ref={ghostBlobRef}
+              ref={orbBlobRef}
               className="absolute w-10 h-10 bg-white rounded-full"
               style={{ willChange: 'transform' }}
             />
           </div>
 
-          {/* Ghost orb (visible during drag and snap-back) */}
+          {/* Two-circle drag orb: gooey layer (white blobs, filtered) */}
           <div
-            ref={ghostRef}
-            className="absolute left-0 top-0 w-10 h-10 flex items-center justify-center bg-white rounded-full border border-gray-200"
+            ref={orbGooLayerRef}
+            className="absolute inset-0 pointer-events-none"
             style={{
-              pointerEvents: 'none',
+              filter: 'url(#drag-orb-goo) drop-shadow(0 6px 20px rgba(178, 91, 139, 0.55))',
               opacity: 0,
-              boxShadow: '0 0 16px rgba(147, 51, 234, 0.3), 0 4px 20px rgba(0, 0, 0, 0.1)',
-              willChange: 'transform, opacity',
+              willChange: 'opacity',
             }}
           >
-            <Sparkles className="w-4 h-4 text-purple-600" />
+            {/* Anchor: small circle AT cursor (hotspot) */}
+            <div
+              ref={orbAnchorCircleRef}
+              style={{
+                position: 'absolute',
+                width: 22,
+                height: 22,
+                borderRadius: '50%',
+                background: 'white',
+                transform: 'translate(-50%, -50%)',
+                willChange: 'left, top',
+              }}
+            />
+            {/* Icon body: large circle top-right of cursor */}
+            <div
+              ref={orbIconCircleRef}
+              style={{
+                position: 'absolute',
+                width: 52,
+                height: 52,
+                borderRadius: '50%',
+                background: 'white',
+                transform: 'translate(-50%, -50%)',
+                willChange: 'left, top',
+              }}
+            />
+          </div>
+
+          {/* Icon overlay — rendered outside the goo filter so sparkles render cleanly */}
+          <div
+            ref={orbIconRef}
+            className="absolute flex items-center justify-center"
+            style={{
+              width: 52,
+              height: 52,
+              pointerEvents: 'none',
+              opacity: 0,
+              transform: 'translate(-50%, -50%)',
+              willChange: 'left, top, opacity',
+            }}
+          >
+            <Sparkles className="w-5 h-5 text-ai-600" />
           </div>
 
           {/* Target label tooltip */}
           <div
             ref={labelRef}
-            className="absolute left-0 top-0 px-3 py-1.5 bg-purple-600 text-white text-xs font-semibold rounded-full shadow-lg whitespace-nowrap"
+            className="absolute left-0 top-0 px-3 py-1.5 bg-ai-600 text-white text-xs font-semibold rounded-full shadow-lg whitespace-nowrap"
             style={{
               pointerEvents: 'none',
               opacity: 0,
@@ -639,12 +839,18 @@ export function AIDragProvider({
         </div>
       )}
 
-      {/* SVG Filter for Liquid Effect */}
+      {/* SVG Filters for Liquid Effects */}
       <svg className="fixed h-0 w-0 pointer-events-none" aria-hidden="true">
         <defs>
+          {/* Dock-to-orb gooey stretch (dock blob + initial detach) */}
           <filter id="ai-liquid-goo">
             <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
             <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 25 -12" result="goo" />
+          </filter>
+          {/* Two-circle drag orb gooey stretch (anchor + icon body) */}
+          <filter id="drag-orb-goo">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="13" result="blur" />
+            <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -9" result="goo" />
           </filter>
         </defs>
       </svg>

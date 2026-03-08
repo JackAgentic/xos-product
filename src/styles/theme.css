@@ -39,6 +39,18 @@
   --sidebar-accent-foreground: #F2E9E4;
   --sidebar-border: #3d5a63;
   --sidebar-ring: #0B3D2E;
+
+  /* AI Brand Colors (base: #b25b8b) */
+  --ai-50: #faf0f6;
+  --ai-100: #f2d9e9;
+  --ai-200: #e5b3d3;
+  --ai-300: #d280b3;
+  --ai-400: #c16d9f;
+  --ai-500: #b25b8b;
+  --ai-600: #9e4e7a;
+  --ai-700: #854069;
+  --ai-800: #6b3355;
+  --ai-900: #4f2540;
 }
 
 .dark {
@@ -120,6 +132,18 @@
   --breakpoint-menu: 1200px;
   --breakpoint-search: 500px;
   --breakpoint-tab-collapse: 920px;
+
+  /* AI Brand Color Utilities */
+  --color-ai-50: var(--ai-50);
+  --color-ai-100: var(--ai-100);
+  --color-ai-200: var(--ai-200);
+  --color-ai-300: var(--ai-300);
+  --color-ai-400: var(--ai-400);
+  --color-ai-500: var(--ai-500);
+  --color-ai-600: var(--ai-600);
+  --color-ai-700: var(--ai-700);
+  --color-ai-800: var(--ai-800);
+  --color-ai-900: var(--ai-900);
 }
 
 @layer base {

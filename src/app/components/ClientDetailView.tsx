@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useSwipeable } from 'react-swipeable';
+import { toast } from 'sonner';
 import { clientMenuItems, adviceMenuItems, allTabs } from '../data/menuData';
 import { initialClientsData } from '../data/clientsInitialState';
+import { contactsData } from '../data/seedData';
 import { ClientDetailHeader } from './ClientDetailHeader';
 import { ClientFloatingActions } from './ClientFloatingActions';
 import { OverviewView } from './OverviewView';
@@ -21,6 +23,16 @@ import {
   MoreVertical,
   X,
 } from 'lucide-react';
+
+const onboardingItemsTemplate = [
+  { id: 'client-details', label: 'Client Details' },
+  { id: 'onboarding-form', label: 'Onboarding Form' },
+  { id: 'cdd', label: 'CDD' },
+  { id: 'aml', label: 'AML' },
+  { id: 'privacy', label: 'Privacy Consent' },
+  { id: 'agreement', label: 'Client Agreement' },
+  { id: 'disclosure', label: 'Disclosure Statement' },
+];
 
 interface ClientDetailViewProps {
   selectedClientId: number | null;
@@ -77,10 +89,60 @@ export function ClientDetailView({
   const [selectedMeeting, setSelectedMeeting] = useState(0);
   const [notesTab, setNotesTab] = useState('notes');
   const [isMobileClientDetailsOpen, setIsMobileClientDetailsOpen] = useState(false);
+  const [isViewsMenuOpen, setIsViewsMenuOpen] = useState(false);
   const [visibleModules, setVisibleModules] = useState({
-    factFind: true, aiSummary: true, details: true, quickStats: true,
+    onboarding: true, aiSummary: true, details: true, quickStats: true,
     opportunities: true, activities: true, quickActions: true,
   });
+
+  // Shared onboarding state (used by both OverviewView and FactFindView)
+  const onboardingContacts = contactsData.slice(0, 3);
+  const [contactOnboarding, setContactOnboarding] = useState(
+    onboardingContacts.map(contact => ({
+      contactId: contact.id,
+      contactName: contact.name,
+      contactType: contact.type,
+      items: onboardingItemsTemplate.map(item => ({
+        ...item,
+        completed: false,
+        completedDate: null as string | null,
+      })),
+    }))
+  );
+
+  const allOnboardingCompleted = contactOnboarding.every(c => c.items.every(i => i.completed));
+  const prevCompletionRef = useRef(allOnboardingCompleted);
+
+  useEffect(() => {
+    if (!prevCompletionRef.current && allOnboardingCompleted) {
+      toast.success('Onboarding completed!', {
+        description: 'All contacts have completed onboarding.',
+        duration: 4000,
+      });
+    }
+    prevCompletionRef.current = allOnboardingCompleted;
+  }, [allOnboardingCompleted]);
+
+  const toggleOnboardingItem = (contactId: number, itemId: string) => {
+    setContactOnboarding(prev =>
+      prev.map(contact =>
+        contact.contactId === contactId
+          ? {
+            ...contact,
+            items: contact.items.map(item =>
+              item.id === itemId
+                ? {
+                  ...item,
+                  completed: !item.completed,
+                  completedDate: !item.completed ? new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : null,
+                }
+                : item
+            ),
+          }
+          : contact
+      )
+    );
+  };
 
   const modalSetters = {
     setShowAddEventModal, setShowSendEmailModal, setShowAddDocumentModal,
@@ -144,11 +206,11 @@ export function ClientDetailView({
   const renderClientContent = () => {
     switch (activeClientMenu) {
       case 'overview':
-        return <OverviewView visibleModules={visibleModules} changeTab={changeTab} selectedClient={selectedClient} />;
+        return <OverviewView visibleModules={visibleModules} changeTab={changeTab} selectedClient={selectedClient} isViewsMenuOpen={isViewsMenuOpen} setIsViewsMenuOpen={setIsViewsMenuOpen} toggleModule={toggleModule} contactOnboarding={contactOnboarding} toggleOnboardingItem={toggleOnboardingItem} allOnboardingCompleted={allOnboardingCompleted} />;
       case 'opportunities':
         return <OpportunitiesView clientId={selectedClientId as number} showAddOpportunityModal={showAddOpportunityModal} opportunityForm={opportunityForm} setOpportunityForm={setOpportunityForm} allOpportunities={allOpportunities} addOpportunity={addOpportunity} updateOpportunity={updateOpportunity} selectedOpportunityId={selectedOpportunityId} setSelectedOpportunityId={setSelectedOpportunityId} {...modalSetters} onClientClick={onClientClick} />;
-      case 'fact-find':
-        return <FactFindView {...modalSetters} />;
+      case 'onboarding':
+        return <FactFindView contactOnboarding={contactOnboarding} toggleOnboardingItem={toggleOnboardingItem} {...modalSetters} />;
       case 'financials':
         return <FinancialsView {...modalSetters} />;
       case 'contacts':
@@ -168,7 +230,7 @@ export function ClientDetailView({
       case 'kiwisaver':
         return <KiwiSaverView clientId={selectedClientId as number} clientName={selectedClient?.name || 'Client'} contacts={[{ id: 0, name: 'Andrew Carter', type: 'self', email: 'andrew.carter@gmail.com' }, { id: 1, name: 'Sarah Carter', type: 'primary_contact', email: 'sarah.carter@gmail.com' }, { id: 2, name: 'Margaret Carter', type: 'primary_contact', email: 'margaret.carter@xtra.co.nz' }]} setMobileDrawerOpen={setMobileDrawerOpen} />;
       default:
-        return <OverviewView visibleModules={visibleModules} changeTab={changeTab} selectedClient={selectedClient} />;
+        return <OverviewView visibleModules={visibleModules} changeTab={changeTab} selectedClient={selectedClient} isViewsMenuOpen={isViewsMenuOpen} setIsViewsMenuOpen={setIsViewsMenuOpen} toggleModule={toggleModule} />;
     }
   };
 
@@ -181,6 +243,7 @@ export function ClientDetailView({
         changeTab={changeTab}
         onBackToList={onBackToList}
         setMobileDrawerOpen={setMobileDrawerOpen}
+        visibleModules={visibleModules}
         {...modalSetters}
       />
 

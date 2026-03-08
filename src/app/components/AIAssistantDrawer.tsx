@@ -389,20 +389,20 @@ export function AIAssistantDrawer({ isOpen, onClose, elementContext, dashboardCo
 
             {/* Element Context Banner (from drag-to-inspect) */}
             {elementContext && (
-              <div className="bg-purple-100 border-b border-purple-300 px-4 py-3">
+              <div className="bg-ai-100 border-b border-ai-300 px-4 py-3">
                 <div className="flex items-center gap-2 mb-1">
-                  <Crosshair className="w-3.5 h-3.5 text-purple-700" />
-                  <span className="text-xs font-bold text-purple-800 uppercase tracking-wider">Inspecting Element</span>
+                  <Crosshair className="w-3.5 h-3.5 text-ai-700" />
+                  <span className="text-xs font-bold text-ai-800 uppercase tracking-wider">Inspecting Element</span>
                 </div>
-                <p className="text-sm font-semibold text-purple-900">{elementContext.label}</p>
+                <p className="text-sm font-semibold text-ai-900">{elementContext.label}</p>
                 {elementContext.section && (
-                  <p className="text-xs text-purple-700 mt-0.5">Section: {elementContext.section}</p>
+                  <p className="text-xs text-ai-700 mt-0.5">Section: {elementContext.section}</p>
                 )}
                 {elementContext.value && (
-                  <p className="text-xs text-purple-700 mt-0.5">Current value: <span className="font-medium">{elementContext.value}</span></p>
+                  <p className="text-xs text-ai-700 mt-0.5">Current value: <span className="font-medium">{elementContext.value}</span></p>
                 )}
                 {elementContext.editable && (
-                  <p className="text-[10px] text-purple-600 mt-1 font-medium">This field can be updated via AI</p>
+                  <p className="text-[10px] text-ai-600 mt-1 font-medium">This field can be updated via AI</p>
                 )}
               </div>
             )}
@@ -412,8 +412,8 @@ export function AIAssistantDrawer({ isOpen, onClose, elementContext, dashboardCo
               {aiMessages.length === 0 ? (
                 /* Welcome Screen */
                 <div className="flex flex-col items-center justify-center h-full px-4">
-                  <div className="bg-purple-100 rounded-full p-6 mb-6">
-                    <Sparkles className="w-12 h-12 text-purple-600" />
+                  <div className="bg-ai-100 rounded-full p-6 mb-6">
+                    <Sparkles className="w-12 h-12 text-ai-600" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-2 text-center">
                     Hi! I'm AVA, your AI assistant.{clientName ? ` Ask me anything about ${clientName}.` : ' Ask me anything about your clients.'}
@@ -423,15 +423,153 @@ export function AIAssistantDrawer({ isOpen, onClose, elementContext, dashboardCo
                   </p>
 
                   <div className="flex flex-wrap justify-center gap-2 max-w-md">
-                    {['Summarize this client', 'Show upcoming meetings', 'Check mortgage status', 'Recent notes history'].map((starter, i) => (
-                      <button
-                        key={i}
-                        onClick={() => handleSuggestionClick(starter)}
-                        className="px-4 py-2 bg-purple-50 border border-purple-100 text-purple-700 text-sm font-medium rounded-full hover:bg-purple-100 hover:border-purple-200 transition-colors shadow-sm"
-                      >
-                        {starter}
-                      </button>
-                    ))}
+                    {(() => {
+                      const name = elementContext?.entityName;
+                      const ref = name ? `"${name}"` : null;
+
+                      const promptsByType: Record<string, string[]> = {
+                        clientRecord: [
+                          ref ? `Summarize ${ref}'s recent activity.` : 'Summarize this client.',
+                          ref ? `What are the next steps for ${ref}?` : 'Show upcoming meetings.',
+                          ref ? `Are there any active opportunities for ${ref}?` : 'Check mortgage status.',
+                          ref ? `Draft a check-in email for ${ref}.` : 'Recent notes history.',
+                        ],
+                        activityRecord: [
+                          ref ? `Generate prep notes for ${ref}.` : 'Generate prep notes.',
+                          ref ? `Draft a follow-up email for ${ref}.` : 'Draft a follow-up email.',
+                          ref ? `Summarize ${ref}.` : 'Summarize this activity.',
+                          ref ? `Create a task related to ${ref}.` : 'Create a related task.',
+                        ],
+                        opportunityRecord: [
+                          ref ? `What is the status of ${ref}?` : 'What is the status?',
+                          ref ? `Summarize recent interactions for ${ref}.` : 'Summarize recent interactions.',
+                          ref ? `Draft a proposal update for ${ref}.` : 'Draft a proposal update.',
+                          ref ? `What are the next steps to close ${ref}?` : 'What are the next steps to close?',
+                        ],
+                        meetingRecord: [
+                          ref ? `Generate a summary of ${ref}.` : 'Generate a meeting summary.',
+                          ref ? `List action items from ${ref}.` : 'List action items.',
+                          ref ? `Draft a follow-up email about ${ref}.` : 'Draft a follow-up email.',
+                          ref ? `Who attended ${ref}?` : 'Who attended?',
+                        ],
+                      };
+
+                      // If an element was dragged, use its prompts — otherwise fall back to current view
+                      const viewSuggestions: Record<string, string[]> = {
+                        // Main menu views
+                        dashboard: [
+                          'Summarize today\'s key tasks and meetings.',
+                          'Which clients need attention this week?',
+                          'Show me overdue tasks.',
+                          'What opportunities are closing soon?',
+                        ],
+                        clients: [
+                          'Which clients haven\'t been contacted recently?',
+                          'Show clients with upcoming reviews.',
+                          'Who has the most active opportunities?',
+                          'List clients by risk level.',
+                        ],
+                        opportunities: [
+                          'Which opportunities are at risk of closing?',
+                          'Summarise the pipeline by stage.',
+                          'What are the highest-value opportunities?',
+                          'Which opportunities need follow-up today?',
+                        ],
+                        inbox: [
+                          'Summarise unread messages.',
+                          'Are there any urgent emails from clients?',
+                          'Draft a reply to the latest message.',
+                          'Show messages from this week.',
+                        ],
+                        tasks: [
+                          'What tasks are overdue?',
+                          'Summarise today\'s tasks.',
+                          'Which tasks are high priority?',
+                          'Create a task for a client follow-up.',
+                        ],
+                        calendar: [
+                          'What meetings do I have today?',
+                          'Show upcoming client reviews this week.',
+                          'Summarise my schedule for the next 7 days.',
+                          'Find a free slot for a client meeting.',
+                        ],
+                        marketing: [
+                          'Summarise recent campaign performance.',
+                          'Which clients should I target for a new campaign?',
+                          'Draft a newsletter for mortgage clients.',
+                          'Show engagement metrics.',
+                        ],
+                        contacts: [
+                          'Show recently added contacts.',
+                          'Which contacts have no assigned advisor?',
+                          'Find contacts with upcoming birthdays.',
+                          'Search for a contact by company.',
+                        ],
+                        reporting: [
+                          'Show revenue performance for this month.',
+                          'Which advisor has the most closed deals?',
+                          'Summarise client growth over the past quarter.',
+                          'What is the conversion rate for new leads?',
+                        ],
+                        // Client sub-tabs
+                        overview: [
+                          clientName ? `Summarise ${clientName}'s portfolio.` : 'Summarise this client\'s portfolio.',
+                          clientName ? `What are the next steps for ${clientName}?` : 'What are the next steps?',
+                          clientName ? `Are there active opportunities for ${clientName}?` : 'Are there active opportunities?',
+                          clientName ? `Draft a check-in email for ${clientName}.` : 'Draft a check-in email.',
+                        ],
+                        meetings: [
+                          clientName ? `List upcoming meetings with ${clientName}.` : 'List upcoming meetings.',
+                          'Generate notes for the last meeting.',
+                          'Draft a follow-up email from the last meeting.',
+                          'Schedule a new meeting.',
+                        ],
+                        notes: [
+                          'Show the most recent notes.',
+                          'Summarise all notes for this client.',
+                          'Are there any action items in the notes?',
+                          'Create a new note.',
+                        ],
+                        onboarding: [
+                          'What onboarding steps are incomplete?',
+                          'Summarise client information collected so far.',
+                          'What documents are still needed?',
+                          'Generate a fact-find summary.',
+                        ],
+                        financials: [
+                          'Summarise the financial position.',
+                          'What are the key financial risks?',
+                          'Show a cashflow overview.',
+                          'Are there any outstanding liabilities?',
+                        ],
+                        communication: [
+                          'Show the latest correspondence.',
+                          'Summarise recent email threads.',
+                          'Draft a follow-up message.',
+                          'What communications are overdue?',
+                        ],
+                        documents: [
+                          'List recently added documents.',
+                          'Are there any unsigned documents?',
+                          'Find the latest statement of advice.',
+                          'What documents are missing?',
+                        ],
+                      };
+
+                      const starters = (elementContext?.fieldName && promptsByType[elementContext.fieldName])
+                        || (activeView && viewSuggestions[activeView])
+                        || ['Summarise this client', 'Show upcoming meetings', 'Check mortgage status', 'Recent notes history'];
+
+                      return starters.map((starter, i) => (
+                        <button
+                          key={i}
+                          onClick={() => handleSuggestionClick(starter)}
+                          className="px-4 py-2 bg-ai-50 border border-ai-100 text-ai-700 text-sm font-medium rounded-full hover:bg-ai-100 hover:border-ai-200 transition-colors shadow-sm"
+                        >
+                          {starter}
+                        </button>
+                      ));
+                    })()}
                   </div>
                 </div>
               ) : (
@@ -443,14 +581,14 @@ export function AIAssistantDrawer({ isOpen, onClose, elementContext, dashboardCo
                       className={`flex gap-3 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                     >
                       {message.role === 'assistant' && (
-                        <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
-                          <Sparkles className="w-4 h-4 text-purple-600" />
+                        <div className="w-8 h-8 bg-ai-100 rounded-full flex items-center justify-center flex-shrink-0">
+                          <Sparkles className="w-4 h-4 text-ai-600" />
                         </div>
                       )}
                       <div
                         className={`px-4 py-3 rounded max-w-[80%] ${message.role === 'user'
                           ? 'bg-gray-100 text-gray-900'
-                          : 'bg-purple-600 text-white'
+                          : 'bg-ai-600 text-white'
                           }`}
                       >
                         {message.role === 'assistant' ? (
@@ -480,7 +618,7 @@ export function AIAssistantDrawer({ isOpen, onClose, elementContext, dashboardCo
                         <button
                           key={i}
                           onClick={() => handleSuggestionClick(suggestion)}
-                          className="px-4 py-2 bg-white border border-purple-200 text-purple-700 text-sm font-medium rounded-full hover:bg-purple-50 hover:border-purple-300 transition-colors shadow-sm"
+                          className="px-4 py-2 bg-white border border-ai-200 text-ai-700 text-sm font-medium rounded-full hover:bg-ai-50 hover:border-ai-300 transition-colors shadow-sm"
                         >
                           {suggestion}
                         </button>
@@ -568,7 +706,7 @@ export function AIAssistantDrawer({ isOpen, onClose, elementContext, dashboardCo
                       }
                     }}
                     placeholder="Ask AVA for help..."
-                    className="w-full pl-4 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-full text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full pl-4 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-full text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-ai-500 focus:border-transparent"
                   />
                 </div>
 
@@ -581,7 +719,7 @@ export function AIAssistantDrawer({ isOpen, onClose, elementContext, dashboardCo
                       exit={{ scale: 0, opacity: 0 }}
                       transition={{ duration: 0.15, ease: 'easeInOut' }}
                       onClick={() => handleSendMessage()}
-                      className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center hover:bg-purple-700 transition-colors flex-shrink-0"
+                      className="w-12 h-12 bg-ai-600 rounded-full flex items-center justify-center hover:bg-ai-700 transition-colors flex-shrink-0"
                       aria-label="Send Message"
                     >
                       <Send className="w-5 h-5 text-white" />
@@ -599,7 +737,7 @@ export function AIAssistantDrawer({ isOpen, onClose, elementContext, dashboardCo
                         onClick={handleMicrophoneClick}
                         className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors flex-shrink-0 ${isRecording && !isVoiceChatActive
                           ? 'bg-red-600 hover:bg-red-700'
-                          : 'bg-purple-600 hover:bg-purple-700'
+                          : 'bg-ai-600 hover:bg-ai-700'
                           }`}
                         aria-label="Voice Input"
                       >

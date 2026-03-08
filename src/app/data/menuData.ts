@@ -9,7 +9,7 @@ import {
   Calendar as CalendarIcon,
   BarChart3,
   UserCircle,
-  LayoutGrid,
+  PanelsTopLeft,
   ClipboardList,
   DollarSign,
   CalendarDays,
@@ -65,9 +65,9 @@ export const mainMenuItems: MainMenuItem[] = [
 ];
 
 export const clientMenuItems: ClientMenuItem[] = [
-  { id: 'overview', label: 'Overview', icon: LayoutGrid, badge: null },
+  { id: 'overview', label: 'Overview', icon: PanelsTopLeft, badge: null },
   { id: 'opportunities', label: 'Opportunities', icon: Target, badge: null },
-  { id: 'fact-find', label: 'Fact-Find', icon: ClipboardList, badge: null },
+  { id: 'onboarding', label: 'Onboarding', icon: ClipboardList, badge: null },
   { id: 'financials', label: 'Financials', icon: DollarSign, badge: null },
   { id: 'contacts', label: 'Contacts', icon: Users, badge: 2 },
   { id: 'meetings', label: 'Meetings', icon: CalendarDays, badge: 1 },

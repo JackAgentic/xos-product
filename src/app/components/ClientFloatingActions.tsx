@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import * as Popover from '@radix-ui/react-popover';
 import {
     LayoutGrid,
@@ -15,13 +15,16 @@ import {
     Mic,
     User,
     Sparkles,
+    PanelRightClose,
+    PanelRightOpen,
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import { QuickActionsMenu } from './QuickActionsMenu';
 import { useAIDrag } from './AIDragToInspect';
 
 interface ClientFloatingActionsProps {
     activeTab: string;
-    visibleModules: { factFind: boolean; aiSummary: boolean; details: boolean; quickStats: boolean; opportunities: boolean; activities: boolean; quickActions: boolean };
+    visibleModules: { onboarding: boolean; aiSummary: boolean; details: boolean; quickStats: boolean; opportunities: boolean; activities: boolean; quickActions: boolean };
     toggleModule: (key: string) => void;
     setShowAddEventModal: (show: boolean) => void;
     setShowSendEmailModal: (show: boolean) => void;
@@ -43,91 +46,75 @@ export function ClientFloatingActions({
     setShowAddOpportunityModal,
 }: ClientFloatingActionsProps) {
     const [isViewsMenuOpen, setIsViewsMenuOpen] = useState(false);
-    const [isQuickActionsMenuOpen, setIsQuickActionsMenuOpen] = useState(false);
-    const { isDrawerOpen, setActions, openAI } = useAIDrag();
+    const { isDrawerOpen, setActions, registerPlaceholder } = useAIDrag();
+    const [isActionsCollapsed, setIsActionsCollapsed] = useState(false);
+    const [isOverCard, setIsOverCard] = useState(true);
+    const viewsBtnRef = useRef<HTMLButtonElement>(null);
 
     useEffect(() => {
+        let ticking = false;
+
+        const checkOverlap = () => {
+            if (!viewsBtnRef.current) return;
+            const rect = viewsBtnRef.current.getBoundingClientRect();
+            // Check pixel slightly to the left of the button
+            const elements = document.elementsFromPoint(rect.left - 2, rect.top + rect.height / 2);
+
+            if (elements) {
+                // Check if any element behind it is a card (usually bg-white)
+                const overCard = elements.some(el => el.classList.contains('bg-white'));
+                setIsOverCard(overCard);
+            }
+            ticking = false;
+        };
+
+        const onScroll = () => {
+            if (!ticking) {
+                window.requestAnimationFrame(checkOverlap);
+                ticking = true;
+            }
+        };
+
+        window.addEventListener('scroll', onScroll, true);
+        window.addEventListener('resize', onScroll, true);
+
+        // Initial check
+        const timeout = setTimeout(checkOverlap, 100);
+
+        return () => {
+            window.removeEventListener('scroll', onScroll, true);
+            window.removeEventListener('resize', onScroll, true);
+            clearTimeout(timeout);
+        };
+    }, [activeTab]);
+
+    useEffect(() => {
+        // When collapsed, clear the actions slot so the AI orb returns to center
+        if (isActionsCollapsed) {
+            setActions(null);
+            return;
+        }
+
         setActions(
-            <div className={`flex items-center justify-center transition-all duration-500 ease-in-out ${isDrawerOpen ? 'gap-4' : 'gap-0'}`}>
-                {/* Left Pillar: Views */}
-                <div className={`flex items-center justify-end transition-all duration-500 ease-in-out ${isDrawerOpen ? 'w-auto' : 'w-24 sm:w-80'}`}>
-                    {activeTab === 'overview' && (
-                        <Popover.Root open={isViewsMenuOpen} onOpenChange={setIsViewsMenuOpen}>
-                            <Popover.Trigger asChild>
-                                <button
-                                    className="bg-white rounded-full shadow-lg border border-gray-200 p-4 transition-transform active:scale-95 md:hover:bg-stone-200"
-                                    aria-label="Views Menu"
-                                >
-                                    <LayoutGrid className="w-5 h-5 text-emerald-900" />
-                                </button>
-                            </Popover.Trigger>
-                            <Popover.Portal>
-                                <Popover.Content
-                                    side="top"
-                                    align="start"
-                                    sideOffset={12}
-                                    className="w-56 bg-white rounded-sm shadow-md border border-gray-200 py-2 z-[60] animate-in fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2"
-                                >
-                                    <div className="px-4 py-2 border-b border-gray-200 flex items-center gap-2">
-                                        <LayoutGrid className="w-4 h-4 text-gray-600" />
-                                        <span className="text-sm font-semibold text-gray-900">Views</span>
-                                    </div>
+            <AnimatePresence mode="wait">
+                <div className="flex items-center justify-center gap-2 h-14">
+                    {/* Placeholder for the AI Orb to track resting position */}
+                    {!isDrawerOpen && <div ref={registerPlaceholder} className="w-14 h-14 flex-shrink-0" />}
 
-                                    <div className="py-2 max-h-96 overflow-y-auto">
-                                        {[
-                                            { key: 'details', label: 'Client Details', icon: User, iconColor: 'text-indigo-600' },
-                                            { key: 'aiSummary', label: 'AI Summary', icon: Sparkles, iconColor: 'text-purple-600' },
-                                            { key: 'factFind', label: 'Fact-Find', icon: ClipboardList, iconColor: 'text-cyan-600' },
-                                            { key: 'opportunities', label: 'Opportunities', icon: Target, iconColor: 'text-orange-600' },
-                                            { key: 'quickStats', label: 'Quick Stats', icon: TrendingUp, iconColor: 'text-emerald-700' },
-                                            { key: 'activities', label: 'Activities', icon: Clock, iconColor: 'text-sky-600' },
-                                            { key: 'quickActions', label: 'Quick Actions', icon: Zap, iconColor: 'text-gray-500' },
-                                        ].map((module, index, array) => {
-                                            const Icon = module.icon;
-                                            return (
-                                                <div key={module.key}>
-                                                    <button
-                                                        onClick={() => toggleModule(module.key)}
-                                                        className="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left"
-                                                    >
-                                                        <div className={`w-4 h-4 rounded border-2 flex items-center justify-center flex-shrink-0 ${visibleModules[module.key as keyof typeof visibleModules]
-                                                            ? 'bg-emerald-900 border-emerald-900'
-                                                            : 'border-gray-300 bg-white'
-                                                            }`}>
-                                                            {visibleModules[module.key as keyof typeof visibleModules] && (
-                                                                <span className="text-white text-xs leading-none">✓</span>
-                                                            )}
-                                                        </div>
-                                                        <Icon className={`w-4 h-4 ${module.iconColor} flex-shrink-0`} />
-                                                        <span className="text-sm text-gray-700">{module.label}</span>
-                                                    </button>
-                                                    {index < array.length - 1 && <div className="h-px bg-gray-100 mx-2" />}
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                    <Popover.Arrow className="fill-white" />
-                                </Popover.Content>
-                            </Popover.Portal>
-                        </Popover.Root>
-                    )}
-                </div>
-
-                {/* CENTER: Space for the AI Orb (w-14) - Only when drawer is closed */}
-                {!isDrawerOpen && <div className="w-14 h-14 flex-shrink-0" />}
-
-                {/* Right Pillar: Quick Actions */}
-                <div className={`flex items-center justify-start transition-all duration-500 ease-in-out ${isDrawerOpen ? 'w-auto' : 'w-24 sm:w-80'}`}>
-                    <div className="flex items-center">
-                        {/* Quick Actions Popover for Mobile */}
-                        <div className="max-[445px]:block hidden">
-                            <Popover.Root open={isQuickActionsMenuOpen} onOpenChange={setIsQuickActionsMenuOpen}>
+                    <motion.div
+                        key="actions-bar"
+                        initial={{ x: 20, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        exit={{ scale: 0.8, opacity: 0 }}
+                        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                        className="flex items-center h-14"
+                    >
+                        {/* Mobile View (Floating Button) */}
+                        <div className="md:hidden">
+                            <Popover.Root>
                                 <Popover.Trigger asChild>
-                                    <button
-                                        className="bg-white rounded-full shadow-lg border border-gray-200 p-4 transition-transform active:scale-95"
-                                        aria-label="Quick Actions Menu"
-                                    >
-                                        <Zap className="w-5 h-5 text-orange-600" />
+                                    <button className="w-14 h-14 flex items-center justify-center bg-white rounded-full shadow-lg border border-gray-200 text-gray-600 transition-transform active:scale-95">
+                                        <Zap className="w-5 h-5 fill-gray-600" />
                                     </button>
                                 </Popover.Trigger>
                                 <Popover.Portal>
@@ -135,58 +122,43 @@ export function ClientFloatingActions({
                                         side="top"
                                         align="end"
                                         sideOffset={12}
-                                        className="w-56 bg-white rounded-sm shadow-md border border-gray-200 py-2 z-[60] animate-in fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2"
+                                        className="bg-white rounded-sm shadow-md border border-gray-200 py-2 z-50 animate-in fade-in-0 zoom-in-95"
                                     >
                                         <div className="px-4 py-2 border-b border-gray-200 flex items-center gap-2">
                                             <Zap className="w-4 h-4 text-gray-600" />
                                             <span className="text-sm font-semibold text-gray-900">Quick Actions</span>
                                         </div>
-
-                                        <div className="py-2">
-                                            <button onClick={() => { setShowAddEventModal(true); setIsQuickActionsMenuOpen(false); }} className="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left">
-                                                <CalendarPlus className="w-4 h-4 text-emerald-700" />
-                                                <span className="text-sm text-gray-700">Schedule Meeting</span>
+                                        <div className="py-1">
+                                            <button onClick={() => { setShowAddEventModal(true); }} className="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left text-sm text-gray-700">
+                                                <CalendarPlus className="w-4 h-4 text-emerald-700" /> Schedule Meeting
                                             </button>
-                                            <div className="h-px bg-gray-100 mx-2" />
-                                            <button onClick={() => { setShowSendEmailModal(true); setIsQuickActionsMenuOpen(false); }} className="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left">
-                                                <MailPlus className="w-4 h-4 text-blue-600" />
-                                                <span className="text-sm text-gray-700">Send Email</span>
+                                            <button onClick={() => { setShowSendEmailModal(true); }} className="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left text-sm text-gray-700">
+                                                <MailPlus className="w-4 h-4 text-blue-600" /> Send Email
                                             </button>
-                                            <div className="h-px bg-gray-100 mx-2" />
-                                            <button onClick={() => { setShowAddDocumentModal(true); setIsQuickActionsMenuOpen(false); }} className="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left">
-                                                <FilePlus className="w-4 h-4 text-indigo-600" />
-                                                <span className="text-sm text-gray-700">Add Document</span>
+                                            <button onClick={() => { setShowAddDocumentModal(true); }} className="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left text-sm text-gray-700">
+                                                <FilePlus className="w-4 h-4 text-indigo-600" /> Add Document
                                             </button>
-                                            <div className="h-px bg-gray-100 mx-2" />
-                                            <button onClick={() => { setShowAddNoteModal(true); setIsQuickActionsMenuOpen(false); }} className="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left">
-                                                <NotebookPen className="w-4 h-4 text-amber-600" />
-                                                <span className="text-sm text-gray-700">Create Note</span>
+                                            <button onClick={() => { setShowAddNoteModal(true); }} className="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left text-sm text-gray-700">
+                                                <NotebookPen className="w-4 h-4 text-amber-600" /> Create Note
                                             </button>
-                                            <div className="h-px bg-gray-100 mx-2" />
-                                            <button onClick={() => { setShowAddTaskModal(true); setIsQuickActionsMenuOpen(false); }} className="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left">
-                                                <ClipboardCheck className="w-4 h-4 text-cyan-600" />
-                                                <span className="text-sm text-gray-700">Create Task</span>
+                                            <button onClick={() => { setShowAddTaskModal(true); }} className="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left text-sm text-gray-700">
+                                                <ClipboardCheck className="w-4 h-4 text-cyan-600" /> Create Task
                                             </button>
-                                            <div className="h-px bg-gray-100 mx-2" />
-                                            <button onClick={() => { setShowAddOpportunityModal(true); setIsQuickActionsMenuOpen(false); }} className="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left">
-                                                <Target className="w-4 h-4 text-orange-600" />
-                                                <span className="text-sm text-gray-700">Add Opportunity</span>
+                                            <button onClick={() => { setShowAddOpportunityModal(true); }} className="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left text-sm text-gray-700">
+                                                <Target className="w-4 h-4 text-orange-600" /> Add Opportunity
                                             </button>
-                                            <div className="h-px bg-gray-100 mx-2" />
-                                            <button onClick={() => { setIsQuickActionsMenuOpen(false); }} className="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left">
-                                                <Mic className="w-4 h-4 text-red-600" />
-                                                <span className="text-sm text-gray-700">Voice Recording</span>
+                                            <button onClick={() => { /* Voice recording logic */ }} className="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left text-sm text-gray-700">
+                                                <Mic className="w-4 h-4 text-red-600" /> Voice Recording
                                             </button>
                                         </div>
-
                                         <Popover.Arrow className="fill-white" />
                                     </Popover.Content>
                                 </Popover.Portal>
                             </Popover.Root>
                         </div>
 
-                        {/* Quick Actions Bar for Desktop */}
-                        <div className="max-[445px]:hidden block">
+                        {/* Desktop View (Horizontal Bar) */}
+                        <div className="hidden md:flex items-center gap-2">
                             <QuickActionsMenu
                                 setShowAddEventModal={setShowAddEventModal}
                                 setShowSendEmailModal={setShowSendEmailModal}
@@ -194,29 +166,53 @@ export function ClientFloatingActions({
                                 setShowAddNoteModal={setShowAddNoteModal}
                                 setShowAddTaskModal={setShowAddTaskModal}
                                 setShowAddOpportunityModal={setShowAddOpportunityModal}
+                                onCollapse={() => setIsActionsCollapsed(true)}
                             />
                         </div>
-                    </div>
+                    </motion.div>
                 </div>
-            </div>
+            </AnimatePresence>
         );
-        // Cleanup on unmount
-        return () => setActions(null);
+
+        // Cleanup: clear actions when this component unmounts (navigating away from client page)
+        return () => {
+            setActions(null);
+        };
     }, [
         activeTab,
+        isViewsMenuOpen,
+        isDrawerOpen,
         visibleModules,
-        toggleModule,
+        isActionsCollapsed,
         setShowAddEventModal,
         setShowSendEmailModal,
         setShowAddDocumentModal,
         setShowAddNoteModal,
         setShowAddTaskModal,
         setShowAddOpportunityModal,
-        isViewsMenuOpen,
-        isQuickActionsMenuOpen,
-        isDrawerOpen,
+        toggleModule,
         setActions
     ]);
 
-    return null; // This component is a pure logic/portal component
+    return (
+        <>
+            <AnimatePresence>
+                {/* Expand Actions Button (shows when actions bar is collapsed) */}
+                {isActionsCollapsed && (
+                    <motion.button
+                        key="expand-actions"
+                        initial={{ scale: 0, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0, opacity: 0 }}
+                        transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+                        onClick={() => setIsActionsCollapsed(false)}
+                        className="fixed right-4 lg:right-6 bottom-4 lg:bottom-3 w-14 h-14 flex items-center justify-center bg-white rounded-full shadow-lg border border-gray-200 text-gray-500 hover:text-gray-700 transition-transform active:scale-95 hover:bg-stone-50 z-[100]"
+                        title="Expand Actions"
+                    >
+                        <PanelRightOpen className="w-6 h-6" />
+                    </motion.button>
+                )}
+            </AnimatePresence>
+        </>
+    );
 }

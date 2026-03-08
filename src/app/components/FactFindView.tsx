@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { AnimatePresence, motion } from 'motion/react';
 import {
   UserCircle,
   Users,
@@ -11,8 +12,29 @@ import {
   Plus,
   Trash2,
   CheckCircle2,
-  Edit2
+  Edit2,
+  ClipboardList,
+  ChevronDown,
+  Check,
 } from 'lucide-react';
+
+interface ContactOnboardingData {
+  contactId: number;
+  contactName: string;
+  contactType: string;
+  items: { id: string; label: string; completed: boolean; completedDate: string | null }[];
+}
+
+interface FactFindViewProps {
+  setShowAddEventModal: (show: boolean) => void;
+  setShowSendEmailModal: (show: boolean) => void;
+  setShowAddDocumentModal: (show: boolean) => void;
+  setShowAddNoteModal: (show: boolean) => void;
+  setShowAddTaskModal: (show: boolean) => void;
+  setShowAddOpportunityModal: (show: boolean) => void;
+  contactOnboarding: ContactOnboardingData[];
+  toggleOnboardingItem: (contactId: number, itemId: string) => void;
+}
 
 export function FactFindView({
   setShowAddEventModal,
@@ -20,19 +42,19 @@ export function FactFindView({
   setShowAddDocumentModal,
   setShowAddNoteModal,
   setShowAddTaskModal,
-  setShowAddOpportunityModal
-}: {
-  setShowAddEventModal: (show: boolean) => void;
-  setShowSendEmailModal: (show: boolean) => void;
-  setShowAddDocumentModal: (show: boolean) => void;
-  setShowAddNoteModal: (show: boolean) => void;
-  setShowAddTaskModal: (show: boolean) => void;
-  setShowAddOpportunityModal: (show: boolean) => void;
-}) {
+  setShowAddOpportunityModal,
+  contactOnboarding,
+  toggleOnboardingItem,
+}: FactFindViewProps) {
+  const [selectedContactId, setSelectedContactId] = useState<number>(contactOnboarding[0]?.contactId ?? 0);
   const [selectedEntity, setSelectedEntity] = useState('individual');
   const [activeTab, setActiveTab] = useState('client-info');
   const [entitySelected, setEntitySelected] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
+
+  const selectedContact = contactOnboarding.find(c => c.contactId === selectedContactId) ?? contactOnboarding[0];
+  const contactCompleted = selectedContact?.items.filter(i => i.completed).length ?? 0;
+  const contactTotal = selectedContact?.items.length ?? 0;
 
   // Form data state
   const [clientInfoData, setClientInfoData] = useState({
@@ -191,7 +213,7 @@ export function FactFindView({
   // Read-only completed view
   if (isCompleted && entitySelected) {
     return (
-      <div className="flex-1 overflow-auto bg-gray-50" data-ai-section="Fact Find">
+      <div className="flex-1 overflow-auto bg-gray-50" data-ai-section="Onboarding">
         <div className="p-4 sm:p-6 pb-24">
           <div className="max-w-5xl mx-auto relative">
 
@@ -199,13 +221,13 @@ export function FactFindView({
             <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
                 <div className="flex items-center gap-3 mb-2">
-                  <h2 className="text-2xl font-semibold">Fact-Find</h2>
+                  <h2 className="text-2xl font-semibold">Onboarding</h2>
                   <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
                     <CheckCircle2 className="w-4 h-4" />
                     Completed
                   </span>
                 </div>
-                <p className="text-gray-600">Review the completed fact-find information below.</p>
+                <p className="text-gray-600">Review the completed onboarding information below.</p>
               </div>
               <button
                 onClick={handleEdit}
@@ -214,6 +236,72 @@ export function FactFindView({
                 <Edit2 className="w-4 h-4" />
                 Edit Details
               </button>
+            </div>
+
+            {/* Contact Selector + Onboarding Progress (Read-only view) */}
+            <div className="bg-white rounded-sm border border-gray-200 p-4 mb-4">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <ClipboardList className="w-4 h-4 text-cyan-600" />
+                    <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Contact</span>
+                  </div>
+                  <div className="relative">
+                    <select
+                      value={selectedContactId}
+                      onChange={(e) => setSelectedContactId(Number(e.target.value))}
+                      className="w-full appearance-none bg-white border border-gray-200 rounded-sm pl-3 pr-8 py-2 text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-900/20 focus:border-emerald-900/30 cursor-pointer"
+                    >
+                      {contactOnboarding.map(contact => {
+                        const allDone = contact.items.every(i => i.completed);
+                        const done = contact.items.filter(i => i.completed).length;
+                        return (
+                          <option key={contact.contactId} value={contact.contactId}>
+                            {contact.contactName} — {allDone ? '✓ Done' : `${done}/${contact.items.length}`}
+                          </option>
+                        );
+                      })}
+                    </select>
+                    <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                  </div>
+                </div>
+                <div className="sm:w-48">
+                  <div className="text-xs text-gray-500 mb-1.5 text-right">{contactCompleted}/{contactTotal} complete</div>
+                  <div className="flex-1 bg-gray-200 rounded-full h-1.5">
+                    <div
+                      className="bg-emerald-900 h-1.5 rounded-full transition-all duration-500"
+                      style={{ width: `${contactTotal > 0 ? Math.round((contactCompleted / contactTotal) * 100) : 0}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {selectedContact && (
+                <div className="mt-4 pt-4 border-t border-gray-200">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+                    {selectedContact.items.map(item => (
+                      <div
+                        key={item.id}
+                        onClick={() => toggleOnboardingItem(selectedContact.contactId, item.id)}
+                        className={`flex items-center gap-2.5 py-2 px-3 rounded-sm cursor-pointer transition-colors border ${
+                          item.completed
+                            ? 'bg-emerald-50/50 border-emerald-200/50 hover:bg-emerald-50'
+                            : 'border-gray-200 hover:bg-gray-50'
+                        }`}
+                      >
+                        <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
+                          item.completed ? 'bg-emerald-900 border-emerald-900' : 'border-gray-300 bg-white'
+                        }`}>
+                          {item.completed && <Check className="w-2.5 h-2.5 text-white" />}
+                        </div>
+                        <span className={`text-sm transition-colors ${item.completed ? 'text-gray-400 line-through' : 'text-gray-700'}`}>
+                          {item.label}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Entity Badge */}
@@ -526,13 +614,94 @@ export function FactFindView({
 
   // Editable form view
   return (
-    <div className="flex-1 overflow-auto bg-gray-50" data-ai-section="Fact Find">
+    <div className="flex-1 overflow-auto bg-gray-50" data-ai-section="Onboarding">
       <div className="p-4 sm:p-6 pb-24">
 
         <div className="max-w-5xl mx-auto relative">
           <div className="mb-6">
-            <h2 className="text-2xl font-semibold mb-2">Fact-Find</h2>
-            <p className="text-gray-600">Complete each section to finish the fact-find process.</p>
+            <h2 className="text-2xl font-semibold mb-2">Onboarding</h2>
+            <p className="text-gray-600">Complete each section to finish the onboarding process.</p>
+          </div>
+
+          {/* Contact Selector + Onboarding Progress */}
+          <div className="bg-white rounded-sm border border-gray-200 p-4 mb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+              {/* Contact Dropdown */}
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-2">
+                  <ClipboardList className="w-4 h-4 text-cyan-600" />
+                  <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Contact</span>
+                </div>
+                <div className="relative">
+                  <select
+                    value={selectedContactId}
+                    onChange={(e) => setSelectedContactId(Number(e.target.value))}
+                    className="w-full appearance-none bg-white border border-gray-200 rounded-sm pl-3 pr-8 py-2 text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-900/20 focus:border-emerald-900/30 cursor-pointer"
+                  >
+                    {contactOnboarding.map(contact => {
+                      const allDone = contact.items.every(i => i.completed);
+                      const done = contact.items.filter(i => i.completed).length;
+                      return (
+                        <option key={contact.contactId} value={contact.contactId}>
+                          {contact.contactName} — {allDone ? '✓ Done' : `${done}/${contact.items.length}`}
+                        </option>
+                      );
+                    })}
+                  </select>
+                  <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                </div>
+              </div>
+
+              {/* Progress bar */}
+              <div className="sm:w-48">
+                <div className="text-xs text-gray-500 mb-1.5 text-right">{contactCompleted}/{contactTotal} complete</div>
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 bg-gray-200 rounded-full h-1.5">
+                    <div
+                      className="bg-emerald-900 h-1.5 rounded-full transition-all duration-500"
+                      style={{ width: `${contactTotal > 0 ? Math.round((contactCompleted / contactTotal) * 100) : 0}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Onboarding Checklist */}
+            {selectedContact && (
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={selectedContact.contactId}
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -5 }}
+                    transition={{ duration: 0.15 }}
+                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2"
+                  >
+                    {selectedContact.items.map(item => (
+                      <div
+                        key={item.id}
+                        onClick={() => toggleOnboardingItem(selectedContact.contactId, item.id)}
+                        className={`flex items-center gap-2.5 py-2 px-3 rounded-sm cursor-pointer transition-colors border ${
+                          item.completed
+                            ? 'bg-emerald-50/50 border-emerald-200/50 hover:bg-emerald-50'
+                            : 'border-gray-200 hover:bg-gray-50'
+                        }`}
+                      >
+                        <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
+                          item.completed ? 'bg-emerald-900 border-emerald-900' : 'border-gray-300 bg-white'
+                        }`}>
+                          {item.completed && <Check className="w-2.5 h-2.5 text-white" />}
+                        </div>
+                        <span className={`text-sm transition-colors ${item.completed ? 'text-gray-400 line-through' : 'text-gray-700'}`}>
+                          {item.label}
+                        </span>
+                      </div>
+                    ))}
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+            )}
           </div>
 
           {/* Entity Type Selection */}

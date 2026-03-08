@@ -93,11 +93,10 @@ export function OpportunitySidebar({
           <div className="flex items-center gap-2">
             <button
               onClick={showFilterModal}
-              className={`relative px-3 py-2 h-10 border rounded-sm text-sm font-medium transition-colors flex items-center justify-center flex-1 ${
-                filterClient !== null || filterType
+              className={`relative px-3 py-2 h-10 border rounded-sm text-sm font-medium transition-colors flex items-center justify-center flex-1 ${filterClient !== null || filterType
                   ? 'border-emerald-900 bg-stone-200 text-emerald-900'
                   : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-              }`}
+                }`}
             >
               <Filter className="w-4 h-4" />
               {(filterClient !== null || filterType) && (
@@ -142,11 +141,10 @@ export function OpportunitySidebar({
           <div className="flex items-center gap-2">
             <button
               onClick={showFilterModal}
-              className={`px-3 py-2 h-10 border rounded-sm text-sm font-medium transition-colors flex items-center justify-center relative flex-1 ${
-                filterClient !== null || filterType
+              className={`px-3 py-2 h-10 border rounded-sm text-sm font-medium transition-colors flex items-center justify-center relative flex-1 ${filterClient !== null || filterType
                   ? 'border-emerald-900 bg-stone-200 text-emerald-900'
                   : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-              }`}
+                }`}
             >
               <Filter className="w-4 h-4" />
               {(filterClient !== null || filterType) && (
@@ -178,6 +176,8 @@ export function OpportunitySidebar({
               ${selectedOpportunity === opp.id ? 'bg-stone-200 border-l-4 border-l-emerald-900' : 'hover:bg-gray-50'}
             `}
             data-ai-section="Opportunity Card"
+            data-ai-field="opportunityRecord"
+            data-ai-label="Opportunity Record"
             data-ai-entity-id={opp.id}
           >
             <div className="flex lg:flex-col items-start justify-between gap-2 mb-2">
@@ -186,18 +186,18 @@ export function OpportunitySidebar({
                 ${opp.type === 'Mortgage' ? 'bg-blue-100 text-blue-700' : ''}
                 ${opp.type === 'Investment' ? 'bg-purple-100 text-purple-700' : ''}
                 ${opp.type === 'Insurance' ? 'bg-orange-100 text-orange-700' : ''}
-              `} data-ai-field="opportunityType" data-ai-label="Type">
+              `}>
                 {getAdviceIcon(getTypeIcon(opp.type))}
                 {opp.type}
               </span>
-              <h4 className="font-semibold text-sm flex-1" data-ai-field="opportunityName" data-ai-label="Opportunity Name">{opp.name}</h4>
+              <h4 className="font-semibold text-sm flex-1">{opp.name}</h4>
             </div>
             {/* Show client name when viewing all opportunities */}
             {!clientId && (
-              <p className="text-xs font-medium text-gray-900 mb-1" data-ai-field="clientName" data-ai-label="Client">{opp.client}</p>
+              <p className="text-xs font-medium text-gray-900 mb-1">{opp.client}</p>
             )}
-            <p className="text-xs text-gray-600 mb-2" data-ai-field="advisor" data-ai-label="Advisor">{opp.advisor}</p>
-            <div className="text-xs text-gray-500" data-ai-field="opportunityDate" data-ai-label="Date">{opp.date}</div>
+            <p className="text-xs text-gray-600 mb-2">{opp.advisor}</p>
+            <div className="text-xs text-gray-500">{opp.date}</div>
           </div>
         ))}
       </div>

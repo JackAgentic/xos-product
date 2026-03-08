@@ -286,23 +286,23 @@ export function ClientsListView({
               <table className="w-full" style={{ minWidth: '1000px' }}>
                 <tbody className="divide-y divide-gray-200">
                   {filteredClients.map((client) => (
-                    <tr key={client.id} onClick={() => onClientClick(client.id)} className="hover:bg-gray-50 cursor-pointer group overflow-visible" data-ai-section="Client Row" data-ai-entity-id={client.id}>
+                    <tr key={client.id} onClick={() => onClientClick(client.id)} className="hover:bg-gray-50 cursor-pointer group overflow-visible" data-ai-section="Client Row" data-ai-field="clientRecord" data-ai-label="Client Record" data-ai-entity-id={client.id}>
                       {visibleColumns.client && (<td className="px-4 py-3" style={{ width: '250px', minWidth: '250px' }}>
                         <div className="flex items-center gap-3 min-w-0">
                           <div className="w-8 h-8 flex items-center justify-center flex-shrink-0 text-gray-400 group-hover:text-emerald-900 transition-colors">
                             {client.type === 'person' ? <Users className="w-4 h-4" /> : <Building className="w-4 h-4" />}
                           </div>
-                          <span className="text-sm font-medium truncate text-gray-700 group-hover:text-gray-900 transition-colors" data-ai-field="clientName" data-ai-label="Client Name">{client.name}</span>
+                          <span className="text-sm font-medium truncate text-gray-700 group-hover:text-gray-900 transition-colors">{client.name}</span>
                         </div>
                       </td>)}
                       {visibleColumns.status && (<td className="px-4 py-3" style={{ width: '180px', minWidth: '180px' }}>
-                        <div className="flex items-center gap-2" data-ai-field="clientStatus" data-ai-label="Status">
+                        <div className="flex items-center gap-2">
                           <div className={`w-2 h-2 rounded-full flex-shrink-0 ${client.status === 'ACTIVE' ? 'bg-green-500' : 'bg-amber-400 group-hover:animate-pulse'}`} />
                           <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase">{client.status}</span>
                         </div>
                       </td>)}
-                      {visibleColumns.advice && (<td className="px-4 py-3" style={{ width: '220px', minWidth: '220px' }} data-ai-field="adviceTypes" data-ai-label="Advice Types"><div className="flex items-center gap-2">{renderAdviceCells(client, false)}</div></td>)}
-                      {visibleColumns.manager && (<td className="px-4 py-3 overflow-visible" style={{ width: '220px', minWidth: '220px' }} data-ai-field="clientManager" data-ai-label="Client Manager">
+                      {visibleColumns.advice && (<td className="px-4 py-3" style={{ width: '220px', minWidth: '220px' }}><div className="flex items-center gap-2">{renderAdviceCells(client, false)}</div></td>)}
+                      {visibleColumns.manager && (<td className="px-4 py-3 overflow-visible" style={{ width: '220px', minWidth: '220px' }}>
                         {client.managers.length > 0 ? (
                           <div className="flex items-center -space-x-2 relative">
                             {client.managers.slice(0, 3).map((manager, index) => (
@@ -334,8 +334,8 @@ export function ClientsListView({
                       </td>)}
                       {visibleColumns.contact && (<td className="px-4 py-3" style={{ width: '280px', minWidth: '280px' }}>
                         <div className="flex flex-col gap-2">
-                          {client.email !== '\u2014' && (<div className="group/email flex items-center gap-2 min-w-0" data-ai-field="clientEmail" data-ai-label="Email"><Mail className="w-4 h-4 text-gray-400 group-hover/email:text-emerald-900 flex-shrink-0 transition-colors" /><span className="text-sm text-gray-600 group-hover/email:text-emerald-950 truncate transition-colors">{client.email}</span></div>)}
-                          {client.phone !== '\u2014' && (<div className="group/phone flex items-center gap-2 min-w-0" data-ai-field="clientPhone" data-ai-label="Phone"><Phone className="w-4 h-4 text-gray-400 group-hover/phone:text-emerald-900 flex-shrink-0 transition-colors" /><span className="text-sm text-gray-600 group-hover/phone:text-emerald-950 truncate transition-colors">{client.phone}</span></div>)}
+                          {client.email !== '\u2014' && (<div className="group/email flex items-center gap-2 min-w-0"><Mail className="w-4 h-4 text-gray-400 group-hover/email:text-emerald-900 flex-shrink-0 transition-colors" /><span className="text-sm text-gray-600 group-hover/email:text-emerald-950 truncate transition-colors">{client.email}</span></div>)}
+                          {client.phone !== '\u2014' && (<div className="group/phone flex items-center gap-2 min-w-0"><Phone className="w-4 h-4 text-gray-400 group-hover/phone:text-emerald-900 flex-shrink-0 transition-colors" /><span className="text-sm text-gray-600 group-hover/phone:text-emerald-950 truncate transition-colors">{client.phone}</span></div>)}
                         </div>
                       </td>)}
                       <td className="px-4 py-3 text-right" style={{ width: '60px', minWidth: '60px' }}>
@@ -351,24 +351,24 @@ export function ClientsListView({
           {/* Mobile Card View */}
           <div className="lg:hidden divide-y divide-gray-200 overflow-y-auto flex-1">
             {filteredClients.map((client) => (
-              <div key={client.id} onClick={() => onClientClick(client.id)} className="p-4 hover:bg-gray-50 cursor-pointer active:bg-gray-100 transition-colors" data-ai-section="Client Card" data-ai-entity-id={client.id}>
+              <div key={client.id} onClick={() => onClientClick(client.id)} className="p-4 hover:bg-gray-50 cursor-pointer active:bg-gray-100 transition-colors" data-ai-section="Client Card" data-ai-field="clientRecord" data-ai-label="Client Record" data-ai-entity-id={client.id}>
                 <div className="flex items-start justify-between gap-5 mb-3">
                   <div className="flex items-center gap-2 min-w-0 flex-1 flex-wrap">
                     <div className="w-8 h-8 rounded-full bg-emerald-900/10 flex items-center justify-center flex-shrink-0">
                       {client.type === 'person' ? <Users className="w-4 h-4 text-emerald-900" /> : <Building className="w-4 h-4 text-emerald-900" />}
                     </div>
-                    <span className="font-medium text-base flex-1 min-w-[100px] truncate" data-ai-field="clientName" data-ai-label="Client Name">{client.name}</span>
+                    <span className="font-medium text-base flex-1 min-w-[100px] truncate">{client.name}</span>
                     <div className="flex items-center gap-1.5 flex-shrink-0">{renderAdviceCells(client, true)}</div>
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
-                    <span className={`px-2 py-0.5 rounded text-xs font-medium uppercase flex-shrink-0 ${client.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`} data-ai-field="clientStatus" data-ai-label="Status">{client.status}</span>
+                    <span className={`px-2 py-0.5 rounded text-xs font-medium uppercase flex-shrink-0 ${client.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>{client.status}</span>
                     <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0" />
                   </div>
                 </div>
                 <div className="space-y-2 text-sm">
-                  {client.managers.length > 0 && (<div className="flex items-start gap-2" data-ai-field="clientManager" data-ai-label="Client Manager"><UserCircle className="w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5" /><div className="text-gray-600 text-sm">{client.managers.map((m) => m.name).join(', ')}</div></div>)}
-                  {client.email !== '\u2014' && (<div className="flex items-start gap-2" data-ai-field="clientEmail" data-ai-label="Email"><Mail className="w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5" /><div className="text-gray-900 break-all flex-1 min-w-0">{client.email}</div></div>)}
-                  {client.phone !== '\u2014' && (<div className="flex items-start gap-2" data-ai-field="clientPhone" data-ai-label="Phone"><Smartphone className="w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5" /><div className="text-gray-900 break-words flex-1">{client.phone}</div></div>)}
+                  {client.managers.length > 0 && (<div className="flex items-start gap-2"><UserCircle className="w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5" /><div className="text-gray-600 text-sm">{client.managers.map((m) => m.name).join(', ')}</div></div>)}
+                  {client.email !== '\u2014' && (<div className="flex items-start gap-2"><Mail className="w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5" /><div className="text-gray-900 break-all flex-1 min-w-0">{client.email}</div></div>)}
+                  {client.phone !== '\u2014' && (<div className="flex items-start gap-2"><Smartphone className="w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5" /><div className="text-gray-900 break-words flex-1">{client.phone}</div></div>)}
                 </div>
               </div>
             ))}
