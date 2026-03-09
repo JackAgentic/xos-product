@@ -397,7 +397,7 @@ export function OpportunitiesView({
             </div>
 
             {/* Scrollable Content */}
-            <div className="w-full p-3 lg:p-6 max-w-5xl mx-auto">
+            <div className="w-full p-3 lg:p-6 max-w-5xl 2xl:max-w-none mx-auto">
               <OpportunityDetails
                 selectedOpp={selectedOpp}
                 editingNotes={editingNotes}

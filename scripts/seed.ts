@@ -1,7 +1,5 @@
-import { neon } from '@neondatabase/serverless';
+import { sql } from '../lib/db.js';
 import bcrypt from 'bcryptjs';
-
-const sql = neon(process.env.DATABASE_URL!);
 
 async function seed() {
   console.log('Seeding database...\n');

@@ -533,7 +533,7 @@ export function FinancialsView({
           </div>
         ) : (
           <div className="p-4 sm:p-6 pb-24">
-            <div className="max-w-5xl mx-auto">
+            <div className="max-w-5xl 2xl:max-w-none mx-auto">
               {/* Header */}
               <div className="mb-6">
                 <div className="flex items-start justify-between mb-2">

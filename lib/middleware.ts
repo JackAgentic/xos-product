@@ -1,7 +1,7 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+import type { Request, Response } from 'express';
 import { verifyToken, type TokenPayload } from './auth.js';
 
-export function cors(req: VercelRequest, res: VercelResponse): boolean {
+export function cors(req: Request, res: Response): boolean {
   res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
@@ -12,7 +12,7 @@ export function cors(req: VercelRequest, res: VercelResponse): boolean {
   return false;
 }
 
-export function requireAuth(req: VercelRequest, res: VercelResponse): TokenPayload | null {
+export function requireAuth(req: Request, res: Response): TokenPayload | null {
   const authHeader = req.headers.authorization;
   if (!authHeader?.startsWith('Bearer ')) {
     res.status(401).json({ error: 'Missing or invalid authorization header' });
@@ -27,7 +27,7 @@ export function requireAuth(req: VercelRequest, res: VercelResponse): TokenPaylo
   }
 }
 
-export function methodGuard(req: VercelRequest, res: VercelResponse, allowed: string[]): boolean {
+export function methodGuard(req: Request, res: Response, allowed: string[]): boolean {
   if (!allowed.includes(req.method || '')) {
     res.status(405).json({ error: `Method ${req.method} not allowed` });
     return false;

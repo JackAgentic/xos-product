@@ -1547,7 +1547,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
 
               {activeTab === 'meeting' && (
                 <div className="p-4 sm:p-4">
-                  <div className="max-w-[1400px] mx-auto">
+                  <div className="max-w-[1400px] 2xl:max-w-none mx-auto">
                     <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
                       <div className="lg:col-span-1 flex lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible pb-4 lg:pb-0 scrollbar-hide items-center lg:items-stretch">
                         {[
@@ -1707,7 +1707,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
 
               {activeTab === 'risk' && (
                 <div className="p-4 sm:p-4">
-                  <div className="max-w-[1200px] mx-auto">
+                  <div className="max-w-[1200px] 2xl:max-w-none mx-auto">
                     <div className="bg-white rounded-sm border border-gray-200 p-4">
                       <div className="mb-4">
                         <div className="flex items-center justify-between mb-2">
@@ -1778,7 +1778,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
 
               {activeTab === 'projection' && (
                 <div className="p-4 sm:p-4">
-                  <div className="max-w-[1400px] mx-auto">
+                  <div className="max-w-[1400px] 2xl:max-w-none mx-auto">
                     <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
                       {/* Left Sidebar */}
                       <div className="lg:col-span-1">
@@ -1912,7 +1912,7 @@ export function KiwiSaverView({ clientId, clientName, contacts = [], setMobileDr
 
               {activeTab === 'comparison' && (
                 <div className="p-4 sm:p-4">
-                  <div className="max-w-[1400px] mx-auto">
+                  <div className="max-w-[1400px] 2xl:max-w-none mx-auto">
                     {!showReportPreview ? (
                       <div className="bg-white rounded-sm border border-gray-200 p-4 animate-in fade-in duration-500">
                         <div className="flex items-center justify-between mb-4">

@@ -53,12 +53,83 @@ export interface ListWidgetConfig {
 
 export type WidgetConfig = MetricCardConfig | ChartWidgetConfig | ListWidgetConfig;
 
+export interface GridLayout {
+  i: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  minW?: number;
+  minH?: number;
+}
+
+export interface DashboardLayouts {
+  lg: GridLayout[];
+  md: GridLayout[];
+  sm: GridLayout[];
+}
+
 export interface DashboardConfig {
   version?: number;
   widgets: WidgetConfig[];
+  layouts?: DashboardLayouts;
 }
 
-export const DASHBOARD_CONFIG_VERSION = 3;
+export const DASHBOARD_CONFIG_VERSION = 5;
+
+export function generateDefaultLayouts(widgets: WidgetConfig[]): DashboardLayouts {
+  const visible = widgets.filter(w => w.visible).sort((a, b) => a.order - b.order);
+  const metrics = visible.filter((w): w is MetricCardConfig => w.type === 'metric');
+  const flow = visible.filter(w => w.type !== 'metric');
+
+  const lg: GridLayout[] = [];
+
+  // Metric cards: row 0, each w=2, h=3
+  metrics.forEach((m, i) => {
+    lg.push({ i: m.id, x: (i * 2) % 12, y: 0, w: 2, h: 3, minW: 2, minH: 3 });
+  });
+
+  // Flow widgets: start after metric row
+  let flowX = 0;
+  let flowY = 3;
+  flow.forEach(w => {
+    const width = w.colSpan === 2 ? 8 : 4;
+    const height = w.type === 'chart' ? 6 : 5;
+    if (flowX + width > 12) {
+      flowX = 0;
+      flowY += height;
+    }
+    lg.push({ i: w.id, x: flowX, y: flowY, w: width, h: height, minW: 3, minH: 3 });
+    flowX += width;
+    if (flowX >= 12) {
+      flowX = 0;
+      flowY += height;
+    }
+  });
+
+  // md: 6 columns
+  const md: GridLayout[] = [];
+  metrics.forEach((m, i) => {
+    md.push({ i: m.id, x: (i * 3) % 6, y: Math.floor((i * 3) / 6) * 3, w: 3, h: 3, minW: 2, minH: 3 });
+  });
+  let mdY = Math.ceil(metrics.length / 2) * 3;
+  flow.forEach(w => {
+    const height = w.type === 'chart' ? 6 : 5;
+    md.push({ i: w.id, x: 0, y: mdY, w: 6, h: height, minW: 3, minH: 3 });
+    mdY += height;
+  });
+
+  // sm: 1 column
+  const sm: GridLayout[] = [];
+  let smY = 0;
+  visible.forEach(w => {
+    const height = w.type === 'metric' ? 3 : w.type === 'chart' ? 6 : 5;
+    sm.push({ i: w.id, x: 0, y: smY, w: 1, h: height, minW: 1, minH: 2 });
+    smY += height;
+  });
+
+  return { lg, md, sm };
+}
 
 export const DEFAULT_DASHBOARD_CONFIG: DashboardConfig = {
   version: DASHBOARD_CONFIG_VERSION,

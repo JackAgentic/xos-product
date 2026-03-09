@@ -15,7 +15,7 @@ export function ChartWidget({ config, data, compact = false, idPrefix = '' }: Ch
   const areaHeight = compact ? 200 : 300;
   const barHeight = compact ? 180 : 250;
   const lineHeight = compact ? 200 : 300;
-  const pieHeight = compact ? 180 : 250;
+
   const fontSize = compact ? '10px' : '12px';
 
   return (
@@ -73,8 +73,9 @@ export function ChartWidget({ config, data, compact = false, idPrefix = '' }: Ch
       )}
 
       {(config.chartType === 'donut' || config.chartType === 'pie') && (
-        <div className={compact ? 'flex flex-col items-center gap-3' : 'flex items-center justify-between'}>
-          <ResponsiveContainer width={compact ? '100%' : '40%'} height={pieHeight}>
+        <div className={compact ? 'flex flex-col items-center gap-3' : 'flex items-center gap-4'}>
+          <div className={compact ? 'w-[150px] h-[150px]' : 'w-[200px] h-[200px] shrink-0'}>
+          <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
                 data={data}
@@ -92,6 +93,7 @@ export function ChartWidget({ config, data, compact = false, idPrefix = '' }: Ch
               <Tooltip formatter={(value: any) => `${value} opportunities`} />
             </PieChart>
           </ResponsiveContainer>
+          </div>
           <div className={compact ? 'w-full space-y-2' : 'flex-1 space-y-3'}>
             {data.map((stage: any, idx: number) => (
               <div key={idx} className="flex items-center justify-between">

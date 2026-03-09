@@ -1,6 +1,4 @@
-import { neon } from '@neondatabase/serverless';
-
-const sql = neon(process.env.DATABASE_URL!);
+import { sql } from '../lib/db.js';
 
 async function migrate() {
   console.log('Running migrations...');
@@ -37,7 +35,27 @@ async function migrate() {
   `;
   console.log('  ✓ clients');
 
-  // 3. Client Managers (junction)
+  // 3. Tasks
+  await sql`
+    CREATE TABLE IF NOT EXISTS tasks (
+      id            SERIAL PRIMARY KEY,
+      title         VARCHAR(255) NOT NULL,
+      description   TEXT,
+      priority      VARCHAR(20) DEFAULT 'Medium',
+      due_date      DATE,
+      due_time      TIME,
+      assigned_to   INT REFERENCES users(id),
+      created_by    INT REFERENCES users(id),
+      client_id     INT REFERENCES clients(id) ON DELETE SET NULL,
+      send_reminder BOOLEAN DEFAULT FALSE,
+      status        VARCHAR(20) DEFAULT 'pending',
+      created_at    TIMESTAMPTZ DEFAULT NOW(),
+      updated_at    TIMESTAMPTZ DEFAULT NOW()
+    )
+  `;
+  console.log('  ✓ tasks');
+
+  // 4. Client Managers (junction)
   await sql`
     CREATE TABLE IF NOT EXISTS client_managers (
       id         SERIAL PRIMARY KEY,

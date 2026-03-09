@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   Users,
   Target,
@@ -18,13 +18,18 @@ import {
   Award,
   Plus,
   Eye,
+  GripVertical,
 } from 'lucide-react';
+import { ResponsiveGridLayout, useContainerWidth } from 'react-grid-layout';
+import 'react-grid-layout/css/styles.css';
+import 'react-resizable/css/styles.css';
 import { apiFetch } from '../lib/api';
 import { topClientsData } from '../data/seedData';
-import { resolveChartData } from '../data/dashboardConfig';
-import type { DashboardConfig, DashboardData, MetricCardConfig, ChartWidgetConfig, ListWidgetConfig, WidgetConfig } from '../data/dashboardConfig';
+import { resolveChartData, generateDefaultLayouts } from '../data/dashboardConfig';
+import type { DashboardConfig, DashboardData, DashboardLayouts, MetricCardConfig, ChartWidgetConfig, ListWidgetConfig, WidgetConfig } from '../data/dashboardConfig';
 import { ChartWidget } from './ChartWidget';
 import { ChartSettings } from './ChartSettings';
+
 
 const METRIC_ICONS: Record<string, any> = {
   totalClients: Users,
@@ -69,6 +74,7 @@ export function DashboardView({
   setShowSendEmailModal: (open: boolean) => void;
   setShowAddTaskModal: (open: boolean) => void;
 }) {
+  const { containerRef: gridContainerRef, width } = useContainerWidth();
   const [timeRange, setTimeRange] = useState<'week' | 'month' | 'quarter' | 'year'>('year');
   const [apiDashboard, setApiDashboard] = useState<any>(null);
   const isLoading = apiDashboard === null;
@@ -190,6 +196,23 @@ export function DashboardView({
 
   const metrics = visibleWidgets.filter((w): w is MetricCardConfig => w.type === 'metric');
   const flowWidgets = visibleWidgets.filter(w => w.type !== 'metric');
+
+  // Grid layout state
+  const layouts: DashboardLayouts = useMemo(() => {
+    if (dashboardConfig.layouts) return dashboardConfig.layouts;
+    return generateDefaultLayouts(dashboardConfig.widgets);
+  }, [dashboardConfig]);
+
+  const handleLayoutChange = useCallback((_currentLayout: any, allLayouts: any) => {
+    onConfigChange({
+      ...dashboardConfig,
+      layouts: {
+        lg: allLayouts.lg || [],
+        md: allLayouts.md || [],
+        sm: allLayouts.sm || [],
+      },
+    });
+  }, [dashboardConfig, onConfigChange]);
 
   function fmtCurrency(v: number): string {
     if (v >= 1000000) return `$${(v / 1000000).toFixed(1)}M`;
@@ -421,7 +444,7 @@ export function DashboardView({
         data-ai-field={config.id}
         data-ai-label={config.label}
         data-ai-editable="true"
-        className="bg-white rounded-sm border border-gray-200 p-5 hover:shadow-md transition-shadow"
+        className="bg-white rounded-sm border border-gray-200 p-5"
       >
         <div className="flex items-start justify-between mb-3">
           <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">{config.label}</p>
@@ -739,30 +762,33 @@ export function DashboardView({
 
       {/* Main Content */}
       <div className="flex-1 overflow-y-auto p-4 sm:p-6">
-        <div className="max-w-[1600px] mx-auto space-y-6">
-          {/* Key Metrics Row */}
-          {metrics.length > 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-              {metrics.map(m => renderWidget(m))}
-            </div>
-          )}
-
-          {/* Flow widgets — flex-wrap so cards reflow when moved/removed/resized */}
-          {flowWidgets.length > 0 && (
-            <div className="flex flex-wrap gap-6">
-              {flowWidgets.map(w => (
-                <div
-                  key={w.id}
-                  className={
-                    w.colSpan === 2
-                      ? 'flex-1 basis-0 min-w-[600px] max-lg:min-w-full'
-                      : 'flex-1 basis-0 min-w-[350px] max-lg:min-w-full'
-                  }
-                >
-                  {renderWidget(w)}
+        <div ref={gridContainerRef} className="max-w-[1600px] 2xl:max-w-none mx-auto">
+          {width > 0 && (
+          <ResponsiveGridLayout
+            width={width}
+            layouts={layouts}
+            breakpoints={{ lg: 1200, md: 768, sm: 0 }}
+            cols={{ lg: 12, md: 6, sm: 1 }}
+            rowHeight={60}
+            onLayoutChange={handleLayoutChange}
+            draggableHandle=".widget-drag-handle"
+            resizeHandles={['se', 'e', 's']}
+            margin={[16, 16]}
+            containerPadding={[0, 0]}
+          >
+            {visibleWidgets.map(w => (
+              <div key={w.id} className="widget-grid-item">
+                <div className="h-full flex flex-col">
+                  <div className="widget-drag-handle absolute top-2 right-2 z-10 cursor-grab active:cursor-grabbing p-1 rounded hover:bg-gray-100 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <GripVertical className="w-4 h-4 text-gray-400" />
+                  </div>
+                  <div className="flex-1 overflow-hidden">
+                    {renderWidget(w)}
+                  </div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
+          </ResponsiveGridLayout>
           )}
         </div>
       </div>

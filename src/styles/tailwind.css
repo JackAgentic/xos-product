@@ -2,3 +2,137 @@
 @source '../**/*.{js,ts,jsx,tsx}';
 
 @import 'tw-animate-css';
+
+/* Dashboard grid widget styles */
+.widget-grid-item {
+  position: relative;
+  height: 100%;
+}
+
+.widget-grid-item > div > .widget-drag-handle {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.widget-grid-item:hover > div > .widget-drag-handle {
+  opacity: 1;
+}
+
+/* react-grid-layout resize handle styling */
+.react-grid-item > .react-resizable-handle {
+  background: none;
+  width: 12px;
+  height: 12px;
+}
+
+.react-grid-item > .react-resizable-handle::after {
+  content: '';
+  position: absolute;
+  border-right: 2px solid rgba(0, 0, 0, 0.15);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.15);
+  width: 8px;
+  height: 8px;
+  right: 4px;
+  bottom: 4px;
+}
+
+.react-grid-item:hover > .react-resizable-handle::after {
+  border-color: rgba(0, 0, 0, 0.35);
+}
+
+.react-grid-item > .react-resizable-handle-e {
+  cursor: ew-resize;
+  right: -4px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 40px;
+  width: 8px;
+}
+
+.react-grid-item > .react-resizable-handle-e::after {
+  border: none;
+  width: 3px;
+  height: 24px;
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.12);
+  right: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.react-grid-item:hover > .react-resizable-handle-e::after {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.react-grid-item > .react-resizable-handle-s {
+  cursor: ns-resize;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 8px;
+}
+
+.react-grid-item > .react-resizable-handle-s::after {
+  border: none;
+  height: 3px;
+  width: 24px;
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.12);
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.react-grid-item:hover > .react-resizable-handle-s::after {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Smooth transitions when not dragging */
+.react-grid-item {
+  transition: all 200ms ease;
+}
+
+.react-grid-item.cssTransforms {
+  transition: transform 200ms ease;
+}
+
+.react-grid-item.react-draggable-dragging {
+  transition: none;
+  z-index: 100;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.react-grid-item.resizing {
+  transition: none;
+}
+
+/* Placeholder style when dragging */
+.react-grid-placeholder {
+  background: rgba(11, 61, 46, 0.1) !important;
+  border: 2px dashed rgba(11, 61, 46, 0.3) !important;
+  border-radius: 4px;
+  opacity: 1 !important;
+}
+
+/* Ensure widget content fills the grid item */
+.react-grid-item > div {
+  height: 100%;
+}
+
+.react-grid-item > div > div > .overflow-hidden > div {
+  height: 100%;
+}
+
+/* Make inner widget cards fill their containers */
+.widget-grid-item [data-ai-section] {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.widget-grid-item [data-ai-section] .recharts-responsive-container {
+  flex: 1;
+  min-height: 0;
+}

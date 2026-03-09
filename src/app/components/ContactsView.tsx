@@ -233,7 +233,7 @@ export function ContactsView({
               Select a contact to view details
             </div>
           ) : (
-          <div className="max-w-3xl">
+          <div className="max-w-3xl 2xl:max-w-none">
             {/* AI Summary */}
             <div className="bg-gradient-to-br from-purple-50 via-blue-50 to-purple-50 rounded-sm border border-purple-100 p-4 sm:p-6 mb-4 sm:mb-6">
               <div className="flex items-center justify-between mb-4">

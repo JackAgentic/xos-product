@@ -172,9 +172,9 @@ export function OverviewView({ visibleModules, changeTab, selectedClient, isView
 
   return (
     <div className="flex-1 overflow-auto p-4 pb-24 bg-gray-50" data-ai-section="Client Overview">
-      <div className="max-w-7xl mx-auto relative">
+      <div className="max-w-7xl 2xl:max-w-none mx-auto relative">
         {/* ── Hero Zone ── */}
-        <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 mb-4 sm:mb-6 lg:h-[calc(100vh-280px)] lg:min-h-[500px] relative isolate">
+        <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 mb-4 sm:mb-6 lg:h-[calc(100vh-280px)] lg:min-h-[500px] lg:max-h-[700px] relative isolate">
           <ClientHeaderCard
             selectedClient={selectedClient}
             allOnboardingCompleted={allOnboardingCompleted}

@@ -215,7 +215,7 @@ export function FactFindView({
     return (
       <div className="flex-1 overflow-auto bg-gray-50" data-ai-section="Onboarding">
         <div className="p-4 sm:p-6 pb-24">
-          <div className="max-w-5xl mx-auto relative">
+          <div className="max-w-5xl 2xl:max-w-none mx-auto relative">
 
             {/* Header with Edit Button */}
             <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -617,7 +617,7 @@ export function FactFindView({
     <div className="flex-1 overflow-auto bg-gray-50" data-ai-section="Onboarding">
       <div className="p-4 sm:p-6 pb-24">
 
-        <div className="max-w-5xl mx-auto relative">
+        <div className="max-w-5xl 2xl:max-w-none mx-auto relative">
           <div className="mb-6">
             <h2 className="text-2xl font-semibold mb-2">Onboarding</h2>
             <p className="text-gray-600">Complete each section to finish the onboarding process.</p>

@@ -1,8 +1,8 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+import type { Request, Response } from 'express';
 import { sql } from '../../lib/db.js';
 import { cors, requireAuth, methodGuard } from '../../lib/middleware.js';
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(req: Request, res: Response) {
   if (cors(req, res)) return;
   const auth = requireAuth(req, res);
   if (!auth) return;
