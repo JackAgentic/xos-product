@@ -772,14 +772,16 @@ export function DashboardView({
             rowHeight={60}
             onLayoutChange={handleLayoutChange}
             draggableHandle=".widget-drag-handle"
-            resizeHandles={['se', 'e', 's']}
+            resizeHandles={width < 768 ? [] : ['se', 'e', 's']}
+            isDraggable={width >= 768}
+            isResizable={width >= 768}
             margin={[16, 16]}
             containerPadding={[0, 0]}
           >
             {visibleWidgets.map(w => (
               <div key={w.id} className="widget-grid-item">
                 <div className="h-full flex flex-col">
-                  <div className="widget-drag-handle absolute top-2 right-2 z-10 cursor-grab active:cursor-grabbing p-1 rounded hover:bg-gray-100 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="widget-drag-handle absolute top-2 right-2 z-10 cursor-grab active:cursor-grabbing p-1 rounded hover:bg-gray-100 opacity-0 group-hover:opacity-100 transition-opacity hidden md:block">
                     <GripVertical className="w-4 h-4 text-gray-400" />
                   </div>
                   <div className="flex-1 overflow-hidden">
